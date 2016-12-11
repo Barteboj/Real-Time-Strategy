@@ -6,7 +6,8 @@ public enum ActionButtonType
 {
     BuildBase,
     TrainPeasant,
-    TrainWarrior
+    TrainWarrior,
+    BuildBarracks
 }
 
 public class ActionButton : MonoBehaviour
