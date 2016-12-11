@@ -12,6 +12,15 @@ public class SelectionInfoKeeper : MonoBehaviour
     public Text maxHealth;
     public Button[] buttons;
 
+    public GameObject buildCompletitionBar;
+    public Image buildCompletitionBarFill;
+
+    public GameObject trainingUnitGameObject;
+    public Image trainingCompletitionBarFill;
+    public Image trainedUnitPortrait;
+
+    public Image healthBar;
+
     private static SelectionInfoKeeper instance;
 
     public static SelectionInfoKeeper Instance
@@ -71,5 +80,49 @@ public class SelectionInfoKeeper : MonoBehaviour
         //((Image)buttons[0].targetGraphic).sprite = unit.actionButton.ButtonImage;
         //buttons[0].onClick.RemoveAllListeners();
         //buttons[0].onClick.AddListener(unit.actionButton)
+    }
+
+    public void Assign(Building building)
+    {
+        unitName.text = building.buildingName;
+        unitLevel.text = building.level.ToString();
+        unitPortrait.sprite = building.portrait;
+        actualHealth.text = building.actualHealth.ToString();
+        maxHealth.text = building.maxHealth.ToString();
+    }
+
+    public void ShowBuildCompletitionBar()
+    {
+        buildCompletitionBar.SetActive(true);
+    }
+
+    public void HideBuildCompletitionBar()
+    {
+        buildCompletitionBar.SetActive(false);
+    }
+
+    public void ShowTrainingInfo()
+    {
+        trainingUnitGameObject.SetActive(true);
+    }
+
+    public void HideTrainingInfo()
+    {
+        trainingUnitGameObject.SetActive(false);
+    }
+
+    public void SetCompletitionBar(float fillAmount)
+    {
+        buildCompletitionBarFill.fillAmount = fillAmount;
+    }
+
+    public void SetHealthBar(float fillAmount)
+    {
+        healthBar.fillAmount = fillAmount;
+    }
+
+    public void SetTrainingBar(float fillAmount)
+    {
+        trainingCompletitionBarFill.fillAmount = fillAmount;
     }
 }

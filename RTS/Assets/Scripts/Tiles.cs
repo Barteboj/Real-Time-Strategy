@@ -7,6 +7,8 @@ public class Tiles : MonoBehaviour
     private static Tiles instance;
 
     public List<Tile> tilesPrefabs;
+    public GameObject canBuildIndicator;
+    public GameObject cannotBuildIndicator;
 
     public static Tiles Instance
     {

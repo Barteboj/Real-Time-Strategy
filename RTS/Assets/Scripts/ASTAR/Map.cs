@@ -54,9 +54,4 @@ public class Map : MonoBehaviour
             }
         }
     }
-
-    /*public PathNode GetNodeFromPosition(Vector2 position)
-    {
-        return 
-    }*/
 }
