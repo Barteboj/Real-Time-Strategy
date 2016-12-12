@@ -38,6 +38,7 @@ public class Unit : MonoBehaviour
     {
         actualHealth = maxHealth;
         InitializePositionInGrid();
+        Players.Instance.LocalPlayer.FoodAmount += foodCost;
     }
 
     public virtual void Update()

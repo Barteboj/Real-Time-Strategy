@@ -34,6 +34,7 @@ public class ResourcesGUI : MonoBehaviour
     public Text goldText;
     public Text lumberText;
     public Text foodText;
+    public Text foodMaxText;
 
     void Awake()
     {

@@ -51,7 +51,8 @@ public class Building : MonoBehaviour
     public enum BuildingType
     {
         Castle,
-        Barracks
+        Barracks,
+        Farm
     }
     public BuildingType buildingType;
 
@@ -116,10 +117,14 @@ public class Building : MonoBehaviour
         if (SelectController.Instance.selectedBuilding == this)
         {
             SelectionInfoKeeper.Instance.HideTrainingInfo();
-            List<ActionButton> trainingButtons = ActionButtons.Instance.buttons.FindAll(button => button.GetType() == typeof(TrainingButton));
-            foreach (ActionButton button in trainingButtons)
+
+            foreach (ActionButtonType buttonType in buttonTypes)
             {
-                button.Show();
+                ActionButton button = ActionButtons.Instance.buttons.Find(item => item.buttonType == buttonType);
+                if (button.GetType() == typeof(TrainingButton))
+                {
+                    button.Show();
+                }
             }
         }
         GameObject instantiatedUnit = (GameObject)Instantiate(trainedUnit.gameObject, MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(gameObject.transform.position), width, height)), Quaternion.identity);
@@ -127,7 +132,7 @@ public class Building : MonoBehaviour
         isTraining = false;
     }
 
-    public void FinishBuild()
+    public virtual void FinishBuild()
     {
         buildingViewGameObject.SetActive(true);
         buildField.SetActive(false);
@@ -290,5 +295,10 @@ public class Building : MonoBehaviour
                 }
             }
         }
+    }
+
+    public virtual void DestroyYourself()
+    {
+
     }
 }

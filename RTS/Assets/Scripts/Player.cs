@@ -20,6 +20,34 @@ public class Player : MonoBehaviour
         }
     }
 
+    private int foodMaxAmount = 0;
+    public int FoodMaxAmount
+    {
+        get
+        {
+            return foodMaxAmount;
+        }
+        set
+        {
+            foodMaxAmount = value;
+            ResourcesGUI.Instance.foodMaxText.text = foodMaxAmount.ToString();
+        }
+    }
+
+    private int foodAmount = 0;
+    public int FoodAmount
+    {
+        get
+        {
+            return foodAmount;
+        }
+        set
+        {
+            foodAmount = value;
+            ResourcesGUI.Instance.foodText.text = foodAmount.ToString();
+        }
+    }
+
     public bool HasCastle
     {
         get
@@ -31,5 +59,6 @@ public class Player : MonoBehaviour
     void Awake()
     {
         GoldAmount = 300;
+        FoodMaxAmount = 1;
     }
 }

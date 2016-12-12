@@ -8,14 +8,17 @@ public class TrainingButton : ActionButton
     public void Train()
     {
         string messageToShow = "";
-        if (unitToTrain.goldCost > Players.Instance.LocalPlayer.GoldAmount)
+        if (unitToTrain.goldCost > Players.Instance.LocalPlayer.GoldAmount || unitToTrain.foodCost > Players.Instance.LocalPlayer.FoodMaxAmount - Players.Instance.LocalPlayer.FoodAmount)
         {
-            if (messageToShow != "")
+            if (unitToTrain.goldCost > Players.Instance.LocalPlayer.GoldAmount)
             {
-                messageToShow += "\n";
+                messageToShow += "Not enough gold\n";
             }
-            messageToShow += "Not enough gold";
-            MessagesController.Instance.ShowMessage(messageToShow);
+            if (unitToTrain.foodCost > Players.Instance.LocalPlayer.FoodMaxAmount - Players.Instance.LocalPlayer.FoodAmount)
+            {
+                messageToShow += "Not enough food\n";
+            }
+            MessagesController.Instance.ShowMessage(messageToShow.Remove(messageToShow.Length - 1));
         }
         else
         {
