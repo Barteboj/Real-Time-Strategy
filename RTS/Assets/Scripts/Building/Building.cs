@@ -101,9 +101,10 @@ public class Building : MonoBehaviour
         actualTrainingTime = 0f;
         isTraining = true;
 
-        foreach (ActionButtonType buttonType in buttonTypes)
+        List<ActionButton> trainingButtons = ActionButtons.Instance.buttons.FindAll(button => button.GetType() == typeof(TrainingButton));
+        foreach (ActionButton button in trainingButtons)
         {
-            ActionButtons.Instance.buttons.Find(button => button.GetType() == typeof(TrainingButton)).Hide();
+            button.Hide();
         }
         SelectionInfoKeeper.Instance.SetTrainingBar(actualTrainingTime / trainedUnit.trainingTime);
         SelectionInfoKeeper.Instance.trainedUnitPortrait.sprite = trainedUnit.portrait;
@@ -115,9 +116,10 @@ public class Building : MonoBehaviour
         if (SelectController.Instance.selectedBuilding == this)
         {
             SelectionInfoKeeper.Instance.HideTrainingInfo();
-            foreach (ActionButtonType buttonType in buttonTypes)
+            List<ActionButton> trainingButtons = ActionButtons.Instance.buttons.FindAll(button => button.GetType() == typeof(TrainingButton));
+            foreach (ActionButton button in trainingButtons)
             {
-                ActionButtons.Instance.buttons.Find(button => button.GetType() == typeof(TrainingButton)).Show();
+                button.Show();
             }
         }
         GameObject instantiatedUnit = (GameObject)Instantiate(trainedUnit.gameObject, MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(gameObject.transform.position), width, height)), Quaternion.identity);
@@ -183,9 +185,10 @@ public class Building : MonoBehaviour
         }
         if (isTraining)
         {
-            foreach (ActionButtonType buttonType in buttonTypes)
+            List<ActionButton> trainingButtons = ActionButtons.Instance.buttons.FindAll(button => button.GetType() == typeof(TrainingButton));
+            foreach (ActionButton button in trainingButtons)
             {
-                ActionButtons.Instance.buttons.Find(button => button.GetType() == typeof(TrainingButton)).Hide();
+                button.Hide();
             }
             SelectionInfoKeeper.Instance.SetTrainingBar(actualTrainingTime / trainedUnit.trainingTime);
             SelectionInfoKeeper.Instance.trainedUnitPortrait.sprite = trainedUnit.portrait;
