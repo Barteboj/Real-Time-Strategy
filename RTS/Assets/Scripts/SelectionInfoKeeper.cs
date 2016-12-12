@@ -21,6 +21,12 @@ public class SelectionInfoKeeper : MonoBehaviour
 
     public Image healthBar;
 
+    public GameObject healthInfoGameObject;
+    public GameObject levelInfoGameObject;
+    public GameObject goldLeftInfoGameObject;
+
+    public Text goldLeftAmountText;
+
     private static SelectionInfoKeeper instance;
 
     public static SelectionInfoKeeper Instance

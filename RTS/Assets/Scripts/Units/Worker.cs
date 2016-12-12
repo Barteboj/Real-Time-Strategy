@@ -129,6 +129,7 @@ public class Worker : Unit
         if (SelectController.Instance.selectedUnit == this)
         {
             SelectController.Instance.Unselect();
+            SelectionInfoKeeper.Instance.Hide();
             Unselect();
         }
         ClearPositionInGrid();
@@ -218,6 +219,10 @@ public class Worker : Unit
                 if (buildingToBuild.CouldBeBuildInPlace(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), this))
                 {
                     Build();
+                }
+                else
+                {
+                    CancelBuild();
                 }
             }
         }

@@ -30,6 +30,10 @@ public class Unit : MonoBehaviour
     public ActionButtonType[] buttonTypes;
     public float trainingTime;
 
+    public int goldCost;
+    public int lumberCost;
+    public int foodCost;
+
     void Awake()
     {
         actualHealth = maxHealth;

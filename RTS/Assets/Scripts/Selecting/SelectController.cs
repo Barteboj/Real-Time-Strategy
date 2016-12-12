@@ -7,6 +7,7 @@ public class SelectController : MonoBehaviour
 
     public Unit selectedUnit;
     public Building selectedBuilding;
+    public Mine selectedMine;
 
     public static SelectController Instance
     {
@@ -108,69 +109,82 @@ public class SelectController : MonoBehaviour
                 SelectItem();
             }
         }
+        RaycastHit2D underMouseCursorInfo = GetWhatIsUnderMouseCursor();
+        if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<Cost>())
+        {
+            Cost costToShow = underMouseCursorInfo.collider.GetComponent<Cost>();
+            CostGUI.Instance.ShowCostGUI(costToShow.goldCost, costToShow.lumberCost, costToShow.foodCost);
+        }
+        else if (CostGUI.Instance.IsVisible)
+        {
+            CostGUI.Instance.HideCostGUI();
+        }
     }
 
-    public void buildWithSelectedUnit()
+    public RaycastHit2D GetWhatIsUnderMouseCursor()
     {
-
+        return Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
     }
 
     public void SelectItem()
     {
-        RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
-        if (hitInfo.collider != null)
+        RaycastHit2D selectionInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
+        if (selectionInfo.collider != null)
         {
-            if (hitInfo.collider.transform.parent.GetComponent<Unit>())
+            if (selectionInfo.collider.transform.parent.GetComponent<Unit>())
             {
-                if (selectedUnit != null)
-                {
-                    selectedUnit.Unselect();
-                }
-                selectedUnit = hitInfo.collider.transform.parent.GetComponent<Unit>();
-                if (selectedBuilding != null)
-                {
-                    selectedBuilding.Unselect();
-                    selectedBuilding = null;
-                }
-                hitInfo.collider.transform.parent.GetComponent<Unit>().Select();
+                SelectUnit(selectionInfo.collider.transform.parent.GetComponent<Unit>());
             }
-            else
+            else if(selectionInfo.collider.transform.parent.GetComponent<Building>())
             {
-                if (selectedBuilding != null)
-                {
-                    selectedBuilding.Unselect();
-                }
-                selectedBuilding = hitInfo.collider.transform.parent.GetComponent<Building>();
-                if (selectedUnit != null)
-                {
-                    selectedUnit.Unselect();
-                    selectedUnit = null;
-                }
-                selectedBuilding.Select();
+                SelectBuilding(selectionInfo.collider.transform.parent.GetComponent<Building>());
+            }
+            else if (selectionInfo.collider.transform.parent.GetComponent<Mine>())
+            {
+                SelectMine(selectionInfo.collider.transform.parent.GetComponent<Mine>());
             }
         }
     }
 
     public void SelectBuilding(Building building)
     {
+        Unselect();
+        selectedBuilding = building;
+        building.Select();
+    }
+
+    public void SelectUnit(Unit unit)
+    {
+        Unselect();
+        selectedUnit = unit;
+        unit.Select();
+    }
+
+    public void SelectMine(Mine mine)
+    {
+        Unselect();
+        selectedMine = mine;
+        mine.Select();
+    }
+
+    public void Unselect()
+    {
         if (selectedBuilding != null)
         {
             selectedBuilding.Unselect();
+            selectedBuilding = null;
         }
         if (selectedUnit != null)
         {
             selectedUnit.Unselect();
             selectedUnit = null;
         }
-        selectedBuilding = building;
-        building.Select();
-    }
-
-    public void Unselect()
-    {
-        selectedUnit = null;
-        selectedBuilding = null;
-        SelectionInfoKeeper.Instance.Hide();
+        if (selectedMine != null)
+        {
+            selectedMine.Unselect();
+            selectedMine = null;
+        }
+        ActionButtons.Instance.HideAllButtons();
     }
 
     public IntVector2 GetGridPositionFromMousePosition()

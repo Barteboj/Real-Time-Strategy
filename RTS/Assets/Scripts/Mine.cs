@@ -11,13 +11,32 @@ public class Mine : MonoBehaviour
     public float timeOfMining;
 
     public List<Worker> miners;
+    [SerializeField]
+    private int goldLeft;
 
-    public int goldLeft;
+    public int GoldLeft
+    {
+        get
+        {
+            return goldLeft;
+        }
+        set
+        {
+            goldLeft = value;
+            SelectionInfoKeeper.Instance.goldLeftAmountText.text = goldLeft.ToString();
+        }
+    }
 
     public int width;
     public int height;
 
     public IntVector2 placeOnMapGrid;
+
+    public GameObject selectionIndicator;
+
+    public const string mineName = "Mine";
+
+    public Sprite portrait;
 
     void Start()
     {
@@ -38,15 +57,15 @@ public class Mine : MonoBehaviour
     
     public int TakeGold(int amount)
     {
-        if (goldLeft < amount)
+        if (GoldLeft < amount)
         {
-            amount = goldLeft;
-            goldLeft = 0;
+            amount = GoldLeft;
+            GoldLeft = 0;
             Deplete();
         }
         else
         {
-            goldLeft -= amount;
+            GoldLeft -= amount;
         }
         return amount;
     }
@@ -58,6 +77,7 @@ public class Mine : MonoBehaviour
         if (SelectController.Instance.selectedUnit == visiter)
         {
             SelectController.Instance.Unselect();
+            SelectionInfoKeeper.Instance.Hide();
             visiter.Unselect();
         }
         visiter.ClearPositionInGrid();
@@ -88,5 +108,35 @@ public class Mine : MonoBehaviour
         yield return new WaitForSeconds(timeOfMining);
         miner.takenGoldAmount = TakeGold(100);
         LeaveMine(miner);
+    }
+
+    public void Select()
+    {
+        selectionIndicator.SetActive(true);
+        SelectionInfoKeeper.Instance.unitName.text = mineName;
+        SelectionInfoKeeper.Instance.goldLeftAmountText.text = GoldLeft.ToString();
+        SelectionInfoKeeper.Instance.unitLevel.enabled = false;
+        SelectionInfoKeeper.Instance.maxHealth.enabled = false;
+        SelectionInfoKeeper.Instance.actualHealth.enabled = false;
+        SelectionInfoKeeper.Instance.healthInfoGameObject.SetActive(false);
+        SelectionInfoKeeper.Instance.levelInfoGameObject.SetActive(false);
+        SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(true);
+        SelectionInfoKeeper.Instance.unitPortrait.sprite = portrait;
+        SelectController.Instance.selectedUnit = null;
+        SelectController.Instance.selectedBuilding = null;
+        SelectController.Instance.selectedMine = this;
+        SelectionInfoKeeper.Instance.Show();
+    }
+
+    public void Unselect()
+    {
+        selectionIndicator.SetActive(false);
+        SelectionInfoKeeper.Instance.unitLevel.enabled = true;
+        SelectionInfoKeeper.Instance.maxHealth.enabled = true;
+        SelectionInfoKeeper.Instance.actualHealth.enabled = true;
+        SelectionInfoKeeper.Instance.healthInfoGameObject.SetActive(true);
+        SelectionInfoKeeper.Instance.levelInfoGameObject.SetActive(true);
+        SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(false);
+        SelectionInfoKeeper.Instance.Hide();
     }
 }
