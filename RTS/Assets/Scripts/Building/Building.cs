@@ -297,6 +297,12 @@ public class Building : MonoBehaviour
         }
     }
 
+    public bool CheckIfIsInBuildingArea(IntVector2 positionToCheck)
+    {
+        IntVector2 buildingPlaceOnMap = MapGridded.WorldToMapPosition(gameObject.transform.position);
+        return positionToCheck.x >= buildingPlaceOnMap.x && positionToCheck.x <= buildingPlaceOnMap.x + width - 1 && positionToCheck.y >= buildingPlaceOnMap.y && positionToCheck.y <= buildingPlaceOnMap.y + height - 1;
+    }
+
     public virtual void DestroyYourself()
     {
 

@@ -24,6 +24,8 @@ public class Worker : Unit
     public Mine mineToGoForGold;
     public LumberInGame lumberToCut;
 
+    private Coroutine GatherLumberCoroutine;
+
     public bool HasGold
     {
         get
@@ -157,6 +159,11 @@ public class Worker : Unit
     {
         isGoingForLumber = false;
         isReturningWithLumber = false;
+
+        if (GatherLumberCoroutine != null)
+        {
+            StopCoroutine(GatherLumberCoroutine);
+        }
     }
 
     public void TakeGold()
@@ -166,7 +173,7 @@ public class Worker : Unit
 
     public void TakeLumber()
     {
-        StartCoroutine(GatherLumber());
+        GatherLumberCoroutine = StartCoroutine(GatherLumber());
     }
 
     private IEnumerator GatherLumber()
@@ -322,13 +329,14 @@ public class Worker : Unit
         }
         if (isGoingToBuildPlace)
         {
-            if (!isFollowingPath && (followedPath == null || (followedPath[followedPath.Count - 1].x == MapGridded.WorldToMapPosition(gameObject.transform.position).x && followedPath[followedPath.Count - 1].y == MapGridded.WorldToMapPosition(gameObject.transform.position).y)))
+            if (buildingToBuild.CheckIfIsInBuildingArea(MapGridded.WorldToMapPosition(gameObject.transform.position)))
             {
-                if (buildingToBuild.CouldBeBuildInPlace(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), this))
+                if (buildingToBuild.CouldBeBuildInPlace(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), this) && hasFinishedGoingToLastStep)
                 {
+                    isFollowingPath = false;
                     Build();
                 }
-                else
+                else if (hasFinishedGoingToLastStep)
                 {
                     CancelBuild();
                 }

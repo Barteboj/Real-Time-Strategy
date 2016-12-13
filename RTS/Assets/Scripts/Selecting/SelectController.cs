@@ -56,6 +56,7 @@ public class SelectController : MonoBehaviour
                 {
                     ((Worker)selectedUnit).CancelBuild();
                     ((Worker)selectedUnit).CancelGatheringGold();
+                    ((Worker)selectedUnit).CancelGatheringLumber();
                     RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
                     if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Mine>())
                     {

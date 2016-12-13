@@ -10,6 +10,7 @@ public class Unit : MonoBehaviour
     protected IntVector2 positionInGrid;
     protected int indexOfFollowedPathNode;
     protected IntVector2 requestedTargetPositionInGrid;
+    protected bool hasFinishedGoingToLastStep = false;
 
     public string unitName;
     public int level = 1;
@@ -43,6 +44,7 @@ public class Unit : MonoBehaviour
 
     public virtual void Update()
     {
+        hasFinishedGoingToLastStep = false;
         if (isFollowingPath)
         {
             FollowPath();
@@ -63,6 +65,7 @@ public class Unit : MonoBehaviour
 
     public virtual void StartFollowingPath(List<MapGridElement> pathToFollow)
     {
+        hasFinishedGoingToLastStep = true;
         if (pathToFollow != null && pathToFollow.Count > 0)
         {
             followedPath = pathToFollow;
@@ -87,6 +90,7 @@ public class Unit : MonoBehaviour
         gameObject.transform.position += (Vector3)(new Vector2(nextNodeToFollow.x, nextNodeToFollow.y) - (Vector2)gameObject.transform.position).normalized * speed * Time.deltaTime;
         if (((Vector2)gameObject.transform.position - new Vector2(nextNodeToFollow.x, nextNodeToFollow.y)).magnitude < 0.03f)
         {
+            hasFinishedGoingToLastStep = true;
             if (requestedTargetPositionInGrid != null)
             {
                 isFollowingPath = false;
