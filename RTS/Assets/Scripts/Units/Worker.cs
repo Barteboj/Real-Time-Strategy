@@ -20,7 +20,7 @@ public class Worker : Unit
     public float timeOfGivingLumber;
 
     public Building buildingToBuild;
-    public Building castleToReturnWithGold;
+    public Building castleToReturnWithGoods;
     public Mine mineToGoForGold;
     public LumberInGame lumberToCut;
 
@@ -37,11 +37,10 @@ public class Worker : Unit
     public void GoForGold(Mine mine)
     {
         mineToGoForGold = mine;
-        List<MapGridElement> shortestPathToMine;
-        shortestPathToMine = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(mineToGoForGold.transform.position), mineToGoForGold.width, mineToGoForGold.height);
-        if (shortestPathToMine != null && shortestPathToMine.Count > 0)
+        IntVector2 placeToGoInToMine = MapGridded.Instance.GetStrictFirstFreePlaceAround(MapGridded.WorldToMapPosition(mine.transform.position), 2, 2);
+        if (placeToGoInToMine != null)
         {
-            RequestGoTo(new IntVector2(shortestPathToMine[shortestPathToMine.Count - 1].x, shortestPathToMine[shortestPathToMine.Count - 1].y));
+            RequestGoTo(placeToGoInToMine);
         }
         isGoingForGold = true;
     }
@@ -49,11 +48,10 @@ public class Worker : Unit
     public void GoForLumber(LumberInGame lumber)
     {
         lumberToCut = lumber;
-        List<MapGridElement> shortestPathToLumber;
-        shortestPathToLumber = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(lumberToCut.transform.position), 1, 1);
-        if (shortestPathToLumber != null && shortestPathToLumber.Count > 0)
+        IntVector2 placeToGoToChopTree = MapGridded.Instance.GetStrictFirstFreePlaceAround(MapGridded.WorldToMapPosition(lumber.transform.position), 1, 1);
+        if (placeToGoToChopTree != null)
         {
-            RequestGoTo(new IntVector2(shortestPathToLumber[shortestPathToLumber.Count - 1].x, shortestPathToLumber[shortestPathToLumber.Count - 1].y));
+            RequestGoTo(placeToGoToChopTree);
         }
         isGoingForLumber = true;
     }
@@ -230,7 +228,7 @@ public class Worker : Unit
 
     public void LeaveCastle()
     {
-        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGold.transform.position), castleToReturnWithGold.width, castleToReturnWithGold.height);
+        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         spriteRenderer.enabled = true;
         selectionCollider.SetActive(true);
@@ -239,7 +237,7 @@ public class Worker : Unit
 
     public void LeaveCastleForLumber()
     {
-        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGold.transform.position), castleToReturnWithGold.width, castleToReturnWithGold.height);
+        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         spriteRenderer.enabled = true;
         selectionCollider.SetActive(true);
@@ -248,11 +246,11 @@ public class Worker : Unit
 
     public void ReturnWithGold()
     {
-        castleToReturnWithGold = FindNearestCastle();
-        if (castleToReturnWithGold != null)
+        castleToReturnWithGoods = FindNearestCastle();
+        if (castleToReturnWithGoods != null)
         {
             List<MapGridElement> shortestPathToCastle;
-            shortestPathToCastle = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(castleToReturnWithGold.transform.position), castleToReturnWithGold.width, castleToReturnWithGold.height);
+            shortestPathToCastle = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
             if (shortestPathToCastle != null && shortestPathToCastle.Count == 0)
             {
                 RequestGoTo(positionInGrid);
@@ -267,11 +265,11 @@ public class Worker : Unit
 
     public void ReturnWithLumber()
     {
-        castleToReturnWithGold = FindNearestCastle();
-        if (castleToReturnWithGold != null)
+        castleToReturnWithGoods = FindNearestCastle();
+        if (castleToReturnWithGoods != null)
         {
             List<MapGridElement> shortestPathToCastle;
-            shortestPathToCastle = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(castleToReturnWithGold.transform.position), castleToReturnWithGold.width, castleToReturnWithGold.height);
+            shortestPathToCastle = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
             if (shortestPathToCastle != null && shortestPathToCastle.Count == 0)
             {
                 RequestGoTo(positionInGrid);
@@ -304,6 +302,45 @@ public class Worker : Unit
     public void StartReturningWithLumber()
     {
         isReturningWithLumber = true;
+    }
+
+    public bool CheckIfIsNextToMine()
+    {
+        List<MapGridElement> AdjacentGridElements = MapGridded.Instance.GetAdjacentGridElements(MapGridded.WorldToMapPosition(gameObject.transform.position));
+        foreach (MapGridElement actualMapGridElement in AdjacentGridElements)
+        {
+            if (actualMapGridElement.mine != null && actualMapGridElement.mine == mineToGoForGold)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool CheckIfIsNextToLumber()
+    {
+        List<MapGridElement> AdjacentGridElements = MapGridded.Instance.GetAdjacentGridElements(MapGridded.WorldToMapPosition(gameObject.transform.position));
+        foreach (MapGridElement actualMapGridElement in AdjacentGridElements)
+        {
+            if (actualMapGridElement.lumber != null && actualMapGridElement.lumber == lumberToCut)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool CheckIfIsNextToCastleToReturnGoods()
+    {
+        List<MapGridElement> AdjacentGridElements = MapGridded.Instance.GetAdjacentGridElements(MapGridded.WorldToMapPosition(gameObject.transform.position));
+        foreach (MapGridElement actualMapGridElement in AdjacentGridElements)
+        {
+            if (actualMapGridElement.building != null && actualMapGridElement.building == castleToReturnWithGoods)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public override void Update()
@@ -342,8 +379,9 @@ public class Worker : Unit
                 }
             }
         }
-        if (isGoingForGold && !isFollowingPath && followedPath != null && positionInGrid.x == followedPath[followedPath.Count - 1].x && positionInGrid.y == followedPath[followedPath.Count - 1].y)
+        if (isGoingForGold && CheckIfIsNextToMine() && hasFinishedGoingToLastStep)
         {
+            isFollowingPath = false;
             isGoingForGold = false;
             TakeGold();
         }
@@ -351,8 +389,9 @@ public class Worker : Unit
         {
             GoForGold(mineToGoForGold);
         }
-        if (isReturningWithGold && !isFollowingPath && followedPath != null && positionInGrid.x == followedPath[followedPath.Count - 1].x && positionInGrid.y == followedPath[followedPath.Count - 1].y)
+        if (isReturningWithGold && CheckIfIsNextToCastleToReturnGoods() && hasFinishedGoingToLastStep)
         {
+            isFollowingPath = false;
             isReturningWithGold = false;
             GiveGold();
         }
@@ -360,8 +399,9 @@ public class Worker : Unit
         {
             ReturnWithGold();
         }
-        if (isGoingForLumber && !isFollowingPath && followedPath != null && positionInGrid.x == followedPath[followedPath.Count - 1].x && positionInGrid.y == followedPath[followedPath.Count - 1].y)
+        if (isGoingForLumber && CheckIfIsNextToLumber() && hasFinishedGoingToLastStep)
         {
+            isFollowingPath = false;
             isGoingForLumber = false;
             if (lumberToCut.IsDepleted)
             {
@@ -376,8 +416,9 @@ public class Worker : Unit
         {
             GoForLumber(lumberToCut);
         }
-        if (isReturningWithLumber && !isFollowingPath && followedPath != null && positionInGrid.x == followedPath[followedPath.Count - 1].x && positionInGrid.y == followedPath[followedPath.Count - 1].y)
+        if (isReturningWithLumber && CheckIfIsNextToCastleToReturnGoods() && hasFinishedGoingToLastStep)
         {
+            isFollowingPath = false;
             isReturningWithLumber = false;
             GiveLumber();
         }

@@ -8,6 +8,13 @@ public class Warrior : Unit
     public Unit attackedUnit;
     public Building attackedBuilding;
 
+    public float delaybetweenAttacks;
+
+    public int damage;
+
+    private float timeFromLastTryToHit = 0f;
+    private bool justContactedWithEnemy = true;
+
     public void StartAttack(Unit unitToAttack)
     {
         attackedUnit = unitToAttack;
@@ -26,7 +33,7 @@ public class Warrior : Unit
     {
         if (!CheckIfEnemyIsInAttackRange())
         {
-            Debug.Log("Following");
+            justContactedWithEnemy = true;
             List<MapGridElement> shortestPath;
             shortestPath = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(attackedUnit.transform.position), 1, 1);
             if (shortestPath.Count == 0)
@@ -41,7 +48,17 @@ public class Warrior : Unit
         }
         else
         {
-            Debug.Log("Attacking");
+            if (justContactedWithEnemy)
+            {
+                justContactedWithEnemy = false;
+                timeFromLastTryToHit = 0f;
+            }
+            timeFromLastTryToHit += Time.deltaTime;
+            if (timeFromLastTryToHit >= delaybetweenAttacks)
+            {
+                attackedUnit.GetHit(damage, this);
+                timeFromLastTryToHit = 0f;
+            }
         }
     }
 

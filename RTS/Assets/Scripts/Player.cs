@@ -72,7 +72,7 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        GoldAmount = 300;
-        FoodMaxAmount = 1;
+        GoldAmount = 10000;
+        FoodMaxAmount = 10000;
     }
 }

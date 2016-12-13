@@ -12,6 +12,8 @@ public class Unit : MonoBehaviour
     protected IntVector2 requestedTargetPositionInGrid;
     protected bool hasFinishedGoingToLastStep = false;
 
+    protected Coroutine disableHitAnimationCoroutine;
+
     public string unitName;
     public int level = 1;
     public int armor;
@@ -22,6 +24,21 @@ public class Unit : MonoBehaviour
     public int speed;
     public int maxHealth;
     public int actualHealth;
+    public int ActualHealth
+    {
+        get
+        {
+            return actualHealth;
+        }
+        set
+        {
+            actualHealth = value;
+            if (SelectController.Instance.selectedUnit == this)
+            {
+                SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
+            }
+        }
+    }
     public int ownerPlayerID;
     public List<MapGridElement> followedPath;
     public SpriteRenderer spriteRenderer;
@@ -49,6 +66,48 @@ public class Unit : MonoBehaviour
         {
             FollowPath();
         }
+    }
+
+    public virtual void GetHit(int damage, Warrior attacker)
+    {
+        ActualHealth -= damage;
+        if (actualHealth <= 0)
+        {
+            Die();
+            attacker.StopAttack();
+        }
+        else
+        {
+            ShowHitAnimation();
+        }
+    }
+
+    public virtual void ShowHitAnimation()
+    {
+        spriteRenderer.color = Color.red;
+        if (disableHitAnimationCoroutine != null)
+        {
+            StopCoroutine(disableHitAnimationCoroutine);
+        }
+        disableHitAnimationCoroutine = StartCoroutine(DisableHitAnimation());
+    }
+
+    public IEnumerator DisableHitAnimation()
+    {
+        yield return new WaitForSeconds(0.3f);
+        spriteRenderer.color = Color.white;
+    }
+
+    public virtual void Die()
+    {
+        if (SelectController.Instance.selectedUnit == this)
+        {
+            SelectController.Instance.Unselect();
+            SelectionInfoKeeper.Instance.Hide();
+            Unselect();
+        }
+        Players.Instance.LocalPlayer.FoodAmount -= foodCost;
+        Destroy(gameObject);
     }
 
     public virtual void RequestGoTo(IntVector2 targetPositionInGrid)

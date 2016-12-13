@@ -98,12 +98,65 @@ public class MapGridded : MonoBehaviour
         return GetFirstFreePlaceAround(new IntVector2(position.x - 1, position.y - 1), width + 2, height + 2);
     }
 
+    public IntVector2 GetStrictFirstFreePlaceAround(IntVector2 position, int width, int height)
+    {
+        for (int i = 0; i < height; ++i)
+        {
+            IntVector2 checkedPosition = new IntVector2(position.x - 1, position.y + i);
+            if (IsInMap(checkedPosition) && mapGrid[position.y + i, position.x - 1].isWalkable)
+            {
+                return checkedPosition;
+            }
+        }
+        for (int i = 0; i < width; ++i)
+        {
+            IntVector2 checkedPosition = new IntVector2(position.x + i, position.y + height);
+            if (IsInMap(checkedPosition) && mapGrid[position.y + height, position.x + i].isWalkable)
+            {
+                return checkedPosition;
+            }
+        }
+        for (int i = 0; i < height; ++i)
+        {
+            IntVector2 checkedPosition = new IntVector2(position.x + width, position.y + i);
+            if (IsInMap(checkedPosition) && mapGrid[position.y + i, position.x + width].isWalkable)
+            {
+                return checkedPosition;
+            }
+        }
+        for (int i = 0; i < width; ++i)
+        {
+            IntVector2 checkedPosition = new IntVector2(position.x + i, position.y - 1);
+            if (IsInMap(checkedPosition) && mapGrid[position.y - 1, position.x + i].isWalkable)
+            {
+                return checkedPosition;
+            }
+        }
+        return null;
+    }
+
     public List<MapGridElement> GetGridElementsFromArea(IntVector2 centerPosition, int width, int height)
     {
         List<MapGridElement> mapGridElements = new List<MapGridElement>();
         for (int row = centerPosition.y - height; row <= centerPosition.y + height; ++row)
         {
             for (int column = centerPosition.x - width; column <= centerPosition.x + width; ++column)
+            {
+                if (IsInMap(new IntVector2(column, row)))
+                {
+                    mapGridElements.Add(mapGrid[row, column]);
+                }
+            }
+        }
+        return mapGridElements;
+    }
+
+    public List<MapGridElement> GetAdjacentGridElements(IntVector2 centerPosition)
+    {
+        List<MapGridElement> mapGridElements = new List<MapGridElement>();
+        for (int row = centerPosition.y - 1; row <= centerPosition.y + 1; ++row)
+        {
+            for (int column = centerPosition.x - 1; column <= centerPosition.x + 1; ++column)
             {
                 if (IsInMap(new IntVector2(column, row)))
                 {

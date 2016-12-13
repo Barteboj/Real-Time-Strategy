@@ -139,4 +139,10 @@ public class Mine : MonoBehaviour
         SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(false);
         SelectionInfoKeeper.Instance.Hide();
     }
+
+    public bool CheckIfIsWithinMine(IntVector2 mapPosition)
+    {
+        IntVector2 minePositionOnMap = MapGridded.WorldToMapPosition(gameObject.transform.position);
+        return mapPosition.x >= minePositionOnMap.x && mapPosition.x <= minePositionOnMap.x + 2 && mapPosition.y >= minePositionOnMap.y && mapPosition.y <= minePositionOnMap.y + 2;
+    }
 }
