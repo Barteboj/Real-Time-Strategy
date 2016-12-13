@@ -9,13 +9,20 @@ public class Worker : Unit
     public bool haveFinishedPlacingBuilding = false;
     public bool isGoingForGold = false;
     public bool isReturningWithGold = false;
+    public bool isGoingForLumber = false;
+    public bool isReturningWithLumber = false;
 
     public int takenGoldAmount;
     public float timeOfGivingGold;
 
+    public int takenLumberAmount = 0;
+    public float timeOfGatheringLumber;
+    public float timeOfGivingLumber;
+
     public Building buildingToBuild;
     public Building castleToReturnWithGold;
     public Mine mineToGoForGold;
+    public LumberInGame lumberToCut;
 
     public bool HasGold
     {
@@ -35,6 +42,33 @@ public class Worker : Unit
             RequestGoTo(new IntVector2(shortestPathToMine[shortestPathToMine.Count - 1].x, shortestPathToMine[shortestPathToMine.Count - 1].y));
         }
         isGoingForGold = true;
+    }
+
+    public void GoForLumber(LumberInGame lumber)
+    {
+        lumberToCut = lumber;
+        List<MapGridElement> shortestPathToLumber;
+        shortestPathToLumber = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(lumberToCut.transform.position), 1, 1);
+        if (shortestPathToLumber != null && shortestPathToLumber.Count > 0)
+        {
+            RequestGoTo(new IntVector2(shortestPathToLumber[shortestPathToLumber.Count - 1].x, shortestPathToLumber[shortestPathToLumber.Count - 1].y));
+        }
+        isGoingForLumber = true;
+    }
+
+    public void GoForNewLumber()
+    {
+        List<MapGridElement> mapGridElementsInWorkersSight = MapGridded.Instance.GetGridElementsFromArea(positionInGrid, sight, sight);
+        if (mapGridElementsInWorkersSight.Count > 0)
+        {
+            foreach (MapGridElement mapGridElementInWorkerSight in mapGridElementsInWorkersSight)
+            {
+                if (mapGridElementInWorkerSight.lumber != null && !mapGridElementInWorkerSight.lumber.IsDepleted)
+                {
+                    GoForLumber(mapGridElementInWorkerSight.lumber);
+                }
+            }
+        }
     }
 
     public void PrepareBuild(Building buildingToBuildPrefab)
@@ -119,9 +153,28 @@ public class Worker : Unit
         isReturningWithGold = false;
     }
 
+    public void CancelGatheringLumber()
+    {
+        isGoingForLumber = false;
+        isReturningWithLumber = false;
+    }
+
     public void TakeGold()
     {
         mineToGoForGold.VisitMine(this);
+    }
+
+    public void TakeLumber()
+    {
+        StartCoroutine(GatherLumber());
+    }
+
+    private IEnumerator GatherLumber()
+    {
+        yield return new WaitForSeconds(timeOfGatheringLumber);
+        takenLumberAmount = 50;
+        lumberToCut.Deplete();
+        ReturnWithLumber();
     }
 
     public void GiveGold()
@@ -138,12 +191,34 @@ public class Worker : Unit
         StartCoroutine(GivingGold());
     }
 
+    public void GiveLumber()
+    {
+        if (SelectController.Instance.selectedUnit == this)
+        {
+            SelectController.Instance.Unselect();
+            SelectionInfoKeeper.Instance.Hide();
+            Unselect();
+        }
+        ClearPositionInGrid();
+        spriteRenderer.enabled = false;
+        selectionCollider.SetActive(false);
+        StartCoroutine(GivingLumber());
+    }
+
     public IEnumerator GivingGold()
     {
         yield return new WaitForSeconds(timeOfGivingGold);
         Players.Instance.LocalPlayer.GoldAmount += takenGoldAmount;
         takenGoldAmount = 0;
         LeaveCastle();
+    }
+
+    public IEnumerator GivingLumber()
+    {
+        yield return new WaitForSeconds(timeOfGivingLumber);
+        Players.Instance.LocalPlayer.LumberAmount += takenLumberAmount;
+        takenLumberAmount = 0;
+        LeaveCastleForLumber();
     }
 
     public void LeaveCastle()
@@ -153,6 +228,15 @@ public class Worker : Unit
         spriteRenderer.enabled = true;
         selectionCollider.SetActive(true);
         GoForGold(mineToGoForGold);
+    }
+
+    public void LeaveCastleForLumber()
+    {
+        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGold.transform.position), castleToReturnWithGold.width, castleToReturnWithGold.height);
+        SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
+        spriteRenderer.enabled = true;
+        selectionCollider.SetActive(true);
+        GoForLumber(lumberToCut);
     }
 
     public void ReturnWithGold()
@@ -174,6 +258,25 @@ public class Worker : Unit
         }
     }
 
+    public void ReturnWithLumber()
+    {
+        castleToReturnWithGold = FindNearestCastle();
+        if (castleToReturnWithGold != null)
+        {
+            List<MapGridElement> shortestPathToCastle;
+            shortestPathToCastle = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(castleToReturnWithGold.transform.position), castleToReturnWithGold.width, castleToReturnWithGold.height);
+            if (shortestPathToCastle != null && shortestPathToCastle.Count == 0)
+            {
+                RequestGoTo(positionInGrid);
+            }
+            else if (shortestPathToCastle != null)
+            {
+                RequestGoTo(new IntVector2(shortestPathToCastle[shortestPathToCastle.Count - 1].x, shortestPathToCastle[shortestPathToCastle.Count - 1].y));
+            }
+            StartReturningWithLumber();
+        }
+    }
+
     public Building FindNearestCastle()
     {
         if (Players.Instance.LocalPlayer.HasCastle)
@@ -189,6 +292,11 @@ public class Worker : Unit
     public void StartReturningWithGold()
     {
         isReturningWithGold = true;
+    }
+
+    public void StartReturningWithLumber()
+    {
+        isReturningWithLumber = true;
     }
 
     public override void Update()
@@ -243,6 +351,31 @@ public class Worker : Unit
         else if (isReturningWithGold && !isFollowingPath)
         {
             ReturnWithGold();
+        }
+        if (isGoingForLumber && !isFollowingPath && followedPath != null && positionInGrid.x == followedPath[followedPath.Count - 1].x && positionInGrid.y == followedPath[followedPath.Count - 1].y)
+        {
+            isGoingForLumber = false;
+            if (lumberToCut.IsDepleted)
+            {
+                GoForNewLumber();
+            }
+            else
+            {
+                TakeLumber();
+            }
+        }
+        else if (isGoingForLumber && !isFollowingPath)
+        {
+            GoForLumber(lumberToCut);
+        }
+        if (isReturningWithLumber && !isFollowingPath && followedPath != null && positionInGrid.x == followedPath[followedPath.Count - 1].x && positionInGrid.y == followedPath[followedPath.Count - 1].y)
+        {
+            isReturningWithLumber = false;
+            GiveLumber();
+        }
+        else if (isReturningWithLumber && !isFollowingPath)
+        {
+            ReturnWithLumber();
         }
     }
 }

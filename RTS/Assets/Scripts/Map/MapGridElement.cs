@@ -7,6 +7,7 @@ public class MapGridElement
     public Building building;
     public Tile tile;
     public Mine mine;
+    public LumberInGame lumber;
     public PathNode pathNode = new PathNode();
     public bool isFogged;
     public bool isSighted;
@@ -19,7 +20,7 @@ public class MapGridElement
     {
         get
         {
-            return unit == null && building == null && mine == null && tile.isWalkable;
+            return unit == null && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
         }
     }
 

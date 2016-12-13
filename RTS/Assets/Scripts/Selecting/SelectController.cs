@@ -57,12 +57,13 @@ public class SelectController : MonoBehaviour
                     ((Worker)selectedUnit).CancelBuild();
                     ((Worker)selectedUnit).CancelGatheringGold();
                     RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
-                    if (hitInfo.collider != null)
+                    if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Mine>())
                     {
-                        if (hitInfo.collider.transform.parent.GetComponent<Mine>())
-                        {
-                            ((Worker)selectedUnit).GoForGold(hitInfo.collider.transform.parent.GetComponent<Mine>());
-                        }
+                        ((Worker)selectedUnit).GoForGold(hitInfo.collider.transform.parent.GetComponent<Mine>());
+                    }
+                    else if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<LumberInGame>() && !hitInfo.collider.transform.parent.GetComponent<LumberInGame>().IsDepleted)
+                    {
+                        ((Worker)selectedUnit).GoForLumber(hitInfo.collider.transform.parent.GetComponent<LumberInGame>());
                     }
                     else
                     {
@@ -135,7 +136,7 @@ public class SelectController : MonoBehaviour
             {
                 SelectUnit(selectionInfo.collider.transform.parent.GetComponent<Unit>());
             }
-            else if(selectionInfo.collider.transform.parent.GetComponent<Building>())
+            else if (selectionInfo.collider.transform.parent.GetComponent<Building>())
             {
                 SelectBuilding(selectionInfo.collider.transform.parent.GetComponent<Building>());
             }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MapGridded : MonoBehaviour
 {
@@ -95,5 +96,21 @@ public class MapGridded : MonoBehaviour
             }
         }
         return GetFirstFreePlaceAround(new IntVector2(position.x - 1, position.y - 1), width + 2, height + 2);
+    }
+
+    public List<MapGridElement> GetGridElementsFromArea(IntVector2 centerPosition, int width, int height)
+    {
+        List<MapGridElement> mapGridElements = new List<MapGridElement>();
+        for (int row = centerPosition.y - height; row <= centerPosition.y + height; ++row)
+        {
+            for (int column = centerPosition.x - width; column <= centerPosition.x + width; ++column)
+            {
+                if (IsInMap(new IntVector2(column, row)))
+                {
+                    mapGridElements.Add(mapGrid[row, column]);
+                }
+            }
+        }
+        return mapGridElements;
     }
 }

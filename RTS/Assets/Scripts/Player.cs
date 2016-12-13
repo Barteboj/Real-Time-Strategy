@@ -20,6 +20,20 @@ public class Player : MonoBehaviour
         }
     }
 
+    private int lumberAmount = 0;
+    public int LumberAmount
+    {
+        get
+        {
+            return lumberAmount;
+        }
+        set
+        {
+            lumberAmount = value;
+            ResourcesGUI.Instance.lumberText.text = lumberAmount.ToString();
+        }
+    }
+
     private int foodMaxAmount = 0;
     public int FoodMaxAmount
     {
