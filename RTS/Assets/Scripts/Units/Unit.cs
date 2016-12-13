@@ -23,7 +23,7 @@ public class Unit : MonoBehaviour
     public int sight;
     public int speed;
     public int maxHealth;
-    public int actualHealth;
+    private int actualHealth;
     public int ActualHealth
     {
         get

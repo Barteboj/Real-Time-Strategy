@@ -8,7 +8,7 @@ public class Warrior : Unit
     public Unit attackedUnit;
     public Building attackedBuilding;
 
-    public float delaybetweenAttacks;
+    public float delayBetweenAttacks;
 
     public int damage;
 
@@ -54,7 +54,7 @@ public class Warrior : Unit
                 timeFromLastTryToHit = 0f;
             }
             timeFromLastTryToHit += Time.deltaTime;
-            if (timeFromLastTryToHit >= delaybetweenAttacks)
+            if (timeFromLastTryToHit >= delayBetweenAttacks)
             {
                 attackedUnit.GetHit(damage, this);
                 timeFromLastTryToHit = 0f;
