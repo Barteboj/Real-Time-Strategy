@@ -181,6 +181,11 @@ public class Unit : MonoBehaviour
         }
     }
 
+    public void StopFollowingPath()
+    {
+        RequestGoTo(positionInGrid);
+    }
+
     public void SetNewPositionOnMapSettingWorldPosition(IntVector2 newPosition)
     {
         ClearPositionInGrid();

@@ -52,6 +52,7 @@ public class Warrior : Unit
             {
                 justContactedWithEnemy = false;
                 timeFromLastTryToHit = 0f;
+                StopFollowingPath();
             }
             timeFromLastTryToHit += Time.deltaTime;
             if (timeFromLastTryToHit >= delayBetweenAttacks)

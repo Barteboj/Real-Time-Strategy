@@ -8,7 +8,9 @@ public enum ActionButtonType
     TrainPeasant,
     TrainWarrior,
     BuildBarracks,
-    BuildFarm
+    BuildFarm,
+    BuildShootingRange,
+    TrainArcher
 }
 
 public class ActionButton : MonoBehaviour

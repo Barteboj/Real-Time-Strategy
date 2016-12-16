@@ -52,7 +52,8 @@ public class Building : MonoBehaviour
     {
         Castle,
         Barracks,
-        Farm
+        Farm,
+        ShootingRange
     }
     public BuildingType buildingType;
 
