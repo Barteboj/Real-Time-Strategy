@@ -37,6 +37,8 @@ public class MapLoadController : MonoBehaviour
 
     public MapGridded map;
 
+    public string mapNameToLoad;
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -48,7 +50,7 @@ public class MapLoadController : MonoBehaviour
         {
             instance = this;
         }
-        LoadMap(Application.dataPath + "/" + MapEditor.mapsFolderName + "/" + "map" + ".map");
+        LoadMap(Application.dataPath + "/" + MapEditor.mapsFolderName + "/" + mapNameToLoad + ".map");
     }
 
     public void LoadMap(string filePath)
@@ -62,10 +64,16 @@ public class MapLoadController : MonoBehaviour
                 case MapEditor.mapSizeFileKey:
                     mapSizeX = int.Parse(words[1]);
                     mapSizeY = int.Parse(words[2]);
-                    map.mapGrid = new MapGridElement[mapSizeX, mapSizeY];
+                    map.mapGrid = new MapGridElement[mapSizeY, mapSizeX];
                     break;
                 case MapEditor.tileKey:
                     SaveToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])), (TileType)System.Enum.Parse(typeof(TileType), words[3]));
+                    break;
+                case MapEditor.goldMineKey:
+                    SaveMineToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
+                    break;
+                case MapEditor.lumberKey:
+                    SaveLumberToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
                     break;
             }
         }
@@ -76,5 +84,17 @@ public class MapLoadController : MonoBehaviour
         Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
         Tile tile = ((GameObject)Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
         map.mapGrid[positionInMap.y, positionInMap.x] = new MapGridElement(positionInMap.x, positionInMap.y, tile, (GameObject)Instantiate(Tiles.Instance.canBuildIndicator, tile.transform.position, Quaternion.identity), (GameObject)Instantiate(Tiles.Instance.cannotBuildIndicator, tile.transform.position, Quaternion.identity));
+    }
+
+    public void SaveMineToMap(IntVector2 positionInMap)
+    {
+        Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
+        Instantiate(Resources.Instance.minePrefab, postionToCreate, Quaternion.identity);
+    }
+
+    public void SaveLumberToMap(IntVector2 positionInMap)
+    {
+        Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
+        Instantiate(Resources.Instance.treePrefab, postionToCreate, Quaternion.identity);
     }
 }

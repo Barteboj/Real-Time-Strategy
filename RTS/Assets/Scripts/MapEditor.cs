@@ -31,12 +31,11 @@ public class MapEditor : MonoBehaviour
             }
         }
     }
+    
+    public int mapWidth = 10;
+    public int mapHeight = 10;
 
-
-    public int mapSizeX = 10;
-    public int mapSizeY = 10;
-
-    public Tile[,] map;
+    public MapEditorGridElement[,] map;
 
     public string mapName;
 
@@ -44,14 +43,47 @@ public class MapEditor : MonoBehaviour
 
     public GameObject prefabShowingWhereYouArePuttingTile;
 
+    public MineInMapEditor mineSelectionPrefab;
+
+    public LumberInMapEditor lumberSelectionPrefab;
+
+    public GameObject player1MarkerSelectionPrefab;
+    public GameObject player2MarkerSelectionPrefab;
+
     public const string mapsFolderName = "Maps";
 
     public const string mapSizeFileKey = "MapSize";
     public const string tileKey = "Tile";
 
+    public const string goldMineKey = "GoldMine";
+
+    public const string lumberKey = "Lumber";
+
+    public const string player1PositionKey = "Player1Position";
+    public const string player2PositionKey = "Player2Position";
+
+    public IntVector2 player1Position;
+    public IntVector2 player2Position;
+
+    public GameObject mainEditorGameObject;
+
+    public GameObject minePrefab;
+
+    public GameObject lumberPrefab;
+
+    public GameObject player1MarkerPrefab;
+    public GameObject player2MarkerPrefab;
+
+    public GameObject player1MarkerOnMapInstance;
+    public GameObject player2MarkerOnMapInstance;
+
+    public List<MineInMapEditor> mines = new List<MineInMapEditor>();
+
+    public List<LumberInMapEditor> lumberList = new List<LumberInMapEditor>();
+
     public bool IsInMap(IntVector2 mapPosition)
     {
-        return mapPosition.x >= 0 && mapPosition.x < mapSizeX && mapPosition.y >= 0 && mapPosition.y < mapSizeY;
+        return mapPosition.x >= 0 && mapPosition.x < mapWidth && mapPosition.y >= 0 && mapPosition.y < mapHeight;
     }
 
     void Awake()
@@ -70,50 +102,305 @@ public class MapEditor : MonoBehaviour
     void Update()
     {
         Vector2 mousePositionInWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        IntVector2 positionInMap = WorldPositionToMapPosition(mousePositionInWorld);
-        if (prefabShowingWhereYouArePuttingTile != null && IsInMap(positionInMap))
+        IntVector2 positionInMap = MapGridded.WorldToMapPosition(mousePositionInWorld);
+        if (IsInEditingArea(mousePositionInWorld))
         {
-            prefabShowingWhereYouArePuttingTile.transform.position = new Vector2(Mathf.Round(mousePositionInWorld.x - 0.5f), Mathf.Round(mousePositionInWorld.y - 0.5f));
-            if (Input.GetMouseButton(0))
+            if (prefabShowingWhereYouArePuttingTile != null && IsInMap(positionInMap))
             {
-                SaveTileToMap(positionInMap);
+                prefabShowingWhereYouArePuttingTile.transform.position = MapGridded.MapToWorldPosition(positionInMap);
+                if (Input.GetMouseButton(0))
+                {
+                    SaveTileToMap(positionInMap);
+                }
+            }
+            else if (mineSelectionPrefab != null)
+            {
+                mineSelectionPrefab.transform.position = MapGridded.MapToWorldPosition(positionInMap);
+                if (Input.GetMouseButton(0))
+                {
+                    SaveMineToMap(positionInMap);
+                }
+            }
+            else if (lumberSelectionPrefab != null)
+            {
+                lumberSelectionPrefab.transform.position = MapGridded.MapToWorldPosition(positionInMap);
+                if (Input.GetMouseButton(0))
+                {
+                    SaveLumberToMap(positionInMap);
+                }
+            }
+            else if (player1MarkerSelectionPrefab != null)
+            {
+                player1MarkerSelectionPrefab.transform.position = MapGridded.MapToWorldPosition(positionInMap);
+                if (Input.GetMouseButton(0) && IsInMap(positionInMap) && map[positionInMap.y, positionInMap.x].tile.isWalkable && map[positionInMap.y, positionInMap.x].mine == null && map[positionInMap.y, positionInMap.x].lumber == null)
+                {
+                    player1Position = positionInMap;
+                    if (player1MarkerOnMapInstance != null)
+                    {
+                        Destroy(player1MarkerOnMapInstance);
+                    }
+                    player1MarkerOnMapInstance = (GameObject)Instantiate(player1MarkerPrefab, MapGridded.MapToWorldPosition(positionInMap), Quaternion.identity);
+                }
+            }
+            else if (player2MarkerSelectionPrefab != null)
+            {
+                player2MarkerSelectionPrefab.transform.position = MapGridded.MapToWorldPosition(positionInMap);
+                if (Input.GetMouseButton(0) && IsInMap(positionInMap) && map[positionInMap.y, positionInMap.x].tile.isWalkable && map[positionInMap.y, positionInMap.x].mine == null && map[positionInMap.y, positionInMap.x].lumber == null)
+                {
+                    player2Position = positionInMap;
+                    if (player2MarkerOnMapInstance != null)
+                    {
+                        Destroy(player2MarkerOnMapInstance);
+                    }
+                    player2MarkerOnMapInstance = (GameObject)Instantiate(player2MarkerPrefab, MapGridded.MapToWorldPosition(positionInMap), Quaternion.identity);
+                }
             }
         }
     }
 
+    public void RemovePlayer1Marker()
+    {
+        player1Position = null;
+        if (player1MarkerOnMapInstance != null)
+        {
+            Destroy(player1MarkerOnMapInstance);
+        }
+    }
+
+    public void RemovePlayer2Marker()
+    {
+        player2Position = null;
+        if (player2MarkerOnMapInstance != null)
+        {
+            Destroy(player2MarkerOnMapInstance);
+        }
+    }
+
+    public bool IsInEditingArea(Vector2 position)
+    {
+        RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Editing Area"));
+        if (hitInfo.collider != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void SetMapSize(int width, int height)
+    {
+        mapWidth = width;
+        mapHeight = height;
+    }
+
+    public void SetPlayer1Position(IntVector2 positionToSet)
+    {
+        player1Position = positionToSet;
+    }
+
+    public void CreateMap(string mapName, int mapWidth, int mapHeight)
+    {
+        this.mapName = mapName;
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
+        InitializeMap();
+    }
+
+    public void InitializeMap()
+    {
+        map = new MapEditorGridElement[mapHeight, mapWidth];
+        for (int row = 0; row < mapHeight; ++row)
+        {
+            for (int column = 0; column < mapWidth; ++column)
+            {
+                SaveTileToMap(new IntVector2(column, row), TileType.Grass);
+            }
+        }
+    }
+
+    public void SetPlayer2Position(IntVector2 positionToSet)
+    {
+        player2Position = positionToSet;
+    }
+
+    public void SelectMine()
+    {
+        UnselectElementsToPut();
+        mineSelectionPrefab = Instantiate(minePrefab).GetComponent<MineInMapEditor>();
+    }
+
+    public void SelectLumber()
+    {
+        UnselectElementsToPut();
+        lumberSelectionPrefab = Instantiate(lumberPrefab).GetComponent<LumberInMapEditor>();
+    }
+
+    public void SelectPlayer1Position()
+    {
+        UnselectElementsToPut();
+        player1MarkerSelectionPrefab = Instantiate(player1MarkerPrefab);
+    }
+
+    public void SelectPlayer2Position()
+    {
+        UnselectElementsToPut();
+        player2MarkerSelectionPrefab = Instantiate(player2MarkerPrefab);
+    }
+
+    public void UnselectElementsToPut()
+    {
+        if (mineSelectionPrefab != null)
+        {
+            Destroy(mineSelectionPrefab.gameObject);
+        }
+        if (prefabShowingWhereYouArePuttingTile != null)
+        {
+            Destroy(prefabShowingWhereYouArePuttingTile.gameObject);
+        }
+        if (lumberSelectionPrefab != null)
+        {
+            Destroy(lumberSelectionPrefab.gameObject);
+        }
+        if (player1MarkerSelectionPrefab != null)
+        {
+            Destroy(player1MarkerSelectionPrefab.gameObject);
+        }
+        if (player2MarkerSelectionPrefab != null)
+        {
+            Destroy(player2MarkerSelectionPrefab.gameObject);
+        }
+    }
+
+    public void SelectTile(TileType tileType)
+    {
+        UnselectElementsToPut();
+        selectedTilePrefab = Tiles.Instance.tilesPrefabs.Find(tilePrefab => tilePrefab.tileType == tileType);
+        prefabShowingWhereYouArePuttingTile = Instantiate(selectedTilePrefab.gameObject);
+    }
+
     public void SaveTileToMap(IntVector2 positionInMap)
     {
-        if (map[positionInMap.x, positionInMap.y] == null || map[positionInMap.x, positionInMap.y].tileType != selectedTilePrefab.tileType)
+        if (map[positionInMap.y, positionInMap.x] == null || map[positionInMap.y, positionInMap.x].tile.tileType != selectedTilePrefab.tileType)
         {
-            Vector2 postionToCreate = MapToWorldPosition(positionInMap);
+            Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
             Tile tile = ((GameObject)Instantiate(selectedTilePrefab.gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
-            if (map[positionInMap.x, positionInMap.y] != null)
+            if (map[positionInMap.y, positionInMap.x] != null && map[positionInMap.y, positionInMap.x].tile != null)
             {
-                Destroy(map[positionInMap.x, positionInMap.y].gameObject);
+                Destroy(map[positionInMap.y, positionInMap.x].tile.gameObject);
             }
-            map[positionInMap.x, positionInMap.y] = tile;
+            if (map[positionInMap.y, positionInMap.x] != null)
+            {
+                map[positionInMap.y, positionInMap.x].tile = tile;
+            }
+            else
+            {
+                map[positionInMap.y, positionInMap.x] = new MapEditorGridElement(positionInMap, tile, null);
+            }
+            if (!map[positionInMap.y, positionInMap.x].tile.isWalkable)
+            {
+                if (map[positionInMap.y, positionInMap.x].mine != null)
+                {
+                    mines.Remove(map[positionInMap.y, positionInMap.x].mine);
+                    Destroy(map[positionInMap.y, positionInMap.x].mine.gameObject);
+                }
+                if (map[positionInMap.y, positionInMap.x].lumber != null)
+                {
+                    lumberList.Remove(map[positionInMap.y, positionInMap.x].lumber);
+                    Destroy(map[positionInMap.y, positionInMap.x].lumber.gameObject);
+                }
+                if (player1Position != null && positionInMap.x == player1Position.x && positionInMap.y == player1Position.y)
+                {
+                    RemovePlayer1Marker();
+                }
+                if (player2Position != null && positionInMap.x == player2Position.x && positionInMap.y == player2Position.y)
+                {
+                    RemovePlayer2Marker();
+                }
+            }
+        }
+    }
+
+    public void SaveMineToMap(IntVector2 positionInMap)
+    {
+        Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
+        if (minePrefab.GetComponent<MineInMapEditor>().CouldBeBuildInPlace(positionInMap))
+        {
+            MineInMapEditor mine = ((GameObject)Instantiate(minePrefab, postionToCreate, Quaternion.identity)).GetComponent<MineInMapEditor>();
+            mine.SetPositionInMapGrid();
+            mines.Add(mine);
+            List<IntVector2> mapPositions = mine.GetPositionsOnMap();
+            foreach (IntVector2 mapPosition in mapPositions)
+            {
+                if (player1Position != null && mapPosition.x == player1Position.x && mapPosition.y == player1Position.y)
+                {
+                    RemovePlayer1Marker();
+                }
+                if (player2Position != null && mapPosition.x == player2Position.x && mapPosition.y == player2Position.y)
+                {
+                    RemovePlayer2Marker();
+                }
+            }
+        }
+    }
+
+    public void SaveLumberToMap(IntVector2 positionInMap)
+    {
+        Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
+        if (lumberPrefab.GetComponent<LumberInMapEditor>().CouldBeBuildInPlace(positionInMap))
+        {
+            LumberInMapEditor lumber = ((GameObject)Instantiate(lumberPrefab, postionToCreate, Quaternion.identity)).GetComponent<LumberInMapEditor>();
+            lumber.SetPositionInMapGrid();
+            lumberList.Add(lumber);
+            if (player1Position != null && positionInMap.x == player1Position.x && positionInMap.y == player1Position.y)
+            {
+                RemovePlayer1Marker();
+            }
+            if (player2Position != null && positionInMap.x == player2Position.x && positionInMap.y == player2Position.y)
+            {
+                RemovePlayer2Marker();
+            }
         }
     }
 
     public void SaveTileToMap(IntVector2 positionInMap, TileType tileType)
     {
-        Vector2 postionToCreate = MapToWorldPosition(positionInMap);
+        Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
         Tile tile = ((GameObject)Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
-        if (map[positionInMap.x, positionInMap.y] != null)
+        if (map[positionInMap.y, positionInMap.x] != null && map[positionInMap.y, positionInMap.x].tile != null)
         {
-            Destroy(map[positionInMap.x, positionInMap.y].gameObject);
+            Destroy(map[positionInMap.y, positionInMap.x].tile.gameObject);
         }
-        map[positionInMap.x, positionInMap.y] = tile;
-    }
-
-    public IntVector2 WorldPositionToMapPosition(Vector2 worldPosition)
-    {
-        return new IntVector2(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y));
-    }
-
-    public Vector2 MapToWorldPosition(IntVector2 mapPosition)
-    {
-        return new Vector2(mapPosition.x, mapPosition.y);
+        if (map[positionInMap.y, positionInMap.x] != null)
+        {
+            map[positionInMap.y, positionInMap.x].tile = tile;
+        }
+        else
+        {
+            map[positionInMap.y, positionInMap.x] = new MapEditorGridElement(positionInMap, tile, null);
+        }
+        if (!map[positionInMap.y, positionInMap.x].tile.isWalkable)
+        {
+            if (map[positionInMap.y, positionInMap.x].mine != null)
+            {
+                mines.Remove(map[positionInMap.y, positionInMap.x].mine);
+                Destroy(map[positionInMap.y, positionInMap.x].mine.gameObject);
+            }
+            if (map[positionInMap.y, positionInMap.x].lumber != null)
+            {
+                lumberList.Remove(map[positionInMap.y, positionInMap.x].lumber);
+                Destroy(map[positionInMap.y, positionInMap.x].lumber.gameObject);
+            }
+            if (player1Position != null && positionInMap.x == player1Position.x && positionInMap.y == player1Position.y)
+            {
+                RemovePlayer1Marker();
+            }
+            if (player2Position != null && positionInMap.x == player2Position.x && positionInMap.y == player2Position.y)
+            {
+                RemovePlayer2Marker();
+            }
+        }
     }
 
     public void SaveLoadedMap()
@@ -125,13 +412,23 @@ public class MapEditor : MonoBehaviour
     {
         Debug.Log("Saving file " + filePath);
         List<string> lines = new List<string>();
-        lines.Add(mapSizeFileKey + " " + mapSizeX + " " + mapSizeY);
-        for (int rowIndex = 0; rowIndex < mapSizeX; ++rowIndex)
+        lines.Add(mapSizeFileKey + " " + mapWidth + " " + mapHeight);
+        lines.Add(player1PositionKey + " " + player1Position.x + " " + player1Position.y);
+        lines.Add(player2PositionKey + " " + player2Position.x + " " + player2Position.y);
+        for (int rowIndex = 0; rowIndex < mapHeight; ++rowIndex)
         {
-            for (int columnIndex = 0; columnIndex < mapSizeY; ++columnIndex)
+            for (int columnIndex = 0; columnIndex < mapWidth; ++columnIndex)
             {
-                lines.Add(tileKey + " " + rowIndex + " " + columnIndex + " " + map[rowIndex, columnIndex].tileType.ToString());
+                lines.Add(tileKey + " " + columnIndex + " " + rowIndex + " " + map[rowIndex, columnIndex].tile.tileType.ToString());
             }
+        }
+        foreach (MineInMapEditor mine in mines)
+        {
+            lines.Add(goldMineKey + " " + mine.placeOnMapGrid.x + " " + mine.placeOnMapGrid.y);
+        }
+        foreach (LumberInMapEditor lumber in lumberList)
+        {
+            lines.Add(lumberKey + " " + lumber.placeOnMapGrid.x + " " + lumber.placeOnMapGrid.y);
         }
         File.WriteAllText(filePath, "");
         StreamWriter writer = new StreamWriter(filePath);
@@ -151,12 +448,26 @@ public class MapEditor : MonoBehaviour
             switch (words[0])
             {
                 case mapSizeFileKey:
-                    mapSizeX = int.Parse(words[1]);
-                    mapSizeY = int.Parse(words[2]);
-                    map = new Tile[mapSizeX, mapSizeY];
+                    mapWidth = int.Parse(words[1]);
+                    mapHeight = int.Parse(words[2]);
+                    map = new MapEditorGridElement[mapHeight, mapWidth];
+                    break;
+                case player1PositionKey:
+                    player1MarkerOnMapInstance = (GameObject)Instantiate(player1MarkerPrefab, MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2]))), Quaternion.identity);
+                    player1Position = MapGridded.WorldToMapPosition(player1MarkerOnMapInstance.transform.position);
+                    break;
+                case player2PositionKey:
+                    player2MarkerOnMapInstance = (GameObject)Instantiate(player2MarkerPrefab, MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2]))), Quaternion.identity);
+                    player2Position = MapGridded.WorldToMapPosition(player2MarkerOnMapInstance.transform.position);
                     break;
                 case tileKey:
                     SaveTileToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])), (TileType)System.Enum.Parse(typeof(TileType), words[3]));
+                    break;
+                case goldMineKey:
+                    SaveMineToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
+                    break;
+                case lumberKey:
+                    SaveLumberToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
                     break;
             }
         }

@@ -17,16 +17,10 @@ public class TileTypeEditorHolder : MonoBehaviour
     void Awake()
     {
         tileRepresantation.sprite = Tiles.Instance.tilesPrefabs.Find(tilePrefab => tilePrefab.tileType == tileType).sprite;
-        tileRepresantation.color = Tiles.Instance.tilesPrefabs.Find(tilePrefab => tilePrefab.tileType == tileType).GetComponent<SpriteRenderer>().color;
     }
 
-    public void AssignOnEditor()
+    public void SelectOnEditor()
     {
-        mapEditor.selectedTilePrefab = Tiles.Instance.tilesPrefabs.Find(tilePrefab => tilePrefab.tileType == tileType);
-        if (mapEditor.prefabShowingWhereYouArePuttingTile != null)
-        {
-            Destroy(mapEditor.prefabShowingWhereYouArePuttingTile);
-        }
-        mapEditor.prefabShowingWhereYouArePuttingTile = (GameObject)Instantiate(mapEditor.selectedTilePrefab.gameObject);
+        mapEditor.SelectTile(tileType);
     }
 }
