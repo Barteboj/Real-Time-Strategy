@@ -1,57 +1,25 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class MainMenuController : MonoBehaviour
 {
-    private static MainMenuController instance;
+    public const string gameSceneName = "Game";
+    public const string mapEditorSceneName = "Map Editor";
+    public const string lobbySceneName = "Lobby";
 
-    public static MainMenuController Instance
+    public void LoadGameScene()
     {
-        get
-        {
-            if (instance == null)
-            {
-                MainMenuController newInstance = FindObjectOfType<MainMenuController>();
-                if (newInstance != null)
-                {
-                    instance = newInstance;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("There is not MainMenuController attached to scene and is tried to be obtained");
-                    return null;
-                }
-            }
-            else
-            {
-                return instance;
-            }
-        }
+        SceneManager.LoadScene(lobbySceneName);
     }
 
-    public GameObject mainMenuObject;
-
-    void Awake()
+    public void LoadMapEditorScene()
     {
-        if (instance != null && instance != this)
-        {
-            Debug.LogError("More than one instances of MainMenuController on scene");
-            Destroy(this);
-        }
-        else
-        {
-            instance = this;
-        }
+        SceneManager.LoadScene(mapEditorSceneName);
     }
 
-    public void Show()
+    public void QuitFromGame()
     {
-        mainMenuObject.SetActive(true);
-    }
-
-    public void Hide()
-    {
-        mainMenuObject.SetActive(false);
+        Application.Quit();
     }
 }

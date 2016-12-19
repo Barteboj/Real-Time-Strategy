@@ -32,6 +32,6 @@ public class MapListElement : MonoBehaviour
     {
         MapEditor.Instance.LoadMap(mapFilePath);
         MapEditor.Instance.mapName = mapNameText.text;
-        MainMenuController.Instance.Hide();
+        MapEditorMainMenuController.Instance.Hide();
     }
 }

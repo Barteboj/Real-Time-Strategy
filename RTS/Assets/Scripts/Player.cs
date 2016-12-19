@@ -70,6 +70,8 @@ public class Player : MonoBehaviour
         }
     }
 
+    public Color color;
+
     void Awake()
     {
         GoldAmount = 10000;

@@ -149,6 +149,7 @@ public class Unit : MonoBehaviour
         gameObject.transform.position += (Vector3)(new Vector2(nextNodeToFollow.x, nextNodeToFollow.y) - (Vector2)gameObject.transform.position).normalized * speed * Time.deltaTime;
         if (((Vector2)gameObject.transform.position - new Vector2(nextNodeToFollow.x, nextNodeToFollow.y)).magnitude < 0.03f)
         {
+            gameObject.transform.position = new Vector2(nextNodeToFollow.x, nextNodeToFollow.y);
             hasFinishedGoingToLastStep = true;
             if (requestedTargetPositionInGrid != null)
             {

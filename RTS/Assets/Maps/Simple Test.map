@@ -1,0 +1,484 @@
+MapSize 20 20
+Player1Position 2 3
+Player2Position 7 12
+Tile 0 0 Grass
+Tile 1 0 Grass
+Tile 2 0 Grass
+Tile 3 0 Grass
+Tile 4 0 Grass
+Tile 5 0 Grass
+Tile 6 0 Grass
+Tile 7 0 Grass
+Tile 8 0 Grass
+Tile 9 0 Grass
+Tile 10 0 Grass
+Tile 11 0 Grass
+Tile 12 0 Grass
+Tile 13 0 Grass
+Tile 14 0 Grass
+Tile 15 0 Grass
+Tile 16 0 Grass
+Tile 17 0 Grass
+Tile 18 0 Grass
+Tile 19 0 Grass
+Tile 0 1 Grass
+Tile 1 1 Grass
+Tile 2 1 Grass
+Tile 3 1 Grass
+Tile 4 1 Grass
+Tile 5 1 Grass
+Tile 6 1 Grass
+Tile 7 1 Grass
+Tile 8 1 Grass
+Tile 9 1 Grass
+Tile 10 1 Grass
+Tile 11 1 Grass
+Tile 12 1 Grass
+Tile 13 1 Grass
+Tile 14 1 Grass
+Tile 15 1 Grass
+Tile 16 1 Grass
+Tile 17 1 Grass
+Tile 18 1 Grass
+Tile 19 1 Grass
+Tile 0 2 Grass
+Tile 1 2 Grass
+Tile 2 2 Grass
+Tile 3 2 Grass
+Tile 4 2 Grass
+Tile 5 2 Grass
+Tile 6 2 Grass
+Tile 7 2 Grass
+Tile 8 2 Grass
+Tile 9 2 Grass
+Tile 10 2 Grass
+Tile 11 2 Grass
+Tile 12 2 Grass
+Tile 13 2 Grass
+Tile 14 2 Grass
+Tile 15 2 Grass
+Tile 16 2 Grass
+Tile 17 2 Grass
+Tile 18 2 Grass
+Tile 19 2 Grass
+Tile 0 3 Grass
+Tile 1 3 Grass
+Tile 2 3 Grass
+Tile 3 3 Grass
+Tile 4 3 Grass
+Tile 5 3 Grass
+Tile 6 3 Grass
+Tile 7 3 Grass
+Tile 8 3 Grass
+Tile 9 3 Grass
+Tile 10 3 Grass
+Tile 11 3 Grass
+Tile 12 3 Grass
+Tile 13 3 Grass
+Tile 14 3 Grass
+Tile 15 3 Grass
+Tile 16 3 Grass
+Tile 17 3 Grass
+Tile 18 3 Grass
+Tile 19 3 Grass
+Tile 0 4 Grass
+Tile 1 4 Grass
+Tile 2 4 Grass
+Tile 3 4 Grass
+Tile 4 4 Grass
+Tile 5 4 Grass
+Tile 6 4 Grass
+Tile 7 4 Grass
+Tile 8 4 Grass
+Tile 9 4 Grass
+Tile 10 4 Grass
+Tile 11 4 Grass
+Tile 12 4 Grass
+Tile 13 4 Grass
+Tile 14 4 Grass
+Tile 15 4 Grass
+Tile 16 4 Grass
+Tile 17 4 Grass
+Tile 18 4 Grass
+Tile 19 4 Grass
+Tile 0 5 Grass
+Tile 1 5 Grass
+Tile 2 5 Grass
+Tile 3 5 Grass
+Tile 4 5 Grass
+Tile 5 5 Grass
+Tile 6 5 Grass
+Tile 7 5 Grass
+Tile 8 5 Grass
+Tile 9 5 Grass
+Tile 10 5 Grass
+Tile 11 5 Grass
+Tile 12 5 Grass
+Tile 13 5 Grass
+Tile 14 5 Grass
+Tile 15 5 Grass
+Tile 16 5 Grass
+Tile 17 5 Grass
+Tile 18 5 Grass
+Tile 19 5 Grass
+Tile 0 6 Grass
+Tile 1 6 Grass
+Tile 2 6 Grass
+Tile 3 6 Grass
+Tile 4 6 Grass
+Tile 5 6 Grass
+Tile 6 6 Grass
+Tile 7 6 Grass
+Tile 8 6 Grass
+Tile 9 6 Grass
+Tile 10 6 Grass
+Tile 11 6 Grass
+Tile 12 6 Grass
+Tile 13 6 Grass
+Tile 14 6 Grass
+Tile 15 6 Grass
+Tile 16 6 Grass
+Tile 17 6 Grass
+Tile 18 6 Grass
+Tile 19 6 Grass
+Tile 0 7 Grass
+Tile 1 7 Grass
+Tile 2 7 Grass
+Tile 3 7 Grass
+Tile 4 7 Grass
+Tile 5 7 Grass
+Tile 6 7 Grass
+Tile 7 7 Grass
+Tile 8 7 Grass
+Tile 9 7 Grass
+Tile 10 7 Grass
+Tile 11 7 Grass
+Tile 12 7 Grass
+Tile 13 7 Grass
+Tile 14 7 Grass
+Tile 15 7 Grass
+Tile 16 7 Grass
+Tile 17 7 Grass
+Tile 18 7 Grass
+Tile 19 7 Grass
+Tile 0 8 Rocks
+Tile 1 8 Rocks
+Tile 2 8 Rocks
+Tile 3 8 Rocks
+Tile 4 8 Rocks
+Tile 5 8 Rocks
+Tile 6 8 Rocks
+Tile 7 8 Rocks
+Tile 8 8 Rocks
+Tile 9 8 Grass
+Tile 10 8 Grass
+Tile 11 8 Grass
+Tile 12 8 Grass
+Tile 13 8 Grass
+Tile 14 8 Grass
+Tile 15 8 Grass
+Tile 16 8 Grass
+Tile 17 8 Grass
+Tile 18 8 Grass
+Tile 19 8 Grass
+Tile 0 9 Rocks
+Tile 1 9 Rocks
+Tile 2 9 Rocks
+Tile 3 9 Rocks
+Tile 4 9 Rocks
+Tile 5 9 Rocks
+Tile 6 9 Rocks
+Tile 7 9 Rocks
+Tile 8 9 Rocks
+Tile 9 9 Grass
+Tile 10 9 Grass
+Tile 11 9 Grass
+Tile 12 9 Grass
+Tile 13 9 Grass
+Tile 14 9 Grass
+Tile 15 9 Grass
+Tile 16 9 Grass
+Tile 17 9 Grass
+Tile 18 9 Grass
+Tile 19 9 Grass
+Tile 0 10 Grass
+Tile 1 10 Grass
+Tile 2 10 Grass
+Tile 3 10 Grass
+Tile 4 10 Grass
+Tile 5 10 Grass
+Tile 6 10 Grass
+Tile 7 10 Grass
+Tile 8 10 Grass
+Tile 9 10 Grass
+Tile 10 10 Grass
+Tile 11 10 Grass
+Tile 12 10 Grass
+Tile 13 10 Grass
+Tile 14 10 Grass
+Tile 15 10 Grass
+Tile 16 10 Grass
+Tile 17 10 Grass
+Tile 18 10 Grass
+Tile 19 10 Grass
+Tile 0 11 Grass
+Tile 1 11 Grass
+Tile 2 11 Grass
+Tile 3 11 Grass
+Tile 4 11 Grass
+Tile 5 11 Grass
+Tile 6 11 Grass
+Tile 7 11 Grass
+Tile 8 11 Grass
+Tile 9 11 Grass
+Tile 10 11 Grass
+Tile 11 11 Grass
+Tile 12 11 Grass
+Tile 13 11 Grass
+Tile 14 11 Grass
+Tile 15 11 Grass
+Tile 16 11 Grass
+Tile 17 11 Grass
+Tile 18 11 Grass
+Tile 19 11 Grass
+Tile 0 12 Grass
+Tile 1 12 Grass
+Tile 2 12 Grass
+Tile 3 12 Grass
+Tile 4 12 Grass
+Tile 5 12 Grass
+Tile 6 12 Grass
+Tile 7 12 Grass
+Tile 8 12 Grass
+Tile 9 12 Grass
+Tile 10 12 Grass
+Tile 11 12 Grass
+Tile 12 12 Grass
+Tile 13 12 Grass
+Tile 14 12 Grass
+Tile 15 12 Grass
+Tile 16 12 Grass
+Tile 17 12 Grass
+Tile 18 12 Grass
+Tile 19 12 Grass
+Tile 0 13 Grass
+Tile 1 13 Grass
+Tile 2 13 Grass
+Tile 3 13 Grass
+Tile 4 13 Grass
+Tile 5 13 Grass
+Tile 6 13 Grass
+Tile 7 13 Grass
+Tile 8 13 Grass
+Tile 9 13 Grass
+Tile 10 13 Grass
+Tile 11 13 Grass
+Tile 12 13 Grass
+Tile 13 13 Grass
+Tile 14 13 Grass
+Tile 15 13 Grass
+Tile 16 13 Grass
+Tile 17 13 Grass
+Tile 18 13 Grass
+Tile 19 13 Grass
+Tile 0 14 Grass
+Tile 1 14 Grass
+Tile 2 14 Grass
+Tile 3 14 Grass
+Tile 4 14 Grass
+Tile 5 14 Grass
+Tile 6 14 Grass
+Tile 7 14 Grass
+Tile 8 14 Grass
+Tile 9 14 Grass
+Tile 10 14 Grass
+Tile 11 14 Grass
+Tile 12 14 Grass
+Tile 13 14 Grass
+Tile 14 14 Grass
+Tile 15 14 Grass
+Tile 16 14 Grass
+Tile 17 14 Grass
+Tile 18 14 Grass
+Tile 19 14 Grass
+Tile 0 15 Grass
+Tile 1 15 Grass
+Tile 2 15 Grass
+Tile 3 15 Grass
+Tile 4 15 Grass
+Tile 5 15 Grass
+Tile 6 15 Grass
+Tile 7 15 Grass
+Tile 8 15 Grass
+Tile 9 15 Grass
+Tile 10 15 Grass
+Tile 11 15 Grass
+Tile 12 15 Grass
+Tile 13 15 Grass
+Tile 14 15 Grass
+Tile 15 15 Grass
+Tile 16 15 Grass
+Tile 17 15 Grass
+Tile 18 15 Grass
+Tile 19 15 Grass
+Tile 0 16 Grass
+Tile 1 16 Grass
+Tile 2 16 Grass
+Tile 3 16 Grass
+Tile 4 16 Grass
+Tile 5 16 Grass
+Tile 6 16 Grass
+Tile 7 16 Grass
+Tile 8 16 Grass
+Tile 9 16 Grass
+Tile 10 16 Grass
+Tile 11 16 Grass
+Tile 12 16 Grass
+Tile 13 16 Grass
+Tile 14 16 Grass
+Tile 15 16 Grass
+Tile 16 16 Grass
+Tile 17 16 Grass
+Tile 18 16 Grass
+Tile 19 16 Grass
+Tile 0 17 Grass
+Tile 1 17 Grass
+Tile 2 17 Grass
+Tile 3 17 Grass
+Tile 4 17 Grass
+Tile 5 17 Grass
+Tile 6 17 Grass
+Tile 7 17 Grass
+Tile 8 17 Grass
+Tile 9 17 Grass
+Tile 10 17 Grass
+Tile 11 17 Grass
+Tile 12 17 Grass
+Tile 13 17 Grass
+Tile 14 17 Grass
+Tile 15 17 Grass
+Tile 16 17 Grass
+Tile 17 17 Grass
+Tile 18 17 Grass
+Tile 19 17 Grass
+Tile 0 18 Grass
+Tile 1 18 Grass
+Tile 2 18 Grass
+Tile 3 18 Grass
+Tile 4 18 Grass
+Tile 5 18 Grass
+Tile 6 18 Grass
+Tile 7 18 Grass
+Tile 8 18 Grass
+Tile 9 18 Grass
+Tile 10 18 Grass
+Tile 11 18 Grass
+Tile 12 18 Grass
+Tile 13 18 Grass
+Tile 14 18 Grass
+Tile 15 18 Grass
+Tile 16 18 Grass
+Tile 17 18 Grass
+Tile 18 18 Grass
+Tile 19 18 Grass
+Tile 0 19 Grass
+Tile 1 19 Grass
+Tile 2 19 Grass
+Tile 3 19 Grass
+Tile 4 19 Grass
+Tile 5 19 Grass
+Tile 6 19 Grass
+Tile 7 19 Grass
+Tile 8 19 Grass
+Tile 9 19 Grass
+Tile 10 19 Grass
+Tile 11 19 Grass
+Tile 12 19 Grass
+Tile 13 19 Grass
+Tile 14 19 Grass
+Tile 15 19 Grass
+Tile 16 19 Grass
+Tile 17 19 Grass
+Tile 18 19 Grass
+Tile 19 19 Grass
+GoldMine 2 12
+Lumber 10 0
+Lumber 11 0
+Lumber 11 1
+Lumber 12 1
+Lumber 12 2
+Lumber 13 2
+Lumber 14 2
+Lumber 14 3
+Lumber 15 3
+Lumber 15 4
+Lumber 16 4
+Lumber 17 5
+Lumber 18 5
+Lumber 18 6
+Lumber 19 6
+Lumber 19 7
+Lumber 17 4
+Lumber 16 3
+Lumber 15 2
+Lumber 14 1
+Lumber 13 1
+Lumber 13 0
+Lumber 12 0
+Lumber 17 3
+Lumber 18 4
+Lumber 19 5
+Lumber 18 3
+Lumber 16 2
+Lumber 15 1
+Lumber 14 0
+Lumber 19 4
+Lumber 18 2
+Lumber 17 2
+Lumber 16 1
+Lumber 15 0
+Lumber 17 1
+Lumber 19 3
+Lumber 19 2
+Lumber 18 1
+Lumber 17 0
+Lumber 16 0
+Lumber 18 0
+Lumber 19 0
+Lumber 19 1
+Lumber 9 0
+Lumber 10 1
+Lumber 10 2
+Lumber 11 2
+Lumber 11 3
+Lumber 12 3
+Lumber 12 4
+Lumber 13 4
+Lumber 13 5
+Lumber 14 5
+Lumber 14 6
+Lumber 15 6
+Lumber 16 6
+Lumber 15 5
+Lumber 14 4
+Lumber 13 3
+Lumber 16 5
+Lumber 17 6
+Lumber 9 1
+Lumber 9 2
+Lumber 16 7
+Lumber 17 7
+Lumber 17 8
+Lumber 18 8
+Lumber 18 9
+Lumber 19 9
+Lumber 19 10
+Lumber 18 7
+Lumber 19 8
+Lumber 15 7
+Lumber 15 8
+Lumber 16 8
+Lumber 17 9
+Lumber 18 10
+Lumber 8 0
+Lumber 8 1

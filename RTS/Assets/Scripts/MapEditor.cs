@@ -472,4 +472,32 @@ public class MapEditor : MonoBehaviour
             }
         }
     }
+
+    public void CleanMapEditor()
+    {
+        foreach (MapEditorGridElement mapGridElement in map)
+        {
+            Destroy(mapGridElement.tile);
+        }
+        foreach (MineInMapEditor mine in mines)
+        {
+            Destroy(mine.gameObject);
+        }
+        mines.Clear();
+        foreach (LumberInMapEditor lumber in lumberList)
+        {
+            Destroy(lumber.gameObject);
+        }
+        lumberList.Clear();
+        player1Position = null;
+        player2Position = null;
+        if (player1MarkerOnMapInstance != null)
+        {
+            Destroy(player1MarkerOnMapInstance.gameObject);
+        }
+        if (player2MarkerOnMapInstance != null)
+        {
+            Destroy(player2MarkerOnMapInstance.gameObject);
+        }
+    }
 }
