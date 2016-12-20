@@ -33,5 +33,6 @@ public class MapListElement : MonoBehaviour
         MapEditor.Instance.LoadMap(mapFilePath);
         MapEditor.Instance.mapName = mapNameText.text;
         MapEditorMainMenuController.Instance.Hide();
+        FindObjectOfType<MapEditorCameraController>().ResetCameraPosition();
     }
 }

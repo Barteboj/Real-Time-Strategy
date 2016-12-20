@@ -16,6 +16,10 @@ public class MapListController : MonoBehaviour
 
     public void LoadMapsToList()
     {
+        foreach (MapListElement mapListElement in FindObjectsOfType<MapListElement>())
+        {
+            Destroy(mapListElement.gameObject);
+        }
         string searchedFolder = Application.dataPath + "\\" + MapEditor.mapsFolderName;
         string[] mapsfilesPaths = Directory.GetFiles(searchedFolder, "*.map", SearchOption.TopDirectoryOnly);
         foreach (string mapFilePath in mapsfilesPaths)

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class MapEditorMainMenuController : MonoBehaviour
@@ -7,6 +8,7 @@ public class MapEditorMainMenuController : MonoBehaviour
 
     public GameObject mapCreationWindow;
     public GameObject mapLoadingWindow;
+    public GameObject gridWithMapsGameObject;
 
     public static MapEditorMainMenuController Instance
     {
@@ -62,5 +64,10 @@ public class MapEditorMainMenuController : MonoBehaviour
     {
         mapCreationWindow.SetActive(false);
         mapLoadingWindow.SetActive(false);
+    }
+
+    public void GoBackToMainMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 }

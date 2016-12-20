@@ -35,4 +35,9 @@ public class MapEditorCameraController : MonoBehaviour
             }
         }
     }
+
+    public void ResetCameraPosition()
+    {
+        Camera.main.transform.position = new Vector3(0f, 0f, Camera.main.transform.position.z);
+    }
 }
