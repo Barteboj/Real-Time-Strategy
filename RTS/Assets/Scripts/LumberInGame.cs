@@ -4,6 +4,7 @@ using System.Collections;
 public class LumberInGame : MonoBehaviour
 {
     private bool isDepleted = false;
+    public bool isBeingCut = false;
 
     public bool IsDepleted
     {
@@ -14,6 +15,7 @@ public class LumberInGame : MonoBehaviour
     }
     public Sprite depletedSprite;
     public SpriteRenderer spriteRenderer;
+    public MinimapElement minimapElement;
 
     void Awake()
     {
@@ -24,6 +26,7 @@ public class LumberInGame : MonoBehaviour
     {
         isDepleted = true;
         spriteRenderer.sprite = depletedSprite;
+        minimapElement.Hide();
     }
 
     private void PlaceYourselfOnMapGrid()

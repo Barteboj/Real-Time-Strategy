@@ -34,4 +34,14 @@ public class MinimapElement : MonoBehaviour
             Destroy(image.gameObject);
         }
     }
+
+    public void Hide()
+    {
+        image.enabled = false;
+    }
+
+    public void Show()
+    {
+        image.enabled = true;
+    }
 }

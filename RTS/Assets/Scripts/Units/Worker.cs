@@ -166,6 +166,7 @@ public class Worker : Unit
 
     public void TakeGold()
     {
+        gameObject.GetComponent<MinimapElement>().Hide();
         mineToGoForGold.VisitMine(this);
     }
 
@@ -176,6 +177,7 @@ public class Worker : Unit
 
     private IEnumerator GatherLumber()
     {
+        lumberToCut.isBeingCut = true;
         yield return new WaitForSeconds(timeOfGatheringLumber);
         takenLumberAmount = 50;
         lumberToCut.Deplete();
@@ -193,6 +195,7 @@ public class Worker : Unit
         ClearPositionInGrid();
         spriteRenderer.enabled = false;
         selectionCollider.SetActive(false);
+        gameObject.GetComponent<MinimapElement>().Hide();
         StartCoroutine(GivingGold());
     }
 
@@ -207,6 +210,7 @@ public class Worker : Unit
         ClearPositionInGrid();
         spriteRenderer.enabled = false;
         selectionCollider.SetActive(false);
+        gameObject.GetComponent<MinimapElement>().Hide();
         StartCoroutine(GivingLumber());
     }
 
@@ -232,6 +236,7 @@ public class Worker : Unit
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         spriteRenderer.enabled = true;
         selectionCollider.SetActive(true);
+        gameObject.GetComponent<MinimapElement>().Show();
         GoForGold(mineToGoForGold);
     }
 
@@ -241,11 +246,13 @@ public class Worker : Unit
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         spriteRenderer.enabled = true;
         selectionCollider.SetActive(true);
+        gameObject.GetComponent<MinimapElement>().Show();
         GoForLumber(lumberToCut);
     }
 
     public void ReturnWithGold()
     {
+        gameObject.GetComponent<MinimapElement>().Show();
         castleToReturnWithGoods = FindNearestCastle();
         if (castleToReturnWithGoods != null)
         {
@@ -403,7 +410,7 @@ public class Worker : Unit
         {
             isFollowingPath = false;
             isGoingForLumber = false;
-            if (lumberToCut.IsDepleted)
+            if (lumberToCut.IsDepleted || lumberToCut.isBeingCut)
             {
                 GoForNewLumber();
             }
