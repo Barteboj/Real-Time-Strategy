@@ -39,6 +39,9 @@ public class MapLoadController : MonoBehaviour
 
     public string mapNameToLoad;
 
+    public Vector2 player1StartingPosition;
+    public Vector2 player2StartingPosition;
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -50,6 +53,10 @@ public class MapLoadController : MonoBehaviour
         {
             instance = this;
         }
+    }
+
+    public void LoadChosenMap()
+    {
         LoadMap(Application.dataPath + "/" + MapEditor.mapsFolderName + "/" + mapNameToLoad + ".map");
     }
 
@@ -65,6 +72,7 @@ public class MapLoadController : MonoBehaviour
                     mapSizeX = int.Parse(words[1]);
                     mapSizeY = int.Parse(words[2]);
                     map.mapGrid = new MapGridElement[mapSizeY, mapSizeX];
+                    Minimap.Instance.SetMapSize(mapSizeX);
                     break;
                 case MapEditor.tileKey:
                     SaveToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])), (TileType)System.Enum.Parse(typeof(TileType), words[3]));
@@ -74,6 +82,12 @@ public class MapLoadController : MonoBehaviour
                     break;
                 case MapEditor.lumberKey:
                     SaveLumberToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
+                    break;
+                case MapEditor.player1PositionKey:
+                    player1StartingPosition = MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
+                    break;
+                case MapEditor.player2PositionKey:
+                    player2StartingPosition = MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
                     break;
             }
         }

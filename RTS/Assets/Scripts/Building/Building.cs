@@ -1,8 +1,21 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Building : MonoBehaviour
+public enum BuildingType
+{
+    Player1Castle,
+    Player2Castle,
+    Player1Barracks,
+    Player2Barracks,
+    Player1Farm,
+    Player2Farm,
+    Player1ShootingRange,
+    Player2ShootingRange
+}
+
+public class Building : NetworkBehaviour
 {
     public string buildingName;
     public int maxHealth;
@@ -48,13 +61,7 @@ public class Building : MonoBehaviour
 
     public int lumberCost = 0;
 
-    public enum BuildingType
-    {
-        Castle,
-        Barracks,
-        Farm,
-        ShootingRange
-    }
+    
     public BuildingType buildingType;
 
     private float actualbuildTime = 0f;
@@ -151,7 +158,7 @@ public class Building : MonoBehaviour
                 }
             }
         }
-        if (buildingType == BuildingType.Castle)
+        if (buildingType == BuildingType.Player1Castle || buildingType == BuildingType.Player2Castle)
         {
             Players.Instance.LocalPlayer.castles.Add(this);
         }

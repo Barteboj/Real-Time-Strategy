@@ -7,6 +7,9 @@ using System.Collections;
 public class NetworkController : NetworkManager
 {
     public Text ipAddressText;
+    public GameObject multiplayerControllerGameObject;
+
+    private int readyClientsOnGameScene = 0;
 
     public void HostGame()
     {
@@ -22,23 +25,41 @@ public class NetworkController : NetworkManager
     public override void OnStartHost()
     {
         base.OnStartHost();
+        ServerChangeScene("Lobby");
+        Instantiate(multiplayerControllerGameObject, Vector3.zero, Quaternion.identity);
     }
 
-    public override void OnClientConnect(NetworkConnection conn)
+    public override void OnServerDisconnect(NetworkConnection conn)
     {
-        base.OnClientConnect(conn);
-        //PlayersOnline.Instance.AddPlayer()
-        SceneManager.LoadScene("Lobby");
+        Shutdown();
+        SceneManager.LoadScene("Offline");
     }
 
-    public override void OnStartClient(NetworkClient client)
+    public override void OnClientDisconnect(NetworkConnection conn)
     {
-        base.OnStartClient(client);
+        Shutdown();
+        SceneManager.LoadScene("Offline");
     }
 
-    public override void OnClientError(NetworkConnection conn, int errorCode)
+    public override void OnClientSceneChanged(NetworkConnection conn)
     {
-        base.OnClientError(conn, errorCode);
-        Debug.Log("Couldn't connect");
+        if (!ClientScene.ready)
+        {
+            ClientScene.Ready(conn);
+        }
+    }
+
+    public override void OnServerReady(NetworkConnection conn)
+    {
+        base.OnServerReady(conn);
+        if (SceneManager.GetActiveScene().name == "Game")
+        {
+            ++readyClientsOnGameScene;
+            if (readyClientsOnGameScene == 2)
+            {
+                FindObjectOfType<NetworkGameInitializer>().Initialize();
+                readyClientsOnGameScene = 0;
+            }
+        }
     }
 }

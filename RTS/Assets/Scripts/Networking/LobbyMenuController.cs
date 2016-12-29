@@ -50,9 +50,53 @@ public class LobbyMenuController : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void RpcGoToGameScene()
+    void Start()
     {
-        SceneManager.LoadScene("Game");
+        if (!isServer)
+        {
+            LobbyMenuController.Instance.playButton.gameObject.SetActive(false);
+            LobbyMenuController.Instance.waitingForHostText.gameObject.SetActive(true);
+            player1StatusText.text = "Connected";
+            player2StatusText.text = "Connected";
+        }
+        else
+        {
+            if (MultiplayerController.Instance.Player1 != null)
+            {
+                player1StatusText.text = "Connected";
+            }
+            if (MultiplayerController.Instance.Player2 != null)
+            {
+                player2StatusText.text = "Connected";
+            }
+            if (MultiplayerController.Instance.Player1 != null && MultiplayerController.Instance.Player2 != null)
+            {
+                playButton.interactable = true;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        if (isServer)
+        {
+            if (MultiplayerController.Instance.Player1 != null && player1StatusText.text != "Connected")
+            {
+                player1StatusText.text = "Connected";
+            }
+            if (MultiplayerController.Instance.Player2 != null && player2StatusText.text != "Connected")
+            {
+                player2StatusText.text = "Connected";
+            }
+            if (MultiplayerController.Instance.Player1 != null && MultiplayerController.Instance.Player2 != null && !playButton.interactable)
+            {
+                playButton.interactable = true;
+            }
+        }
+    }
+
+    public void StartGame()
+    {
+        MultiplayerController.Instance.StartGame();
     }
 }

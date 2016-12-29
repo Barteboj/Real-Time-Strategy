@@ -32,7 +32,6 @@ public class Minimap : MonoBehaviour
     }
 
     public int size;
-    public BoxCollider2D mapViewArea;
     public int mapSize;
     public CanvasScaler canvasScaler;
 
@@ -49,9 +48,9 @@ public class Minimap : MonoBehaviour
         }
     }
 
-    void Start()
+    public void SetMapSize(int size)
     {
-        mapSize = MapGridded.Instance.mapGrid.GetLength(0);
+        mapSize = size;
     }
 
     void Update()

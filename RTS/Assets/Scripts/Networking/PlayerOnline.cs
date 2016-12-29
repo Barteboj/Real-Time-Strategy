@@ -8,49 +8,37 @@ public class PlayerOnline : NetworkBehaviour
     [SyncVar]
     public int playerID = -1;
 
+    [SyncVar]
+    public bool isReady = false;
+
     void Awake()
     {
-        DontDestroyOnLoad(this);
+        DontDestroyOnLoad(gameObject);
     }
 
     [Command]
     public void CmdSetPlayerId(int id)
     {
         playerID = id;
-        RpcSetPlayerJoinedGUI();
-        if (id == 1)
-        {
-            LobbyMenuController.Instance.playButton.interactable = true;
-        }
-    }
-
-    [ClientRpc]
-    public void RpcSetPlayerJoinedGUI()
-    {
         if (playerID == 0)
         {
-            LobbyMenuController.Instance.player1StatusText.text = "Connected";
+            MultiplayerController.Instance.Player1 = this;
         }
         else
         {
-            LobbyMenuController.Instance.player2StatusText.text = "Connected";
+            MultiplayerController.Instance.Player2 = this;
         }
+        RpcLol();
+    }
+
+    [ClientRpc]
+    void RpcLol()
+    {
+        Debug.Log("Lol");
     }
 
     void Start()
     {
-        if (!isLocalPlayer)
-        {
-            if (playerID == 0)
-            {
-                LobbyMenuController.Instance.player1StatusText.text = "Connected";
-            }
-            else if (playerID == 1)
-            {
-                LobbyMenuController.Instance.player2StatusText.text = "Connected";
-            }
-            return;
-        }
         if (isServer)
         {
             CmdSetPlayerId(0);
@@ -58,8 +46,11 @@ public class PlayerOnline : NetworkBehaviour
         else if (isClient)
         {
             CmdSetPlayerId(1);
-            LobbyMenuController.Instance.playButton.gameObject.SetActive(false);
-            LobbyMenuController.Instance.waitingForHostText.gameObject.SetActive(true);
+        }
+        if (!isServer)
+        {
+            Debug.Log("Not server");
+            return;
         }
     }
 }

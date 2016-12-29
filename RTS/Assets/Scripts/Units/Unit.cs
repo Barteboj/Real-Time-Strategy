@@ -1,9 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Unit : MonoBehaviour
+public enum UnitType
+{
+    Player1Peasant,
+    Player2Peasant,
+    Player1Warrior,
+    Player2Warrior,
+    Player1Archer,
+    Player2Archer
+}
+
+public class Unit : NetworkBehaviour
 {
     protected bool isFollowingPath = false;
     protected MapGridElement nextNodeToFollow;
@@ -51,6 +62,8 @@ public class Unit : MonoBehaviour
     public int goldCost;
     public int lumberCost;
     public int foodCost;
+
+    public UnitType unitType;
 
     void Awake()
     {
