@@ -1,54 +1,22 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class SelectController : MonoBehaviour
+public class SelectController : NetworkBehaviour
 {
-    private static SelectController instance;
-
     public Unit selectedUnit;
     public Building selectedBuilding;
     public Mine selectedMine;
 
-    public static SelectController Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                if (FindObjectOfType<SelectController>())
-                {
-                    instance = FindObjectOfType<SelectController>();
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("SelectController instance not added to scene and is tried to be obtained");
-                    return null;
-                }
-            }
-            else
-            {
-                return instance;
-            }
-        }
-    }
+    public bool isSelectingBuildingPlace = false;
+    public Building buildingToBuild;
 
-    void Awake()
+    [Command]
+    void CmdRightClickCommand(Vector2 mousePositionInWorld, PlayerType commander)
     {
-        if (instance != null && instance != this)
-        {
-            Debug.LogError("More than one instance of SelectController destroying excessive");
-            Destroy(this);
-        }
-        else
-        {
-            instance = this;
-        }
-    }
-
-    void Update()
-    {
-        if (Input.GetMouseButtonUp(1) && selectedUnit != null && MapGridded.Instance.IsInMap(GetGridPositionFromMousePosition()))
+        IntVector2 mousePositionOnMap = MapGridded.WorldToMapPosition(mousePositionInWorld);
+        if (selectedUnit != null && MapGridded.Instance.IsInMap(mousePositionOnMap) && selectedUnit.owner == commander)
         {
             if (selectedUnit.GetType() == typeof(Worker))
             {
@@ -57,7 +25,7 @@ public class SelectController : MonoBehaviour
                     ((Worker)selectedUnit).CancelBuild();
                     ((Worker)selectedUnit).CancelGatheringGold();
                     ((Worker)selectedUnit).CancelGatheringLumber();
-                    RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
+                    RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray((Vector3)mousePositionInWorld - Vector3.forward, Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
                     if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Mine>())
                     {
                         ((Worker)selectedUnit).GoForGold(hitInfo.collider.transform.parent.GetComponent<Mine>());
@@ -68,7 +36,7 @@ public class SelectController : MonoBehaviour
                     }
                     else
                     {
-                        selectedUnit.RequestGoTo(GetGridPositionFromMousePosition());
+                        selectedUnit.RequestGoTo(mousePositionOnMap);
                     }
                 }
                 else
@@ -78,7 +46,7 @@ public class SelectController : MonoBehaviour
             }
             else if (selectedUnit.GetType() == typeof(Warrior))
             {
-                RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
+                RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray((Vector3)mousePositionInWorld - Vector3.forward, Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
                 if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Unit>())
                 {
                     ((Warrior)selectedUnit).StartAttack(hitInfo.collider.transform.parent.GetComponent<Unit>());
@@ -89,37 +57,101 @@ public class SelectController : MonoBehaviour
                     {
                         ((Warrior)selectedUnit).StopAttack();
                     }
-                    selectedUnit.RequestGoTo(GetGridPositionFromMousePosition());
+                    selectedUnit.RequestGoTo(mousePositionOnMap);
                 }
             }
             else
             {
-                selectedUnit.RequestGoTo(GetGridPositionFromMousePosition());
+                selectedUnit.RequestGoTo(mousePositionOnMap);
             }
         }
-        else if (Input.GetMouseButtonUp(0))
+    }
+
+    [Command]
+    void CmdLeftClickCommand(Vector2 mousePositionInWorld, PlayerType commander)
+    {
+        if (selectedUnit != null && selectedUnit.GetType() == typeof(Worker))
         {
-            if (selectedUnit != null && selectedUnit.GetType() == typeof(Worker))
+            if (!((Worker)selectedUnit).isSelectingPlaceForBuilding)
             {
-                if (!((Worker)selectedUnit).isSelectingPlaceForBuilding)
+                SelectItem(mousePositionInWorld);
+            }
+        }
+        else
+        {
+            SelectItem(mousePositionInWorld);
+        }
+    }
+
+    [Command]
+    void CmdOrderUnitToBuild(BuildingType buildingType, Vector2 buildPlaceInWorldSpace)
+    {
+        ((Worker)selectedUnit).GoToBuildPlace(buildingType, buildPlaceInWorldSpace);
+    }
+
+    void Update()
+    {
+        if (!hasAuthority || SceneManager.GetActiveScene().name != "Game" || MapGridded.Instance.mapGrid == null)
+        {
+            return;
+        }
+        if (isSelectingBuildingPlace)
+        {
+            Vector2 griddedPosition = new Vector2(GetGridPositionFromMousePosition().x, GetGridPositionFromMousePosition().y);
+            buildingToBuild.transform.position = GetGriddedWorldPositionFromMousePosition();
+            buildingToBuild.ShowBuildGrid();
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (buildingToBuild.CouldBeBuildInPlace(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), selectedUnit))
                 {
-                    SelectItem();
+                    isSelectingBuildingPlace = false;
+                    buildingToBuild.HideBuildGrid();
+                    CmdOrderUnitToBuild(buildingToBuild.buildingType, buildingToBuild.transform.position);
+                    Destroy(buildingToBuild);
                 }
             }
-            else
+            else if (Input.GetMouseButtonUp(1))
             {
-                SelectItem();
+                isSelectingBuildingPlace = false;
+                Destroy(buildingToBuild);
             }
         }
-        RaycastHit2D underMouseCursorInfo = GetWhatIsUnderMouseCursor();
-        if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<Cost>())
+        else
         {
-            Cost costToShow = underMouseCursorInfo.collider.GetComponent<Cost>();
-            CostGUI.Instance.ShowCostGUI(costToShow.goldCost, costToShow.lumberCost, costToShow.foodCost);
+            if (Input.GetMouseButtonUp(1) && selectedUnit != null && MapGridded.Instance.IsInMap(GetGridPositionFromMousePosition()) && selectedUnit.owner == MultiplayerController.Instance.localPlayer.playerType)
+            {
+                CmdRightClickCommand(Camera.main.ScreenToWorldPoint(Input.mousePosition), MultiplayerController.Instance.localPlayer.playerType);
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                CmdLeftClickCommand(Camera.main.ScreenToWorldPoint(Input.mousePosition), MultiplayerController.Instance.localPlayer.playerType);
+            }
+            RaycastHit2D underMouseCursorInfo = GetWhatIsUnderMouseCursor();
+            if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<Cost>())
+            {
+                Cost costToShow = underMouseCursorInfo.collider.GetComponent<Cost>();
+                CostGUI.Instance.ShowCostGUI(costToShow.goldCost, costToShow.lumberCost, costToShow.foodCost);
+            }
+            else if (CostGUI.Instance.IsVisible)
+            {
+                CostGUI.Instance.HideCostGUI();
+            }
         }
-        else if (CostGUI.Instance.IsVisible)
+    }
+
+    public void PlaceBuilding(BuildingType buildingType)
+    {
+        Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, selectedUnit.owner).GetComponent<Building>();
+        if (buildingToBuild.goldCost > MultiplayerController.Instance.players.Find(item => item.playerType == selectedUnit.owner).goldAmount)
         {
-            CostGUI.Instance.HideCostGUI();
+            MessagesController.Instance.RpcShowMessage("Not enough gold", selectedUnit.owner);
+        }
+        else
+        {
+            ((Worker)selectedUnit).HideBuildButtons();
+            isSelectingBuildingPlace = true;
+            this.buildingToBuild = Instantiate(buildingToBuild);
+            this.buildingToBuild.builder = (Worker)selectedUnit;
         }
     }
 
@@ -128,9 +160,9 @@ public class SelectController : MonoBehaviour
         return Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
     }
 
-    public void SelectItem()
+    public void SelectItem(Vector2 mousePositionInWorld)
     {
-        RaycastHit2D selectionInfo = Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
+        RaycastHit2D selectionInfo = Physics2D.GetRayIntersection(new Ray((Vector3)mousePositionInWorld - Vector3.forward, Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
         if (selectionInfo.collider != null)
         {
             if (selectionInfo.collider.transform.parent.GetComponent<Unit>())
@@ -150,23 +182,29 @@ public class SelectController : MonoBehaviour
 
     public void SelectBuilding(Building building)
     {
-        Unselect();
+        selectedBuilding = null;
+        selectedUnit = null;
+        selectedMine = null;
         selectedBuilding = building;
-        building.Select();
+        RpcSelectBuilding(building.GetComponent<NetworkIdentity>());
     }
 
     public void SelectUnit(Unit unit)
     {
-        Unselect();
+        selectedBuilding = null;
+        selectedUnit = null;
+        selectedMine = null;
         selectedUnit = unit;
-        unit.Select();
+        RpcSelectUnit(unit.GetComponent<NetworkIdentity>());
     }
 
     public void SelectMine(Mine mine)
     {
-        Unselect();
+        selectedBuilding = null;
+        selectedUnit = null;
+        selectedMine = null;
         selectedMine = mine;
-        mine.Select();
+        RpcSelectMine(mine.GetComponent<NetworkIdentity>());
     }
 
     public void Unselect()
@@ -187,6 +225,42 @@ public class SelectController : MonoBehaviour
             selectedMine = null;
         }
         ActionButtons.Instance.HideAllButtons();
+    }
+
+    [ClientRpc]
+    void RpcSelectUnit(NetworkIdentity networkIdentity)
+    {
+        Unit unitToSelect = networkIdentity.GetComponent<Unit>();
+        if (MultiplayerController.Instance.localPlayer.selectController == this)
+        {
+            Unselect();
+            selectedUnit = unitToSelect;
+            unitToSelect.Select();
+        }
+    }
+
+    [ClientRpc]
+    void RpcSelectBuilding(NetworkIdentity networkIdentity)
+    {
+        Building buildingToSelect = networkIdentity.GetComponent<Building>();
+        if (MultiplayerController.Instance.localPlayer.selectController == this)
+        {
+            Unselect();
+            selectedBuilding = buildingToSelect;
+            buildingToSelect.Select();
+        }
+    }
+
+    [ClientRpc]
+    void RpcSelectMine(NetworkIdentity networkIdentity)
+    {
+        Mine mineToSelect = networkIdentity.GetComponent<Mine>();
+        if (MultiplayerController.Instance.localPlayer.selectController == this)
+        {
+            Unselect();
+            selectedMine = mineToSelect;
+            mineToSelect.Select();
+        }
     }
 
     public IntVector2 GetGridPositionFromMousePosition()

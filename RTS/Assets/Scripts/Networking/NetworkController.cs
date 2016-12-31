@@ -26,7 +26,6 @@ public class NetworkController : NetworkManager
     {
         base.OnStartHost();
         ServerChangeScene("Lobby");
-        Instantiate(multiplayerControllerGameObject, Vector3.zero, Quaternion.identity);
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)

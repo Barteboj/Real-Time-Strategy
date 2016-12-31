@@ -2,55 +2,130 @@
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
+
+public enum PlayerType
+{
+    Player1,
+    Player2
+}
 
 public class PlayerOnline : NetworkBehaviour
 {
     [SyncVar]
-    public int playerID = -1;
+    public PlayerType playerType;
 
     [SyncVar]
     public bool isReady = false;
+
+    public List<Building> buildings;
+    public List<Unit> units;
+
+    [SyncVar(hook = "OnGoldAmountChange")]
+    public int goldAmount = 0;
+
+    [SyncVar(hook = "OnLumberAmountChange")]
+    public int lumberAmount = 0;
+
+    [SyncVar(hook = "OnFoodAmountChange")]
+    public int foodAmount = 0;
+
+    [SyncVar(hook = "OnFoodMaxAmountChange")]
+    public int foodMaxAmount = 0;
+
+    public SelectController selectController;
+    public ActionButtonsController actionButtonsController;
 
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
     }
 
-    [Command]
-    public void CmdSetPlayerId(int id)
+    public void OnGoldAmountChange(int newValue)
     {
-        playerID = id;
-        if (playerID == 0)
+        goldAmount = newValue;
+        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
         {
-            MultiplayerController.Instance.Player1 = this;
+            ResourcesGUI.Instance.goldText.text = goldAmount.ToString();
         }
-        else
+    }
+
+    public void OnLumberAmountChange(int newValue)
+    {
+        lumberAmount = newValue;
+        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
         {
-            MultiplayerController.Instance.Player2 = this;
+            ResourcesGUI.Instance.lumberText.text = lumberAmount.ToString();
         }
-        RpcLol();
+    }
+
+    public void OnFoodAmountChange(int newValue)
+    {
+        foodAmount = newValue;
+        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
+        {
+            ResourcesGUI.Instance.foodText.text = foodAmount.ToString();
+        }
+    }
+
+    public void OnFoodMaxAmountChange(int newValue)
+    {
+        foodMaxAmount = newValue;
+        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
+        {
+            ResourcesGUI.Instance.foodMaxText.text = foodMaxAmount.ToString();
+        }
+    }
+
+    [Command]
+    public void CmdSetPlayerId(PlayerType playerType)
+    {
+        this.playerType = playerType;
+        MultiplayerController.Instance.players.Add(this);
+    }
+
+    [Command]
+    public void CmdUpdateMultiplayerController(NetworkIdentity networkIdentity, PlayerType playerType)
+    {
+        networkIdentity.GetComponent<PlayerOnline>().playerType = playerType;
+        MultiplayerController.Instance.players.Add(networkIdentity.GetComponent<PlayerOnline>());
+        foreach (PlayerOnline player in MultiplayerController.Instance.players)
+        {
+            RpcUpdateMultiplayerController(player.GetComponent<NetworkIdentity>());
+        }
     }
 
     [ClientRpc]
-    void RpcLol()
+    void RpcUpdateMultiplayerController(NetworkIdentity playerNetworkIdentity)
     {
-        Debug.Log("Lol");
+        if (!MultiplayerController.Instance.players.Contains(playerNetworkIdentity.GetComponent<PlayerOnline>()))
+        {
+            MultiplayerController.Instance.players.Add(playerNetworkIdentity.GetComponent<PlayerOnline>());
+        }
     }
 
-    void Start()
+    public override void OnStartAuthority()
     {
+        base.OnStartAuthority();
         if (isServer)
         {
-            CmdSetPlayerId(0);
+            NetworkServer.Spawn(Instantiate(((NetworkController)NetworkManager.singleton).multiplayerControllerGameObject, Vector3.zero, Quaternion.identity));
+            MultiplayerController.Instance.localPlayer = this;
+            CmdUpdateMultiplayerController(GetComponent<NetworkIdentity>(), PlayerType.Player1);
         }
-        else if (isClient)
+        else
         {
-            CmdSetPlayerId(1);
+            playerType = PlayerType.Player2;
+            MultiplayerController.Instance.localPlayer = this;
+            CmdUpdateMultiplayerController(GetComponent<NetworkIdentity>(), PlayerType.Player2);
         }
-        if (!isServer)
-        {
-            Debug.Log("Not server");
-            return;
-        }
+    }
+
+    public void UpdateResourcesGUI()
+    {
+        ResourcesGUI.Instance.goldText.text = goldAmount.ToString();
+        ResourcesGUI.Instance.lumberText.text = lumberAmount.ToString();
+        ResourcesGUI.Instance.foodText.text = foodAmount.ToString();
+        ResourcesGUI.Instance.foodMaxText.text = foodMaxAmount.ToString();
     }
 }

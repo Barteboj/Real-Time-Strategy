@@ -8,24 +8,28 @@ public class NetworkGameController : NetworkBehaviour
     public void InitializeGame()
     {
         RpcInitGame();
-        RpcInitializePlayer();
+        RpcInitializePlayer(MultiplayerController.Instance.startingGold, MultiplayerController.Instance.startingLumber);
     }
 
     [ClientRpc]
-    public void RpcInitializePlayer()
+    public void RpcInitializePlayer(int startingGold, int startingLumber)
     {
         if (isServer)
         {
             Camera.main.transform.position = new Vector3(MapLoadController.Instance.player1StartingPosition.x, MapLoadController.Instance.player1StartingPosition.y, Camera.main.transform.position.z);
-            GameObject instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefabFromUnitType(UnitType.Player1Peasant), MapLoadController.Instance.player1StartingPosition, Quaternion.identity);
+            GameObject instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefab(UnitType.Peasant, PlayerType.Player1), MapLoadController.Instance.player1StartingPosition, Quaternion.identity);
             NetworkServer.Spawn(instantiatedPeasant);
-            instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefabFromUnitType(UnitType.Player2Peasant), MapLoadController.Instance.player2StartingPosition, Quaternion.identity);
+            instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefab(UnitType.Peasant, PlayerType.Player2), MapLoadController.Instance.player2StartingPosition, Quaternion.identity);
             NetworkServer.Spawn(instantiatedPeasant);
         }
         else
         {
             Camera.main.transform.position = new Vector3(MapLoadController.Instance.player2StartingPosition.x, MapLoadController.Instance.player2StartingPosition.y, Camera.main.transform.position.z);
         }
+        MultiplayerController.Instance.localPlayer.goldAmount = startingGold;
+        MultiplayerController.Instance.localPlayer.lumberAmount = startingLumber;
+        MultiplayerController.Instance.localPlayer.foodMaxAmount = 1;
+        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
     }
 
     [ClientRpc]

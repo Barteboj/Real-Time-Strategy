@@ -84,6 +84,10 @@ public class Warrior : Unit
     public override void Update()
     {
         base.Update();
+        if (!isServer)
+        {
+            return;
+        }
         if (isAttacking)
         {
             Attack();

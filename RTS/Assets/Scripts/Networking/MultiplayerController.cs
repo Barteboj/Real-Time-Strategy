@@ -1,38 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 
-public class MultiplayerController : MonoBehaviour
+public class MultiplayerController : NetworkBehaviour
 {
-    private PlayerOnline player1;
-    private PlayerOnline player2;
+    public List<PlayerOnline> players = new List<PlayerOnline>();
 
-    public PlayerOnline Player1
-    {
-        get
-        {
-            return player1;
-        }
-        set
-        {
-            player1 = value;
-        }
-    }
-    public PlayerOnline Player2
-    {
-        get
-        {
-            return player2;
-        }
-        set
-        {
-            player2 = value;
-        }
-    }
+    public PlayerOnline localPlayer;
 
     public string gameSceneName;
 
     private static MultiplayerController instance;
+
+    public int startingGold;
+
+    public int startingLumber;
 
     public static MultiplayerController Instance
     {
@@ -75,5 +58,10 @@ public class MultiplayerController : MonoBehaviour
     public void StartGame()
     {
         NetworkManager.singleton.ServerChangeScene(gameSceneName);
+    }
+
+    public PlayerOnline GetPlayerByPlayerType(PlayerType playerType)
+    {
+        return players.Find(item => item.playerType == playerType);
     }
 }

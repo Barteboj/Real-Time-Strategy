@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using System.Collections;
 
 public enum ActionButtonType
@@ -13,10 +14,11 @@ public enum ActionButtonType
     TrainArcher
 }
 
-public class ActionButton : MonoBehaviour
+public abstract class ActionButton : MonoBehaviour
 {
     public ActionButtonType buttonType;
     public GameObject objectWithButton;
+    public Image buttonImage;
 
     public void Show()
     {
@@ -27,4 +29,7 @@ public class ActionButton : MonoBehaviour
     {
         objectWithButton.SetActive(false);
     }
+
+    public abstract void Act(GameObject executioner);
+    public abstract void GiveActionButtonsControllerToExecuteOnServer();
 }

@@ -5,14 +5,10 @@ using System.Collections.Generic;
 
 public enum BuildingType
 {
-    Player1Castle,
-    Player2Castle,
-    Player1Barracks,
-    Player2Barracks,
-    Player1Farm,
-    Player2Farm,
-    Player1ShootingRange,
-    Player2ShootingRange
+    Castle,
+    Barracks,
+    Farm,
+    ShootingRange
 }
 
 public class Building : NetworkBehaviour
@@ -32,15 +28,11 @@ public class Building : NetworkBehaviour
     public GameObject buildField;
 
     public bool isInBuildingProcess = true;
-
     public bool isBuilded = false;
-
     public float buildCompletition = 0f;
-
     public float buildTime;
 
     public GameObject selectionIndicator;
-
     public BoxCollider2D selectionIndicatorCollider;
 
     public Sprite portrait;
@@ -58,16 +50,19 @@ public class Building : NetworkBehaviour
     public bool isTraining = false;
 
     public int goldCost = 0;
-
     public int lumberCost = 0;
-
     
     public BuildingType buildingType;
+    public PlayerType owner;
 
     private float actualbuildTime = 0f;
 
     void Update()
     {
+        if (!isServer)
+        {
+            return;
+        }
         if (isInBuildingProcess)
         {
             actualbuildTime += Time.deltaTime;
@@ -78,7 +73,7 @@ public class Building : NetworkBehaviour
             else
             {
                 actualHealth = Mathf.RoundToInt(actualbuildTime / buildTime * maxHealth);
-                if (SelectController.Instance.selectedBuilding == this)
+                if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
                 {
                     SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
                     SelectionInfoKeeper.Instance.SetCompletitionBar(actualbuildTime / buildTime);
@@ -95,12 +90,11 @@ public class Building : NetworkBehaviour
             }
             else
             {
-                if (SelectController.Instance.selectedBuilding == this)
+                if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
                 {
                     SelectionInfoKeeper.Instance.SetTrainingBar(actualTrainingTime / trainedUnit.trainingTime);
                 }
             }
-            
         }
     }
 
@@ -122,7 +116,7 @@ public class Building : NetworkBehaviour
 
     public void FinishTraining()
     {
-        if (SelectController.Instance.selectedBuilding == this)
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
         {
             SelectionInfoKeeper.Instance.HideTrainingInfo();
 
@@ -137,16 +131,24 @@ public class Building : NetworkBehaviour
         }
         GameObject instantiatedUnit = (GameObject)Instantiate(trainedUnit.gameObject, MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(gameObject.transform.position), width, height)), Quaternion.identity);
         instantiatedUnit.GetComponent<Unit>().InitializePositionInGrid();
+        NetworkServer.Spawn(instantiatedUnit);
         isTraining = false;
     }
 
     public virtual void FinishBuild()
     {
+        RpcFinishBuild();
+        builder.FinishBuild();
+    }
+
+    [ClientRpc]
+    void RpcFinishBuild()
+    {
         buildingViewGameObject.SetActive(true);
         buildField.SetActive(false);
         isInBuildingProcess = false;
         actualHealth = maxHealth;
-        if (SelectController.Instance.selectedBuilding == this)
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
         {
             SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
             SelectionInfoKeeper.Instance.HideBuildCompletitionBar();
@@ -158,14 +160,27 @@ public class Building : NetworkBehaviour
                 }
             }
         }
-        if (buildingType == BuildingType.Player1Castle || buildingType == BuildingType.Player2Castle)
+        if (buildingType == BuildingType.Castle)
         {
-            Players.Instance.LocalPlayer.castles.Add(this);
+            if (MultiplayerController.Instance.localPlayer.playerType == owner)
+            {
+                MultiplayerController.Instance.localPlayer.buildings.Add(this);
+            }
         }
-        builder.FinishBuild();
     }
 
     public void StartBuildProcess()
+    {
+        /*buildingViewGameObject.SetActive(false);
+        buildField.SetActive(true);
+        isInBuildingProcess = true;
+        actualHealth = 0;
+        selectionIndicatorCollider.enabled = true;*/
+        RpcStartBuildProcess();
+    }
+
+    [ClientRpc]
+    void RpcStartBuildProcess()
     {
         buildingViewGameObject.SetActive(false);
         buildField.SetActive(true);
@@ -211,8 +226,8 @@ public class Building : NetworkBehaviour
         SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
         SelectionInfoKeeper.Instance.unitPortrait.sprite = portrait;
         SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
-        SelectController.Instance.selectedUnit = null;
-        SelectController.Instance.selectedBuilding = this;
+        MultiplayerController.Instance.localPlayer.selectController.selectedUnit = null;
+        MultiplayerController.Instance.localPlayer.selectController.selectedBuilding = this;
         SelectionInfoKeeper.Instance.Show();
     }
 
@@ -277,7 +292,13 @@ public class Building : NetworkBehaviour
 
     public void PlaceOnMap()
     {
-        placeOnMapGrid = MapGridded.WorldToMapPosition(gameObject.transform.position);
+        RpcPlaceOnMap(gameObject.transform.position);
+    }
+
+    [ClientRpc]
+    void RpcPlaceOnMap(Vector2 buildingPositioninWorld)
+    {
+        placeOnMapGrid = MapGridded.WorldToMapPosition(buildingPositioninWorld);
         for (int row = 0; row < height; ++row)
         {
             for (int column = 0; column < width; ++column)
@@ -292,7 +313,13 @@ public class Building : NetworkBehaviour
 
     public void VanishFromMap()
     {
-        placeOnMapGrid = MapGridded.WorldToMapPosition(gameObject.transform.position);
+        RpcVanishFromMap(gameObject.transform.position);
+    }
+
+    [ClientRpc]
+    void RpcVanishFromMap(Vector2 buildingPositioninWorld)
+    {
+        placeOnMapGrid = MapGridded.WorldToMapPosition(buildingPositioninWorld);
         for (int row = 0; row < height; ++row)
         {
             for (int column = 0; column < width; ++column)

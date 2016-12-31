@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class MessagesController : MonoBehaviour
+public class MessagesController : NetworkBehaviour
 {
     public Text messageGUI;
     public float messageTime;
@@ -49,15 +50,19 @@ public class MessagesController : MonoBehaviour
         }
     }
 
-    public void ShowMessage(string messageText)
+    [ClientRpc]
+    public void RpcShowMessage(string messageText, PlayerType targetPlayer)
     {
-        messageGUI.text = messageText;
-        messageGUI.enabled = true;
-        if (showMessageCoroutine != null)
+        if (MultiplayerController.Instance.localPlayer.playerType == targetPlayer)
         {
-            StopCoroutine(showMessageCoroutine);
+            messageGUI.text = messageText;
+            messageGUI.enabled = true;
+            if (showMessageCoroutine != null)
+            {
+                StopCoroutine(showMessageCoroutine);
+            }
+            showMessageCoroutine = StartCoroutine(HideMessageAfterTime());
         }
-        showMessageCoroutine = StartCoroutine(HideMessageAfterTime());
     }
 
     public IEnumerator HideMessageAfterTime()

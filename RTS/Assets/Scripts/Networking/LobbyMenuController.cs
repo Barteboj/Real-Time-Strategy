@@ -37,6 +37,33 @@ public class LobbyMenuController : NetworkBehaviour
     public Text player2StatusText;
     public Button playButton;
     public Text waitingForHostText;
+    public Slider startingGoldSlider;
+    public Slider startingLumberSlider;
+
+    [SyncVar(hook = "OnStartingGoldValueChange")]
+    public int startingGold = -1;
+    [SyncVar(hook = "OnStartingLumberValueChange")]
+    public int startingLumber = -1;
+
+    public void OnStartingGoldValueChange(int newValue)
+    {
+        startingGoldSlider.value = newValue;
+    }
+
+    public void OnStartingLumberValueChange(int newValue)
+    {
+        startingLumberSlider.value = newValue;
+    }
+
+    public void UpdateStartingGoldValue()
+    {
+        startingGold = (int)startingGoldSlider.value;
+    }
+
+    public void UpdateStartingLumberValue()
+    {
+        startingLumber = (int)startingLumberSlider.value;
+    } 
 
     void Awake()
     {
@@ -54,22 +81,26 @@ public class LobbyMenuController : NetworkBehaviour
     {
         if (!isServer)
         {
-            LobbyMenuController.Instance.playButton.gameObject.SetActive(false);
-            LobbyMenuController.Instance.waitingForHostText.gameObject.SetActive(true);
+            playButton.gameObject.SetActive(false);
+            waitingForHostText.gameObject.SetActive(true);
+            startingGoldSlider.interactable = false;
+            startingLumberSlider.interactable = false;
             player1StatusText.text = "Connected";
             player2StatusText.text = "Connected";
         }
         else
         {
-            if (MultiplayerController.Instance.Player1 != null)
+            UpdateStartingGoldValue();
+            UpdateStartingLumberValue();
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null)
             {
                 player1StatusText.text = "Connected";
             }
-            if (MultiplayerController.Instance.Player2 != null)
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
                 player2StatusText.text = "Connected";
             }
-            if (MultiplayerController.Instance.Player1 != null && MultiplayerController.Instance.Player2 != null)
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
                 playButton.interactable = true;
             }
@@ -80,15 +111,15 @@ public class LobbyMenuController : NetworkBehaviour
     {
         if (isServer)
         {
-            if (MultiplayerController.Instance.Player1 != null && player1StatusText.text != "Connected")
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && player1StatusText.text != "Connected")
             {
                 player1StatusText.text = "Connected";
             }
-            if (MultiplayerController.Instance.Player2 != null && player2StatusText.text != "Connected")
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && player2StatusText.text != "Connected")
             {
                 player2StatusText.text = "Connected";
             }
-            if (MultiplayerController.Instance.Player1 != null && MultiplayerController.Instance.Player2 != null && !playButton.interactable)
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && !playButton.interactable)
             {
                 playButton.interactable = true;
             }
@@ -97,6 +128,8 @@ public class LobbyMenuController : NetworkBehaviour
 
     public void StartGame()
     {
+        MultiplayerController.Instance.startingGold = startingGold;
+        MultiplayerController.Instance.startingLumber = startingLumber;
         MultiplayerController.Instance.StartGame();
     }
 }

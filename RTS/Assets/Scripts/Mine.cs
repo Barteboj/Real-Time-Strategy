@@ -74,9 +74,9 @@ public class Mine : MonoBehaviour
     {
         miners.Add(visiter);
         spriteRenderer.sprite = visitedSprite;
-        if (SelectController.Instance.selectedUnit == visiter)
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == visiter)
         {
-            SelectController.Instance.Unselect();
+            MultiplayerController.Instance.localPlayer.selectController.Unselect();
             SelectionInfoKeeper.Instance.Hide();
             visiter.Unselect();
         }
@@ -122,9 +122,9 @@ public class Mine : MonoBehaviour
         SelectionInfoKeeper.Instance.levelInfoGameObject.SetActive(false);
         SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(true);
         SelectionInfoKeeper.Instance.unitPortrait.sprite = portrait;
-        SelectController.Instance.selectedUnit = null;
-        SelectController.Instance.selectedBuilding = null;
-        SelectController.Instance.selectedMine = this;
+        MultiplayerController.Instance.localPlayer.selectController.selectedUnit = null;
+        MultiplayerController.Instance.localPlayer.selectController.selectedBuilding = null;
+        MultiplayerController.Instance.localPlayer.selectController.selectedMine = this;
         SelectionInfoKeeper.Instance.Show();
     }
 

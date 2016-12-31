@@ -1,27 +1,43 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System;
 
 public class BuildButton : ActionButton
 {
-    public Building building;
+    public BuildingType buildingType;
 
-    public void Build()
+    private void Awake()
     {
-        try
+        buttonImage.sprite = Buildings.Instance.GetBuildingPrefab(buildingType, MultiplayerController.Instance.localPlayer.playerType).GetComponent<Building>().portrait;
+    }
+
+    public override void Act(GameObject executioner)
+    {
+        Unit actingUnit = executioner.GetComponent<Unit>();
+        Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, actingUnit.owner).GetComponent<Building>();
+        if (buildingToBuild.goldCost > MultiplayerController.Instance.players.Find(item => item.playerType == actingUnit.owner).goldAmount)
         {
-            if (building.goldCost > Players.Instance.LocalPlayer.GoldAmount)
-            {
-                MessagesController.Instance.ShowMessage("Not enough gold");
-            }
-            else
-            {
-                ((Worker)SelectController.Instance.selectedUnit).PrepareBuild(building);
-            }
+            MessagesController.Instance.RpcShowMessage("Not enough gold", actingUnit.owner);
         }
-        catch (InvalidCastException e)
+        else
         {
-            Debug.LogError("Trying to build with unit that is not a worker");
+            ((Worker)actingUnit).PrepareBuild(buildingToBuild);
+        }
+    }
+
+    public override void GiveActionButtonsControllerToExecuteOnServer()
+    {
+        
+        Unit actingUnit = MultiplayerController.Instance.localPlayer.selectController.selectedUnit;
+        Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, actingUnit.owner).GetComponent<Building>();
+        if (buildingToBuild.goldCost > MultiplayerController.Instance.players.Find(item => item.playerType == actingUnit.owner).goldAmount)
+        {
+            MessagesController.Instance.RpcShowMessage("Not enough gold", actingUnit.owner);
+        }
+        else
+        {
+            MultiplayerController.Instance.localPlayer.selectController.PlaceBuilding(buildingType);
         }
     }
 }

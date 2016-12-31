@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -80,6 +81,15 @@ public class Worker : Unit
         this.buildingToBuild.builder = this;
     }
 
+    [ClientRpc]
+    void RpcPrepareBuild()
+    {
+        if (MultiplayerController.Instance.localPlayer.playerType == owner)
+        {
+
+        }
+    }
+
     public void ShowBuildButtons()
     {
         foreach (ActionButtonType buttonType in buttonTypes)
@@ -104,8 +114,9 @@ public class Worker : Unit
         }
     }
 
-    public void GoToBuildPlace()
+    public void GoToBuildPlace(BuildingType buildingType, Vector2 buildPlaceInWorldSpace)
     {
+        buildingToBuild = Instantiate(Buildings.Instance.GetBuildingPrefab(buildingType, owner).GetComponent<Building>(), buildPlaceInWorldSpace, Quaternion.identity);
         isSelectingPlaceForBuilding = false;
         buildingToBuild.gameObject.SetActive(false);
         RequestGoTo(MapGridded.WorldToMapPosition(buildingToBuild.transform.position));
@@ -114,16 +125,24 @@ public class Worker : Unit
 
     public void Build()
     {
-        Players.Instance.LocalPlayer.GoldAmount -= buildingToBuild.goldCost;
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).goldAmount -= buildingToBuild.goldCost;
+
         buildingToBuild.gameObject.SetActive(true);
         buildingToBuild.PlaceOnMap();
         isGoingToBuildPlace = false;
         haveFinishedPlacingBuilding = true;
         gameObject.SetActive(false);
         buildingToBuild.StartBuildProcess();
-        if (SelectController.Instance.selectedUnit == this)
+        NetworkServer.Spawn(buildingToBuild.gameObject);
+        RpcSelectBuildedBuilding(buildingToBuild.GetComponent<NetworkIdentity>());
+    }
+
+    [ClientRpc]
+    void RpcSelectBuildedBuilding(NetworkIdentity buildingNetworkIdentity)
+    {
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
         {
-            SelectController.Instance.SelectBuilding(buildingToBuild);
+            MultiplayerController.Instance.localPlayer.selectController.SelectBuilding(buildingNetworkIdentity.GetComponent<Building>());
         }
     }
 
@@ -186,38 +205,62 @@ public class Worker : Unit
 
     public void GiveGold()
     {
-        if (SelectController.Instance.selectedUnit == this)
+        RpcGiveGold();
+    }
+
+    [ClientRpc]
+    void RpcGiveGold()
+    {
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
         {
-            SelectController.Instance.Unselect();
+            MultiplayerController.Instance.localPlayer.selectController.Unselect();
             SelectionInfoKeeper.Instance.Hide();
             Unselect();
         }
-        ClearPositionInGrid();
+        if (isServer)
+        {
+            ClearPositionInGrid();
+        }
         spriteRenderer.enabled = false;
         selectionCollider.SetActive(false);
         gameObject.GetComponent<MinimapElement>().Hide();
-        StartCoroutine(GivingGold());
+        if (isServer)
+        {
+            StartCoroutine(GivingGold());
+        }
     }
 
     public void GiveLumber()
     {
-        if (SelectController.Instance.selectedUnit == this)
+        RpcGiveLumber();
+    }
+
+    [ClientRpc]
+    void RpcGiveLumber()
+    {
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
         {
-            SelectController.Instance.Unselect();
+            MultiplayerController.Instance.localPlayer.selectController.Unselect();
             SelectionInfoKeeper.Instance.Hide();
             Unselect();
         }
-        ClearPositionInGrid();
+        if (isServer)
+        {
+            ClearPositionInGrid();
+        }
         spriteRenderer.enabled = false;
         selectionCollider.SetActive(false);
         gameObject.GetComponent<MinimapElement>().Hide();
-        StartCoroutine(GivingLumber());
+        if (isServer)
+        {
+            StartCoroutine(GivingLumber());
+        }
     }
 
     public IEnumerator GivingGold()
     {
         yield return new WaitForSeconds(timeOfGivingGold);
-        Players.Instance.LocalPlayer.GoldAmount += takenGoldAmount;
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).goldAmount += takenGoldAmount;
         takenGoldAmount = 0;
         LeaveCastle();
     }
@@ -225,29 +268,66 @@ public class Worker : Unit
     public IEnumerator GivingLumber()
     {
         yield return new WaitForSeconds(timeOfGivingLumber);
-        Players.Instance.LocalPlayer.LumberAmount += takenLumberAmount;
+        MultiplayerController.Instance.localPlayer.lumberAmount += takenLumberAmount;
+        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
         takenLumberAmount = 0;
         LeaveCastleForLumber();
     }
 
     public void LeaveCastle()
     {
-        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
+        /*IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         spriteRenderer.enabled = true;
         selectionCollider.SetActive(true);
         gameObject.GetComponent<MinimapElement>().Show();
-        GoForGold(mineToGoForGold);
+        GoForGold(mineToGoForGold);*/
+        RpcLeaveCastle();
+    }
+
+    [ClientRpc]
+    void RpcLeaveCastle()
+    {
+        if (isServer)
+        {
+            IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
+            SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
+        }
+        spriteRenderer.enabled = true;
+        selectionCollider.SetActive(true);
+        gameObject.GetComponent<MinimapElement>().Show();
+        if (isServer)
+        {
+            GoForGold(mineToGoForGold);
+        }
     }
 
     public void LeaveCastleForLumber()
     {
-        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
+        /*IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         spriteRenderer.enabled = true;
         selectionCollider.SetActive(true);
         gameObject.GetComponent<MinimapElement>().Show();
-        GoForLumber(lumberToCut);
+        GoForLumber(lumberToCut);*/
+        RpcLeaveCastleForLumber();
+    }
+
+    [ClientRpc]
+    void RpcLeaveCastleForLumber()
+    {
+        if (isServer)
+        {
+            IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
+            SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
+        }
+        spriteRenderer.enabled = true;
+        selectionCollider.SetActive(true);
+        gameObject.GetComponent<MinimapElement>().Show();
+        if (isServer)
+        {
+            GoForLumber(lumberToCut);
+        }
     }
 
     public void ReturnWithGold()
@@ -291,9 +371,9 @@ public class Worker : Unit
 
     public Building FindNearestCastle()
     {
-        if (Players.Instance.LocalPlayer.HasCastle)
+        if (MultiplayerController.Instance.localPlayer.buildings.Find(item => item.buildingType == BuildingType.Castle))
         {
-            return Players.Instance.LocalPlayer.castles[0];
+            return MultiplayerController.Instance.localPlayer.buildings.Find(item => item.buildingType == BuildingType.Castle);
         }
         else
         {
@@ -353,7 +433,11 @@ public class Worker : Unit
     public override void Update()
     {
         base.Update();
-        if (isSelectingPlaceForBuilding)
+        if (!isServer)
+        {
+            return;
+        }
+        /*if (isSelectingPlaceForBuilding)
         {
             Vector2 griddedPosition = new Vector2(SelectController.Instance.GetGridPositionFromMousePosition().x, SelectController.Instance.GetGridPositionFromMousePosition().y);
             buildingToBuild.transform.position = SelectController.Instance.GetGriddedWorldPositionFromMousePosition();
@@ -370,7 +454,7 @@ public class Worker : Unit
             {
                 CancelBuild();
             }
-        }
+        }*/
         if (isGoingToBuildPlace)
         {
             if (buildingToBuild.CheckIfIsInBuildingArea(MapGridded.WorldToMapPosition(gameObject.transform.position)))

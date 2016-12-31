@@ -45,8 +45,8 @@ public class Units : MonoBehaviour
         }
     }
 
-    public GameObject GetUnitPrefabFromUnitType(UnitType unitType)
+    public GameObject GetUnitPrefab(UnitType unitType, PlayerType owner)
     {
-        return unitsList.Find(item => item.unitType == unitType).gameObject;
+        return unitsList.Find(item => item.unitType == unitType && item.owner == owner).gameObject;
     }
 }

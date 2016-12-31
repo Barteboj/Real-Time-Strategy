@@ -1,29 +1,43 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class TrainingButton : ActionButton
 {
-    public Unit unitToTrain;
+    public UnitType unitType;
 
-    public void Train()
+    private void Awake()
     {
+        buttonImage.sprite = Units.Instance.GetUnitPrefab(unitType, MultiplayerController.Instance.localPlayer.playerType).GetComponent<Unit>().portrait;
+    }
+
+    public override void GiveActionButtonsControllerToExecuteOnServer()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Act(GameObject executioner)
+    {
+        Building selectedBuilding = executioner.GetComponent<Building>();
+        PlayerOnline buildingPlayer = MultiplayerController.Instance.players.Find(item => item.playerType == selectedBuilding.owner);
+        Unit unitToTrain = Units.Instance.GetUnitPrefab(unitType, selectedBuilding.owner).GetComponent<Unit>();
         string messageToShow = "";
-        if (unitToTrain.goldCost > Players.Instance.LocalPlayer.GoldAmount || unitToTrain.foodCost > Players.Instance.LocalPlayer.FoodMaxAmount - Players.Instance.LocalPlayer.FoodAmount)
+        if (unitToTrain.goldCost > buildingPlayer.goldAmount || unitToTrain.foodCost > buildingPlayer.foodMaxAmount - buildingPlayer.foodAmount)
         {
-            if (unitToTrain.goldCost > Players.Instance.LocalPlayer.GoldAmount)
+            if (unitToTrain.goldCost > buildingPlayer.goldAmount)
             {
                 messageToShow += "Not enough gold\n";
             }
-            if (unitToTrain.foodCost > Players.Instance.LocalPlayer.FoodMaxAmount - Players.Instance.LocalPlayer.FoodAmount)
+            if (unitToTrain.foodCost > buildingPlayer.foodMaxAmount - buildingPlayer.foodAmount)
             {
                 messageToShow += "Not enough food\n";
             }
-            MessagesController.Instance.ShowMessage(messageToShow.Remove(messageToShow.Length - 1));
+            MessagesController.Instance.RpcShowMessage(messageToShow.Remove(messageToShow.Length - 1), buildingPlayer.playerType);
         }
         else
         {
-            Players.Instance.LocalPlayer.GoldAmount -= unitToTrain.goldCost;
-            SelectController.Instance.selectedBuilding.Train(unitToTrain);
+            buildingPlayer.goldAmount -= unitToTrain.goldCost;
+            selectedBuilding.Train(unitToTrain);
         }
     }
 }

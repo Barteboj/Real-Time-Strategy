@@ -45,8 +45,8 @@ public class Buildings : MonoBehaviour
         }
     }
 
-    public GameObject GetBuildingPrefabFromBuildingType(BuildingType buildingType)
+    public GameObject GetBuildingPrefab(BuildingType buildingType, PlayerType owner)
     {
-        return buildingsList.Find(item => item.buildingType == buildingType).gameObject;
+        return buildingsList.Find(item => item.buildingType == buildingType && item.owner == owner).gameObject;
     }
 }

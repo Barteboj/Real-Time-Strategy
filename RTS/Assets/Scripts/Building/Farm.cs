@@ -8,12 +8,14 @@ public class Farm : Building
     public override void FinishBuild()
     {
         base.FinishBuild();
-        Players.Instance.LocalPlayer.FoodMaxAmount += foodGrowth;
+        MultiplayerController.Instance.localPlayer.foodMaxAmount += foodGrowth;
+        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
     }
 
     public override void DestroyYourself()
     {
         base.DestroyYourself();
-        Players.Instance.LocalPlayer.FoodMaxAmount -= foodGrowth;
+        MultiplayerController.Instance.localPlayer.foodMaxAmount -= foodGrowth;
+        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
     }
 }
