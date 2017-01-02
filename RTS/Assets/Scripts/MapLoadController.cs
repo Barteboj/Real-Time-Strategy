@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MapLoadController : MonoBehaviour
+public class MapLoadController : NetworkBehaviour
 {
     private static MapLoadController instance;
 
@@ -102,8 +103,12 @@ public class MapLoadController : MonoBehaviour
 
     public void SaveMineToMap(IntVector2 positionInMap)
     {
-        Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-        Instantiate(Resources.Instance.minePrefab, postionToCreate, Quaternion.identity);
+        if (isServer)
+        {
+            Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
+            NetworkServer.Spawn(Instantiate(Resources.Instance.minePrefab, postionToCreate, Quaternion.identity));
+        }
+        
     }
 
     public void SaveLumberToMap(IntVector2 positionInMap)

@@ -21,14 +21,17 @@ public class NetworkGameController : NetworkBehaviour
             NetworkServer.Spawn(instantiatedPeasant);
             instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefab(UnitType.Peasant, PlayerType.Player2), MapLoadController.Instance.player2StartingPosition, Quaternion.identity);
             NetworkServer.Spawn(instantiatedPeasant);
+            foreach(PlayerOnline player in MultiplayerController.Instance.players)
+            {
+                player.goldAmount = startingGold;
+                player.lumberAmount = startingLumber;
+                player.foodMaxAmount = 1;
+            }
         }
         else
         {
             Camera.main.transform.position = new Vector3(MapLoadController.Instance.player2StartingPosition.x, MapLoadController.Instance.player2StartingPosition.y, Camera.main.transform.position.z);
         }
-        MultiplayerController.Instance.localPlayer.goldAmount = startingGold;
-        MultiplayerController.Instance.localPlayer.lumberAmount = startingLumber;
-        MultiplayerController.Instance.localPlayer.foodMaxAmount = 1;
         MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
     }
 

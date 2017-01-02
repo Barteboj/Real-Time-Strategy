@@ -22,6 +22,13 @@ public class Warrior : Unit
         isAttacking = true;
     }
 
+    public void StartAttack(Building buildingToAttack)
+    {
+        attackedBuilding = buildingToAttack;
+        attackedUnit = null;
+        isAttacking = true;
+    }
+
     public void StopAttack()
     {
         attackedUnit = null;
@@ -35,7 +42,14 @@ public class Warrior : Unit
         {
             justContactedWithEnemy = true;
             List<MapGridElement> shortestPath;
-            shortestPath = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(attackedUnit.transform.position), 1, 1);
+            if (attackedUnit != null)
+            {
+                shortestPath = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(attackedUnit.transform.position), 1, 1);
+            }
+            else
+            {
+                shortestPath = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(attackedBuilding.transform.position), 1, 1);
+            }
             if (shortestPath.Count == 0)
             {
                 RequestGoTo(positionInGrid);
@@ -44,7 +58,6 @@ public class Warrior : Unit
             {
                 RequestGoTo(new IntVector2(shortestPath[shortestPath.Count - 1].x, shortestPath[shortestPath.Count - 1].y));
             }
-            
         }
         else
         {
@@ -57,7 +70,14 @@ public class Warrior : Unit
             timeFromLastTryToHit += Time.deltaTime;
             if (timeFromLastTryToHit >= delayBetweenAttacks)
             {
-                attackedUnit.GetHit(damage, this);
+                if (attackedUnit != null)
+                {
+                    attackedUnit.GetHit(damage, this);
+                }
+                else
+                {
+                    attackedBuilding.GetHit(damage, this);
+                }
                 timeFromLastTryToHit = 0f;
             }
         }
@@ -65,16 +85,24 @@ public class Warrior : Unit
 
     public bool CheckIfEnemyIsInAttackRange()
     {
-
-        bool isAttackingUnit = attackedUnit != null;
         for (int row = 0; row <= 2* range; ++row)
         {
             for (int column = 0; column <= 2 * range; ++column)
             {
                 IntVector2 checkedPosition = new IntVector2(positionInGrid.x - range + column, positionInGrid.y - range + row);
-                if (MapGridded.Instance.IsInMap(checkedPosition) && (MapGridded.Instance.mapGrid[checkedPosition.y, checkedPosition.x].unit == attackedUnit))
+                if (attackedUnit != null)
                 {
-                    return true;
+                    if (MapGridded.Instance.IsInMap(checkedPosition) && (MapGridded.Instance.mapGrid[checkedPosition.y, checkedPosition.x].unit == attackedUnit))
+                    {
+                        return true;
+                    }
+                }
+                else if (attackedBuilding != null)
+                {
+                    if (MapGridded.Instance.IsInMap(checkedPosition) && (MapGridded.Instance.mapGrid[checkedPosition.y, checkedPosition.x].building == attackedBuilding))
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -84,13 +112,12 @@ public class Warrior : Unit
     public override void Update()
     {
         base.Update();
-        if (!isServer)
+        if (isServer)
         {
-            return;
-        }
-        if (isAttacking)
-        {
-            Attack();
+            if (isAttacking)
+            {
+                Attack();
+            }
         }
     }
 }

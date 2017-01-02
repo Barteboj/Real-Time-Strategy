@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Mine : MonoBehaviour
+public class Mine : NetworkBehaviour
 {
     public Sprite nonVisitedSprite;
     public Sprite visitedSprite;
@@ -12,6 +13,7 @@ public class Mine : MonoBehaviour
 
     public List<Worker> miners;
     [SerializeField]
+    [SyncVar(hook = "OnGoldLeftChange")]
     private int goldLeft;
 
     public int GoldLeft
@@ -43,6 +45,12 @@ public class Mine : MonoBehaviour
         FillPositionInGrid();
     }
 
+    public void OnGoldLeftChange(int newValue)
+    {
+        goldLeft = newValue;
+        SelectionInfoKeeper.Instance.goldLeftAmountText.text = goldLeft.ToString();
+    }
+
     public void FillPositionInGrid()
     {
         placeOnMapGrid = MapGridded.WorldToMapPosition(gameObject.transform.position);
@@ -57,15 +65,15 @@ public class Mine : MonoBehaviour
     
     public int TakeGold(int amount)
     {
-        if (GoldLeft < amount)
+        if (goldLeft < amount)
         {
-            amount = GoldLeft;
-            GoldLeft = 0;
+            amount = goldLeft;
+            goldLeft = 0;
             Deplete();
         }
         else
         {
-            GoldLeft -= amount;
+            goldLeft -= amount;
         }
         return amount;
     }
@@ -80,9 +88,23 @@ public class Mine : MonoBehaviour
             SelectionInfoKeeper.Instance.Hide();
             visiter.Unselect();
         }
-        visiter.ClearPositionInGrid();
-        visiter.gameObject.SetActive(false);
+        visiter.RpcClearPositionInGrid();
+        visiter.RpcHideYourself();
+        RpcVisitMine(visiter.GetComponent<NetworkIdentity>());
         StartCoroutine(Mining(visiter));
+    }
+
+    [ClientRpc]
+    void RpcVisitMine(NetworkIdentity visiterNetworkIdentity)
+    {
+        Worker visiter = visiterNetworkIdentity.GetComponent<Worker>();
+        spriteRenderer.sprite = visitedSprite;
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == visiter)
+        {
+            MultiplayerController.Instance.localPlayer.selectController.Unselect();
+            SelectionInfoKeeper.Instance.Hide();
+            visiter.Unselect();
+        }
     }
 
     public void LeaveMine(Worker visiter)
@@ -90,12 +112,18 @@ public class Mine : MonoBehaviour
         miners.Remove(visiter);
         if (miners.Count == 0)
         {
-            spriteRenderer.sprite = nonVisitedSprite;
+            RpcSetNonVisitedMineSprite();
         }
         IntVector2 firstFreePlaceOnMapAroundMine = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(gameObject.transform.position), width, height);
         visiter.SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundMine);
-        visiter.gameObject.SetActive(true);
+        visiter.RpcShowYourself();
         visiter.ReturnWithGold();
+    }
+
+    [ClientRpc]
+    void RpcSetNonVisitedMineSprite()
+    {
+        spriteRenderer.sprite = nonVisitedSprite;
     }
 
     public void Deplete()
@@ -114,7 +142,7 @@ public class Mine : MonoBehaviour
     {
         selectionIndicator.SetActive(true);
         SelectionInfoKeeper.Instance.unitName.text = mineName;
-        SelectionInfoKeeper.Instance.goldLeftAmountText.text = GoldLeft.ToString();
+        SelectionInfoKeeper.Instance.goldLeftAmountText.text = goldLeft.ToString();
         SelectionInfoKeeper.Instance.unitLevel.enabled = false;
         SelectionInfoKeeper.Instance.maxHealth.enabled = false;
         SelectionInfoKeeper.Instance.actualHealth.enabled = false;

@@ -8,14 +8,18 @@ public class Farm : Building
     public override void FinishBuild()
     {
         base.FinishBuild();
-        MultiplayerController.Instance.localPlayer.foodMaxAmount += foodGrowth;
-        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
+        if (isServer)
+        {
+            MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodMaxAmount += foodGrowth;
+        }
     }
 
     public override void DestroyYourself()
     {
+        if (isServer)
+        {
+            MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodMaxAmount -= foodGrowth;
+        }
         base.DestroyYourself();
-        MultiplayerController.Instance.localPlayer.foodMaxAmount -= foodGrowth;
-        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
     }
 }

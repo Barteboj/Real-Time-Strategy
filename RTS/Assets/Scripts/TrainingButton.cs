@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System;
 
@@ -13,7 +14,7 @@ public class TrainingButton : ActionButton
 
     public override void GiveActionButtonsControllerToExecuteOnServer()
     {
-        throw new NotImplementedException();
+        MultiplayerController.Instance.localPlayer.actionButtonsController.CmdExecuteButtonAction(buttonType, MultiplayerController.Instance.localPlayer.selectController.selectedBuilding.GetComponent<NetworkIdentity>());
     }
 
     public override void Act(GameObject executioner)

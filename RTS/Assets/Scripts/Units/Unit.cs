@@ -15,26 +15,10 @@ public class Unit : NetworkBehaviour
 {
     protected bool isFollowingPath = false;
     protected MapGridElement nextNodeToFollow;
-    protected IntVector2 positionInGrid
-    {
-        get
-        {
-            return positionInGridField;
-        }
-        set
-        {
-            positionInGridField = value;
-            if (isServer)
-            {
-                positionInGridSyncVar = new Vector2(positionInGridField.x, positionInGridField.y);
-            }
-        }
-    }
-    protected IntVector2 positionInGridField;
+    protected IntVector2 positionInGrid;
     protected int indexOfFollowedPathNode;
     protected IntVector2 requestedTargetPositionInGrid;
     protected bool hasFinishedGoingToLastStep = false;
-
     protected Coroutine disableHitAnimationCoroutine;
 
     public string unitName;
@@ -46,11 +30,90 @@ public class Unit : NetworkBehaviour
     public int sight;
     public int speed;
     public int maxHealth;
+
     [SyncVar(hook = "OnActualHealthChange")]
-    private int actualHealth;
+    public int actualHealth;
 
     [SyncVar(hook = "OnChangePositionInGridSyncVar")]
     public Vector2 positionInGridSyncVar;
+
+    public int ownerPlayerID;
+    public List<MapGridElement> followedPath;
+    public SpriteRenderer spriteRenderer;
+    public Sprite portrait;
+    public GameObject selectionIndicator;
+    public GameObject selectionCollider;
+    public ActionButtonType[] buttonTypes;
+    public float trainingTime;
+
+    public int goldCost;
+    public int lumberCost;
+    public int foodCost;
+
+    public UnitType unitType;
+    public PlayerType owner;
+
+    public Vector2 goalPosition;
+    public bool isMoving = false;
+
+    public float averageDamageFactor = 0.6f;
+    public float criticalDamageFactor = 0.3f;
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        if (isServer)
+        {
+            actualHealth = maxHealth;
+            InitializePositionInGrid();
+            MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodAmount += foodCost;
+        }
+    }
+
+    public virtual void Update()
+    {
+        if (isMoving)
+        {
+            Vector2 previousPosition = gameObject.transform.position;
+            gameObject.transform.position += ((Vector3)((goalPosition) - (Vector2)gameObject.transform.position)).normalized * speed * Time.deltaTime;
+            if (((Vector2)gameObject.transform.position - goalPosition).magnitude < 0.03f || (((goalPosition.x < gameObject.transform.position.x && goalPosition.x > previousPosition.x) || (goalPosition.x > gameObject.transform.position.x && goalPosition.x < previousPosition.x)) || ((goalPosition.y < gameObject.transform.position.y && goalPosition.y > previousPosition.y) || (goalPosition.y > gameObject.transform.position.y && goalPosition.y < previousPosition.y))))
+            {
+                gameObject.transform.position = goalPosition;
+                isMoving = false;
+            }
+        }
+        if (isServer)
+        {
+            hasFinishedGoingToLastStep = false;
+            if (isFollowingPath)
+            {
+                FollowPath();
+            }
+        }
+        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
+        {
+            ShowActualInfo();
+        }
+    }
+
+    public void ShowActualInfo()
+    {
+        SelectionInfoKeeper.Instance.Assign(this);
+        SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
+        SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
+        if ((float)actualHealth / maxHealth < criticalDamageFactor)
+        {
+            SelectionInfoKeeper.Instance.healthBar.color = Color.red;
+        }
+        else if ((float)actualHealth / maxHealth < averageDamageFactor)
+        {
+            SelectionInfoKeeper.Instance.healthBar.color = Color.yellow;
+        }
+        else
+        {
+            SelectionInfoKeeper.Instance.healthBar.color = Color.green;
+        }
+    }
 
     public void OnChangePositionInGridSyncVar(Vector2 newPosition)
     {
@@ -71,82 +134,9 @@ public class Unit : NetworkBehaviour
         }
     }
 
-    public int ActualHealth
-    {
-        get
-        {
-            return actualHealth;
-        }
-        set
-        {
-            actualHealth = value;
-            if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
-            {
-                SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
-            }
-        }
-    }
-    public int ownerPlayerID;
-    public List<MapGridElement> followedPath;
-    public SpriteRenderer spriteRenderer;
-    public Sprite portrait;
-    public GameObject selectionIndicator;
-    public GameObject selectionCollider;
-    public ActionButtonType[] buttonTypes;
-    public float trainingTime;
-
-    public int goldCost;
-    public int lumberCost;
-    public int foodCost;
-
-    public UnitType unitType;
-    public PlayerType owner;
-
-    public Vector2 goalPosition;
-    public bool isMoving = false;
-
-    void Awake()
-    {
-        
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-        if (!isServer)
-        {
-            return;
-        }
-        actualHealth = maxHealth;
-        InitializePositionInGrid();
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodAmount += foodCost;
-    }
-
-    public virtual void Update()
-    {
-        if (isMoving)
-        {
-            gameObject.transform.position += ((Vector3)((goalPosition) - (Vector2)gameObject.transform.position)).normalized * speed * Time.deltaTime;
-            if (((Vector2)gameObject.transform.position - goalPosition).magnitude < 0.03f)
-            {
-                gameObject.transform.position = goalPosition;
-                isMoving = false;
-            }
-        }
-        if (!isServer)
-        {
-            return;
-        }
-        hasFinishedGoingToLastStep = false;
-        if (isFollowingPath)
-        {
-            FollowPath();
-        }
-    }
-
     public virtual void GetHit(int damage, Warrior attacker)
     {
-        ActualHealth -= damage;
+        actualHealth -= damage;
         if (actualHealth <= 0)
         {
             Die();
@@ -182,8 +172,7 @@ public class Unit : NetworkBehaviour
             SelectionInfoKeeper.Instance.Hide();
             Unselect();
         }
-        MultiplayerController.Instance.localPlayer.foodAmount -= foodCost;
-        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodAmount -= foodCost;
         NetworkServer.Destroy(gameObject);
     }
 
@@ -253,9 +242,7 @@ public class Unit : NetworkBehaviour
                 nextNodeToFollow = followedPath[indexOfFollowedPathNode];
                 if (CheckIfCanGoTo(new IntVector2(nextNodeToFollow.x, nextNodeToFollow.y)))
                 {
-                    ClearPositionInGrid();
-                    positionInGrid = new IntVector2(nextNodeToFollow.x, nextNodeToFollow.y);
-                    FillPositionInGrid();
+                    positionInGridSyncVar = new Vector2(nextNodeToFollow.x, nextNodeToFollow.y);
                     RpcMoveFromTo(gameObject.transform.position, new Vector2(nextNodeToFollow.x, nextNodeToFollow.y));
                 }
                 else
@@ -274,28 +261,24 @@ public class Unit : NetworkBehaviour
 
     public void SetNewPositionOnMapSettingWorldPosition(IntVector2 newPosition)
     {
-        ClearPositionInGrid();
-        positionInGrid = newPosition;
+        positionInGridSyncVar = new Vector2(newPosition.x, newPosition.y);
         gameObject.transform.position = MapGridded.MapToWorldPosition(newPosition);
-        FillPositionInGrid();
     }
 
     public void SetNewPositionOnMap(IntVector2 newPosition)
     {
-        ClearPositionInGrid();
-        positionInGrid = newPosition;
-        FillPositionInGrid();
+        positionInGridSyncVar = new Vector2(newPosition.x, newPosition.y);
     }
 
     public void ClearPositionInGrid()
     {
-        RpcClearPositionInGrid();
+        MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x].unit = null;
     }
 
     [ClientRpc]
-    void RpcClearPositionInGrid()
+    public void RpcClearPositionInGrid()
     {
-        MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x].unit = null;
+        ClearPositionInGrid();
     }
 
     public void FillPositionInGrid()
@@ -305,17 +288,11 @@ public class Unit : NetworkBehaviour
 
     public void InitializePositionInGrid()
     {
-        if (positionInGrid != null)
-        {
-            ClearPositionInGrid();
-        }
-        positionInGrid = MapGridded.WorldToMapPosition(gameObject.transform.position);
-        FillPositionInGrid();
+        positionInGridSyncVar = gameObject.transform.position;
     }
 
     public void Select()
     {
-        Debug.LogError("In unit select");
         selectionIndicator.SetActive(true);
         SelectionInfoKeeper.Instance.Assign(this);
         SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
@@ -333,6 +310,41 @@ public class Unit : NetworkBehaviour
         {
             selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
         }
+    }
+
+    [ClientRpc]
+    public void RpcHideYourself()
+    {
+        HideYourself();
+    }
+
+    public virtual void HideYourself()
+    {
+        spriteRenderer.enabled = false;
+        selectionCollider.SetActive(false);
+        selectionIndicator.SetActive(false);
+        enabled = false;
+        gameObject.GetComponent<MinimapElement>().Hide();
+    }
+
+    [ClientRpc]
+    public void RpcShowYourself()
+    {
+        ShowYourself();
+    }
+
+    public virtual void ShowYourself()
+    {
+        spriteRenderer.enabled = true;
+        selectionCollider.SetActive(true);
+        enabled = true;
+        gameObject.GetComponent<MinimapElement>().Show();
+    }
+
+    [ClientRpc]
+    public void RpcSetNewPosition(Vector2 position)
+    {
+        gameObject.transform.position = position;
     }
 
     public void Unselect()

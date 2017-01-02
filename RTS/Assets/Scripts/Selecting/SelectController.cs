@@ -47,9 +47,13 @@ public class SelectController : NetworkBehaviour
             else if (selectedUnit.GetType() == typeof(Warrior))
             {
                 RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray((Vector3)mousePositionInWorld - Vector3.forward, Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
-                if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Unit>())
+                if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Unit>() && hitInfo.collider.transform.parent.GetComponent<Unit>().owner != selectedUnit.owner)
                 {
                     ((Warrior)selectedUnit).StartAttack(hitInfo.collider.transform.parent.GetComponent<Unit>());
+                }
+                else if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Building>() && hitInfo.collider.transform.parent.GetComponent<Building>().owner != selectedUnit.owner)
+                {
+                    ((Warrior)selectedUnit).StartAttack(hitInfo.collider.transform.parent.GetComponent<Building>());
                 }
                 else
                 {
@@ -107,13 +111,15 @@ public class SelectController : NetworkBehaviour
                     isSelectingBuildingPlace = false;
                     buildingToBuild.HideBuildGrid();
                     CmdOrderUnitToBuild(buildingToBuild.buildingType, buildingToBuild.transform.position);
-                    Destroy(buildingToBuild);
+                    Destroy(buildingToBuild.gameObject);
                 }
             }
             else if (Input.GetMouseButtonUp(1))
             {
                 isSelectingBuildingPlace = false;
-                Destroy(buildingToBuild);
+                buildingToBuild.HideBuildGrid();
+                Destroy(buildingToBuild.gameObject);
+                ((Worker)selectedUnit).ShowBuildButtons();
             }
         }
         else
@@ -182,28 +188,16 @@ public class SelectController : NetworkBehaviour
 
     public void SelectBuilding(Building building)
     {
-        selectedBuilding = null;
-        selectedUnit = null;
-        selectedMine = null;
-        selectedBuilding = building;
         RpcSelectBuilding(building.GetComponent<NetworkIdentity>());
     }
 
     public void SelectUnit(Unit unit)
     {
-        selectedBuilding = null;
-        selectedUnit = null;
-        selectedMine = null;
-        selectedUnit = unit;
         RpcSelectUnit(unit.GetComponent<NetworkIdentity>());
     }
 
     public void SelectMine(Mine mine)
     {
-        selectedBuilding = null;
-        selectedUnit = null;
-        selectedMine = null;
-        selectedMine = mine;
         RpcSelectMine(mine.GetComponent<NetworkIdentity>());
     }
 
@@ -237,6 +231,20 @@ public class SelectController : NetworkBehaviour
             selectedUnit = unitToSelect;
             unitToSelect.Select();
         }
+        else
+        {
+            selectedBuilding = null;
+            selectedUnit = null;
+            selectedMine = null;
+            selectedUnit = unitToSelect;
+        }
+    }
+
+    public void SelectBuildingLocally(Building building)
+    {
+        Unselect();
+        selectedBuilding = building;
+        building.Select();
     }
 
     [ClientRpc]
@@ -249,6 +257,13 @@ public class SelectController : NetworkBehaviour
             selectedBuilding = buildingToSelect;
             buildingToSelect.Select();
         }
+        else
+        {
+            selectedBuilding = null;
+            selectedUnit = null;
+            selectedMine = null;
+            selectedBuilding = buildingToSelect;
+        }
     }
 
     [ClientRpc]
@@ -260,6 +275,13 @@ public class SelectController : NetworkBehaviour
             Unselect();
             selectedMine = mineToSelect;
             mineToSelect.Select();
+        }
+        else
+        {
+            selectedBuilding = null;
+            selectedUnit = null;
+            selectedMine = null;
+            selectedMine = mineToSelect;
         }
     }
 

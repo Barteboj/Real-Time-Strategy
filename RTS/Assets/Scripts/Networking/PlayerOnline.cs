@@ -22,16 +22,16 @@ public class PlayerOnline : NetworkBehaviour
     public List<Unit> units;
 
     [SyncVar(hook = "OnGoldAmountChange")]
-    public int goldAmount = 0;
+    public int goldAmount;
 
     [SyncVar(hook = "OnLumberAmountChange")]
-    public int lumberAmount = 0;
+    public int lumberAmount;
 
     [SyncVar(hook = "OnFoodAmountChange")]
-    public int foodAmount = 0;
+    public int foodAmount;
 
     [SyncVar(hook = "OnFoodMaxAmountChange")]
-    public int foodMaxAmount = 0;
+    public int foodMaxAmount;
 
     public SelectController selectController;
     public ActionButtonsController actionButtonsController;
@@ -44,6 +44,7 @@ public class PlayerOnline : NetworkBehaviour
     public void OnGoldAmountChange(int newValue)
     {
         goldAmount = newValue;
+        Debug.LogError(newValue);
         if (playerType == MultiplayerController.Instance.localPlayer.playerType)
         {
             ResourcesGUI.Instance.goldText.text = goldAmount.ToString();

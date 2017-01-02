@@ -81,7 +81,7 @@ public class SelectionInfoKeeper : MonoBehaviour
         unitName.text = unit.unitName;
         unitLevel.text = unit.level.ToString();
         unitPortrait.sprite = unit.portrait;
-        actualHealth.text = unit.ActualHealth.ToString();
+        actualHealth.text = unit.actualHealth.ToString();
         maxHealth.text = unit.maxHealth.ToString();
         //((Image)buttons[0].targetGraphic).sprite = unit.actionButton.ButtonImage;
         //buttons[0].onClick.RemoveAllListeners();
