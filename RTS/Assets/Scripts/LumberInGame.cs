@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class LumberInGame : MonoBehaviour
+public class LumberInGame : NetworkBehaviour
 {
     private bool isDepleted = false;
     public bool isBeingCut = false;
@@ -27,6 +28,12 @@ public class LumberInGame : MonoBehaviour
         isDepleted = true;
         spriteRenderer.sprite = depletedSprite;
         minimapElement.Hide();
+    }
+
+    [ClientRpc]
+    public void RpcDeplete()
+    {
+        Deplete();
     }
 
     private void PlaceYourselfOnMapGrid()

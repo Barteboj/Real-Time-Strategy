@@ -272,14 +272,7 @@ public class Worker : Unit
 
     public Building FindNearestCastle()
     {
-        if (MultiplayerController.Instance.localPlayer.buildings.Find(item => item.buildingType == BuildingType.Castle))
-        {
-            return MultiplayerController.Instance.players.Find(item => item.playerType == owner).buildings.Find(item => item.buildingType == BuildingType.Castle);
-        }
-        else
-        {
-            return null;
-        }
+        return MultiplayerController.Instance.players.Find(item => item.playerType == owner).buildings.Find(item => item.buildingType == BuildingType.Castle && item.isBuilded);
     }
 
     public void StartReturningWithGold()
@@ -357,7 +350,7 @@ public class Worker : Unit
         lumberToCut.isBeingCut = true;
         yield return new WaitForSeconds(timeOfGatheringLumber);
         takenLumberAmount = 50;
-        lumberToCut.Deplete();
+        lumberToCut.RpcDeplete();
         ReturnWithLumber();
     }
 
@@ -424,8 +417,7 @@ public class Worker : Unit
     public IEnumerator GivingLumber()
     {
         yield return new WaitForSeconds(timeOfGivingLumber);
-        MultiplayerController.Instance.localPlayer.lumberAmount += takenLumberAmount;
-        MultiplayerController.Instance.localPlayer.UpdateResourcesGUI();
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).lumberAmount += takenLumberAmount;
         takenLumberAmount = 0;
         IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);

@@ -59,6 +59,11 @@ public class Unit : NetworkBehaviour
     public float averageDamageFactor = 0.6f;
     public float criticalDamageFactor = 0.3f;
 
+    private void Awake()
+    {
+        gameObject.GetComponentInChildren<MinimapElement>().image.color = MultiplayerController.Instance.playerColors[(int)owner];
+    }
+
     public override void OnStartServer()
     {
         base.OnStartServer();

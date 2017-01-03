@@ -113,7 +113,10 @@ public class MapLoadController : NetworkBehaviour
 
     public void SaveLumberToMap(IntVector2 positionInMap)
     {
-        Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-        Instantiate(Resources.Instance.treePrefab, postionToCreate, Quaternion.identity);
+        if (isServer)
+        {
+            Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
+            NetworkServer.Spawn(Instantiate(Resources.Instance.treePrefab, postionToCreate, Quaternion.identity));
+        }
     }
 }

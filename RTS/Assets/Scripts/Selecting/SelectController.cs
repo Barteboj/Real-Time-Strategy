@@ -95,11 +95,15 @@ public class SelectController : NetworkBehaviour
 
     void Update()
     {
-        if (!hasAuthority || SceneManager.GetActiveScene().name != "Game" || MapGridded.Instance.mapGrid == null)
+        if (!hasAuthority || SceneManager.GetActiveScene().name != "Game" || MapGridded.Instance.mapGrid == null || !CheckIfIsInSelectionArea())
         {
             return;
         }
-        if (isSelectingBuildingPlace)
+        if (CheckIfIsInSelectionArea())
+        {
+            Debug.LogError("In Selection Area");
+        }
+        if (isSelectingBuildingPlace && CheckIfIsInSelectionArea())
         {
             Vector2 griddedPosition = new Vector2(GetGridPositionFromMousePosition().x, GetGridPositionFromMousePosition().y);
             buildingToBuild.transform.position = GetGriddedWorldPositionFromMousePosition();
@@ -124,13 +128,16 @@ public class SelectController : NetworkBehaviour
         }
         else
         {
-            if (Input.GetMouseButtonUp(1) && selectedUnit != null && MapGridded.Instance.IsInMap(GetGridPositionFromMousePosition()) && selectedUnit.owner == MultiplayerController.Instance.localPlayer.playerType)
+            if (CheckIfIsInSelectionArea())
             {
-                CmdRightClickCommand(Camera.main.ScreenToWorldPoint(Input.mousePosition), MultiplayerController.Instance.localPlayer.playerType);
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                CmdLeftClickCommand(Camera.main.ScreenToWorldPoint(Input.mousePosition), MultiplayerController.Instance.localPlayer.playerType);
+                if (Input.GetMouseButtonUp(1) && selectedUnit != null && MapGridded.Instance.IsInMap(GetGridPositionFromMousePosition()) && selectedUnit.owner == MultiplayerController.Instance.localPlayer.playerType)
+                {
+                    CmdRightClickCommand(Camera.main.ScreenToWorldPoint(Input.mousePosition), MultiplayerController.Instance.localPlayer.playerType);
+                }
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    CmdLeftClickCommand(Camera.main.ScreenToWorldPoint(Input.mousePosition), MultiplayerController.Instance.localPlayer.playerType);
+                }
             }
             RaycastHit2D underMouseCursorInfo = GetWhatIsUnderMouseCursor();
             if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<Cost>())
@@ -143,6 +150,11 @@ public class SelectController : NetworkBehaviour
                 CostGUI.Instance.HideCostGUI();
             }
         }
+    }
+
+    public bool CheckIfIsInSelectionArea()
+    {
+        return Physics2D.GetRayIntersection(new Ray(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Selection Area")).collider != null;
     }
 
     public void PlaceBuilding(BuildingType buildingType)

@@ -17,6 +17,8 @@ public class MultiplayerController : NetworkBehaviour
 
     public int startingLumber;
 
+    public Color[] playerColors;
+
     public static MultiplayerController Instance
     {
         get

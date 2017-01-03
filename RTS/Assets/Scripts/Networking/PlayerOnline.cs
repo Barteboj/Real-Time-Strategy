@@ -44,7 +44,6 @@ public class PlayerOnline : NetworkBehaviour
     public void OnGoldAmountChange(int newValue)
     {
         goldAmount = newValue;
-        Debug.LogError(newValue);
         if (playerType == MultiplayerController.Instance.localPlayer.playerType)
         {
             ResourcesGUI.Instance.goldText.text = goldAmount.ToString();

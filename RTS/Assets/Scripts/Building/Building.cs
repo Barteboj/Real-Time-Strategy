@@ -89,6 +89,11 @@ public class Building : NetworkBehaviour
         }
     }
 
+    private void Awake()
+    {
+        gameObject.GetComponentInChildren<MinimapElement>().Hide();
+    }
+
     void Update()
     {
         if (isServer)
@@ -142,13 +147,6 @@ public class Building : NetworkBehaviour
                 {
                     ActionButtons.Instance.buttons.Find(button => button.buttonType == buttonType).Show();
                 }
-            }
-        }
-        if (buildingType == BuildingType.Castle)
-        {
-            if (MultiplayerController.Instance.localPlayer.playerType == owner)
-            {
-                MultiplayerController.Instance.localPlayer.buildings.Add(this);
             }
         }
     }
@@ -258,10 +256,13 @@ public class Building : NetworkBehaviour
     [ClientRpc]
     void RpcStartBuildProcess()
     {
+        gameObject.GetComponentInChildren<MinimapElement>().image.color = MultiplayerController.Instance.playerColors[(int)owner];
+        gameObject.GetComponentInChildren<MinimapElement>().Show();
         buildingViewGameObject.SetActive(false);
         buildField.SetActive(true);
         isInBuildingProcess = true;
         selectionIndicatorCollider.enabled = true;
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).buildings.Add(this);
     }
 
     public void Select()
@@ -438,9 +439,16 @@ public class Building : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    void RpcRemoveFromPlayerBuildings()
+    {
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).buildings.Remove(this);
+    }
+
     public virtual void DestroyYourself()
     {
         RpcUnselect();
+        RpcRemoveFromPlayerBuildings();
         NetworkServer.Destroy(gameObject);
     }
 }
