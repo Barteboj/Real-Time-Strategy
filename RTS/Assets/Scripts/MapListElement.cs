@@ -35,4 +35,9 @@ public class MapListElement : MonoBehaviour
         MapEditorMainMenuController.Instance.Hide();
         FindObjectOfType<MapEditorCameraController>().ResetCameraPosition();
     }
+
+    public void SelectMapInLobby()
+    {
+        FindObjectOfType<LobbyMenu>().LobbyMenuController.mapName = mapNameText.text;
+    }
 }

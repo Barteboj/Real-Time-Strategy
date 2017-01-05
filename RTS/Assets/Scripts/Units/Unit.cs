@@ -62,6 +62,8 @@ public class Unit : NetworkBehaviour
     private void Awake()
     {
         gameObject.GetComponentInChildren<MinimapElement>().image.color = MultiplayerController.Instance.playerColors[(int)owner];
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeUnits.Add(this);
+        ++MultiplayerController.Instance.players.Find(item => item.playerType == owner).allUnitsAmount;
     }
 
     public override void OnStartServer()
@@ -144,8 +146,9 @@ public class Unit : NetworkBehaviour
         actualHealth -= damage;
         if (actualHealth <= 0)
         {
-            Die();
+            ++MultiplayerController.Instance.players.Find(item => item.playerType == attacker.owner).kills;
             attacker.StopAttack();
+            Die();
         }
         else
         {
@@ -179,6 +182,11 @@ public class Unit : NetworkBehaviour
         }
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodAmount -= foodCost;
         NetworkServer.Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeUnits.Remove(this);
     }
 
     public virtual void RequestGoTo(IntVector2 targetPositionInGrid)

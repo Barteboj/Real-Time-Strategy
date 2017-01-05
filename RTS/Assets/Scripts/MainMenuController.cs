@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
@@ -15,6 +16,7 @@ public class MainMenuController : MonoBehaviour
 
     public void LoadMapEditorScene()
     {
+        NetworkManager.Shutdown();
         SceneManager.LoadScene(mapEditorSceneName);
     }
 

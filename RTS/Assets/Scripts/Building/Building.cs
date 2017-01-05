@@ -262,7 +262,8 @@ public class Building : NetworkBehaviour
         buildField.SetActive(true);
         isInBuildingProcess = true;
         selectionIndicatorCollider.enabled = true;
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).buildings.Add(this);
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Add(this);
+        ++MultiplayerController.Instance.players.Find(item => item.playerType == owner).allBuildingsAmount;
     }
 
     public void Select()
@@ -319,6 +320,7 @@ public class Building : NetworkBehaviour
         SelectionInfoKeeper.Instance.HideBuildCompletitionBar();
         SelectionInfoKeeper.Instance.HideTrainingInfo();
         SelectionInfoKeeper.Instance.Hide();
+        ActionButtons.Instance.HideAllButtons();
     }
 
     [ClientRpc]
@@ -434,6 +436,7 @@ public class Building : NetworkBehaviour
         actualHealth -= damage;
         if (actualHealth <= 0)
         {
+            ++MultiplayerController.Instance.players.Find(item => item.playerType == attacker.owner).razings;
             attacker.StopAttack();
             DestroyYourself();
         }
@@ -442,13 +445,25 @@ public class Building : NetworkBehaviour
     [ClientRpc]
     void RpcRemoveFromPlayerBuildings()
     {
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).buildings.Remove(this);
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Remove(this);
+    }
+
+    private void OnDestroy()
+    {
+        if (actualBuildTime > 0f)
+        {
+            if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
+            {
+                Unselect();
+            }
+            MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Remove(this);
+        }
     }
 
     public virtual void DestroyYourself()
     {
-        RpcUnselect();
-        RpcRemoveFromPlayerBuildings();
+        //RpcUnselect();
+        //RpcRemoveFromPlayerBuildings();
         NetworkServer.Destroy(gameObject);
     }
 }

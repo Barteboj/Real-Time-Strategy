@@ -8,6 +8,7 @@ public class MinimapElement : MonoBehaviour
     public int width;
     public int height;
     public Image image;
+    public bool isStatic = false;
 
     void Start()
     {
@@ -19,6 +20,10 @@ public class MinimapElement : MonoBehaviour
         {
             image.rectTransform.sizeDelta = new Vector2(image.rectTransform.sizeDelta.x * width, image.rectTransform.sizeDelta.y * height);
             Minimap.Instance.SetMinimapElement(image, gameObject.transform.position, width, height, MapGridded.Instance.mapGrid.GetLength(0));
+            if (isStatic)
+            {
+                enabled = false;
+            }
         }
     }
 

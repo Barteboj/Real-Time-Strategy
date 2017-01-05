@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 using System.Collections;
 
 public class MapEditorMainMenuController : MonoBehaviour
@@ -68,6 +69,7 @@ public class MapEditorMainMenuController : MonoBehaviour
 
     public void GoBackToMainMenu()
     {
+        NetworkManager.Shutdown();
         SceneManager.LoadScene(0);
     }
 }

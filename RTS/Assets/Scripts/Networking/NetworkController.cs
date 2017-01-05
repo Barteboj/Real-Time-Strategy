@@ -8,6 +8,7 @@ public class NetworkController : NetworkManager
 {
     public Text ipAddressText;
     public GameObject multiplayerControllerGameObject;
+    public GameObject lobbyMenuControllerGameObject;
 
     private int readyClientsOnGameScene = 0;
 
@@ -30,14 +31,20 @@ public class NetworkController : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        Shutdown();
-        SceneManager.LoadScene("Offline");
+        if (SceneManager.GetActiveScene().name != "Ending")
+        {
+            Shutdown();
+            SceneManager.LoadScene("Offline");
+        }
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
-        Shutdown();
-        SceneManager.LoadScene("Offline");
+        if (SceneManager.GetActiveScene().name != "Ending")
+        {
+            Shutdown();
+            SceneManager.LoadScene("Offline");
+        }
     }
 
     public override void OnClientSceneChanged(NetworkConnection conn)
@@ -56,9 +63,17 @@ public class NetworkController : NetworkManager
             ++readyClientsOnGameScene;
             if (readyClientsOnGameScene == 2)
             {
-                FindObjectOfType<NetworkGameInitializer>().Initialize();
-                readyClientsOnGameScene = 0;
+                MapLoadController.Instance.LoadChosenMap();
+                MultiplayerController.Instance.RpcInitializeGame();
             }
+        }
+    }
+
+    public void SpawnLobbyMenuController()
+    {
+        if (FindObjectOfType<NetworkIdentity>().isServer)
+        {
+            NetworkServer.Spawn(Instantiate(((NetworkController)NetworkManager.singleton).lobbyMenuControllerGameObject, Vector3.zero, Quaternion.identity));
         }
     }
 }

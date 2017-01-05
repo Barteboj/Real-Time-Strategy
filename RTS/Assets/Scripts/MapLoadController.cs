@@ -43,6 +43,10 @@ public class MapLoadController : NetworkBehaviour
     public Vector2 player1StartingPosition;
     public Vector2 player2StartingPosition;
 
+    public GameObject LoadingMapScreen;
+
+    public string mapText = "";
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -58,12 +62,15 @@ public class MapLoadController : NetworkBehaviour
 
     public void LoadChosenMap()
     {
-        LoadMap(Application.dataPath + "/" + MapEditor.mapsFolderName + "/" + mapNameToLoad + ".map");
+        LoadMap(Application.dataPath + "/" + MapEditor.mapsFolderName + "/" + MultiplayerController.Instance.mapName + ".map");
+        LoadingMapScreen.SetActive(false);
+        FindObjectOfType<GameCameraController>().enabled = true;
     }
 
-    public void LoadMap(string filePath)
+    [ClientRpc]
+    void RpcLoadMap()
     {
-        List<string> lines = new List<string>(new StreamReader(filePath).ReadToEnd().Split('\n'));
+        List<string> lines = new List<string>(mapText.Split('\n'));
         foreach (string line in lines)
         {
             string[] words = line.Split(' ');
@@ -92,6 +99,27 @@ public class MapLoadController : NetworkBehaviour
                     break;
             }
         }
+        LoadingMapScreen.SetActive(false);
+    }
+
+    [ClientRpc]
+    void RpcAddToMap(string textToAdd)
+    {
+        mapText += textToAdd;
+    }
+
+    public void LoadMap(string filePath)
+    {
+        string wholeMapText = new StreamReader(filePath).ReadToEnd();
+        int actualIndexInMapText = 0;
+        while (actualIndexInMapText < wholeMapText.Length)
+        {
+            int numberOfCharsToReadInPacket = Mathf.Min(5000, wholeMapText.Length - actualIndexInMapText);
+            string partOfMapText = wholeMapText.Substring(actualIndexInMapText, numberOfCharsToReadInPacket);
+            RpcAddToMap(partOfMapText);
+            actualIndexInMapText += numberOfCharsToReadInPacket;
+        }
+        RpcLoadMap();
     }
 
     public void SaveToMap(IntVector2 positionInMap, TileType tileType)
@@ -108,7 +136,6 @@ public class MapLoadController : NetworkBehaviour
             Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
             NetworkServer.Spawn(Instantiate(Resources.Instance.minePrefab, postionToCreate, Quaternion.identity));
         }
-        
     }
 
     public void SaveLumberToMap(IntVector2 positionInMap)

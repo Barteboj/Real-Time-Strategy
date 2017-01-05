@@ -13,8 +13,8 @@ public class NetworkGameInitializer : NetworkBehaviour
         {
             return;
         }
-        GameObject instantiatedNetworkGameController = Instantiate(networkGameController.gameObject);
-        NetworkServer.Spawn(instantiatedNetworkGameController);
-        instantiatedNetworkGameController.GetComponent<NetworkGameController>().InitializeGame();
+        //GameObject instantiatedNetworkGameController = Instantiate(networkGameController.gameObject);
+        //NetworkServer.Spawn(instantiatedNetworkGameController);
+        //instantiatedNetworkGameController.GetComponent<NetworkGameController>().InitializeGame();
     }
 }

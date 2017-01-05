@@ -18,8 +18,15 @@ public class PlayerOnline : NetworkBehaviour
     [SyncVar]
     public bool isReady = false;
 
-    public List<Building> buildings;
-    public List<Unit> units;
+    public List<Building> activeBuildings;
+    public List<Unit> activeUnits;
+
+    public int allUnitsAmount = 0;
+    public int allBuildingsAmount = 0;
+    [SyncVar]
+    public int kills;
+    [SyncVar]
+    public int razings;
 
     [SyncVar(hook = "OnGoldAmountChange")]
     public int goldAmount;

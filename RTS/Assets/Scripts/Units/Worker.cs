@@ -272,7 +272,7 @@ public class Worker : Unit
 
     public Building FindNearestCastle()
     {
-        return MultiplayerController.Instance.players.Find(item => item.playerType == owner).buildings.Find(item => item.buildingType == BuildingType.Castle && item.isBuilded);
+        return MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Find(item => item.buildingType == BuildingType.Castle && item.isBuilded);
     }
 
     public void StartReturningWithGold()

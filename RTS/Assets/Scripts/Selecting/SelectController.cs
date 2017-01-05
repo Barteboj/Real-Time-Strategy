@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SelectController : NetworkBehaviour
 {
@@ -11,6 +12,9 @@ public class SelectController : NetworkBehaviour
 
     public bool isSelectingBuildingPlace = false;
     public Building buildingToBuild;
+
+    public SpriteRenderer selectionHighlight;
+    public Vector2 startSelectionPosition;
 
     [Command]
     void CmdRightClickCommand(Vector2 mousePositionInWorld, PlayerType commander)
@@ -95,13 +99,23 @@ public class SelectController : NetworkBehaviour
 
     void Update()
     {
+        /*if (Input.GetMouseButtonDown(0))
+        {
+            selectionHighlight.enabled = true;
+            startSelectionPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            selectionHighlight.transform.position = startSelectionPosition;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            selectionHighlight.enabled = false;
+        }
+        if (Input.GetMouseButton(0))
+        {
+            selectionHighlight.transform.localScale = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - startSelectionPosition.x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y - startSelectionPosition.y, 1f);
+        }*/
         if (!hasAuthority || SceneManager.GetActiveScene().name != "Game" || MapGridded.Instance.mapGrid == null || !CheckIfIsInSelectionArea())
         {
             return;
-        }
-        if (CheckIfIsInSelectionArea())
-        {
-            Debug.LogError("In Selection Area");
         }
         if (isSelectingBuildingPlace && CheckIfIsInSelectionArea())
         {
@@ -130,6 +144,20 @@ public class SelectController : NetworkBehaviour
         {
             if (CheckIfIsInSelectionArea())
             {
+                /*if (Input.GetMouseButtonDown(0))
+                {
+                    selectionHighlight.enabled = true;
+                    startSelectionPosition = Input.mousePosition;
+                    selectionHighlight.transform.position = startSelectionPosition;
+                }
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    selectionHighlight.enabled = false;
+                }
+                if (Input.GetMouseButton(0))
+                {
+                    selectionHighlight.transform.localScale = new Vector3(Input.mousePosition.x - startSelectionPosition.x, Input.mousePosition.y - startSelectionPosition.y, 1f);
+                }*/
                 if (Input.GetMouseButtonUp(1) && selectedUnit != null && MapGridded.Instance.IsInMap(GetGridPositionFromMousePosition()) && selectedUnit.owner == MultiplayerController.Instance.localPlayer.playerType)
                 {
                     CmdRightClickCommand(Camera.main.ScreenToWorldPoint(Input.mousePosition), MultiplayerController.Instance.localPlayer.playerType);

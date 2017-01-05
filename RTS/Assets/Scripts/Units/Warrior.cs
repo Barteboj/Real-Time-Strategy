@@ -50,13 +50,16 @@ public class Warrior : Unit
             {
                 shortestPath = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(attackedBuilding.transform.position), attackedBuilding.width, attackedBuilding.height);
             }
-            if (shortestPath.Count == 0)
+            if (shortestPath != null)
             {
-                RequestGoTo(positionInGrid);
-            }
-            else
-            {
-                RequestGoTo(new IntVector2(shortestPath[shortestPath.Count - 1].x, shortestPath[shortestPath.Count - 1].y));
+                if (shortestPath.Count == 0)
+                {
+                    RequestGoTo(positionInGrid);
+                }
+                else
+                {
+                    RequestGoTo(new IntVector2(shortestPath[shortestPath.Count - 1].x, shortestPath[shortestPath.Count - 1].y));
+                }
             }
         }
         else
@@ -114,6 +117,10 @@ public class Warrior : Unit
         base.Update();
         if (isServer)
         {
+            if (isAttacking && (attackedBuilding == null && attackedUnit == null) || ((attackedBuilding != null && attackedBuilding.actualHealth <= 0f) || (attackedUnit != null && attackedUnit.actualHealth <= 0f)))
+            {
+                StopAttack();
+            }
             if (isAttacking)
             {
                 Attack();
