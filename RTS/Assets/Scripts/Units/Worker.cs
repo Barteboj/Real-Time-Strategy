@@ -243,6 +243,7 @@ public class Worker : Unit
     {
         yield return new WaitForSeconds(timeOfGivingGold);
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).goldAmount += takenGoldAmount;
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).allGatheredGold += takenGoldAmount;
         takenGoldAmount = 0;
         IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
@@ -418,6 +419,7 @@ public class Worker : Unit
     {
         yield return new WaitForSeconds(timeOfGivingLumber);
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).lumberAmount += takenLumberAmount;
+        MultiplayerController.Instance.players.Find(item => item.playerType == owner).allGatheredLumber += takenLumberAmount;
         takenLumberAmount = 0;
         IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);

@@ -54,6 +54,11 @@ public class MapGridElement
         this.cannotBuildIndicator = cannotBuildIndicator;
     }
 
+    public MapGridElement(Tile tile)
+    {
+        this.tile = tile;
+    }
+
     public int GetCostToGetHereFrom(MapGridElement pathNode)
     {
         if (pathNode == this)

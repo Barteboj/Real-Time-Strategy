@@ -450,13 +450,16 @@ public class Building : NetworkBehaviour
 
     private void OnDestroy()
     {
-        if (actualBuildTime > 0f)
+        if (MultiplayerController.Instance != null)
         {
-            if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
+            if (actualBuildTime > 0f)
             {
-                Unselect();
+                if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
+                {
+                    Unselect();
+                }
+                MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Remove(this);
             }
-            MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Remove(this);
         }
     }
 

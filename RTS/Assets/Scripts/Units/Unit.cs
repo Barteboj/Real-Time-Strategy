@@ -186,7 +186,10 @@ public class Unit : NetworkBehaviour
 
     private void OnDestroy()
     {
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeUnits.Remove(this);
+        if (MultiplayerController.Instance != null)
+        {
+            MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeUnits.Remove(this);
+        }
     }
 
     public virtual void RequestGoTo(IntVector2 targetPositionInGrid)

@@ -14,32 +14,28 @@ public class PlayerOnline : NetworkBehaviour
 {
     [SyncVar]
     public PlayerType playerType;
-
     [SyncVar]
     public bool isReady = false;
-
     public List<Building> activeBuildings;
     public List<Unit> activeUnits;
-
     public int allUnitsAmount = 0;
     public int allBuildingsAmount = 0;
     [SyncVar]
     public int kills;
     [SyncVar]
     public int razings;
-
+    [SyncVar]
+    public int allGatheredGold;
+    [SyncVar]
+    public int allGatheredLumber;
     [SyncVar(hook = "OnGoldAmountChange")]
     public int goldAmount;
-
     [SyncVar(hook = "OnLumberAmountChange")]
     public int lumberAmount;
-
     [SyncVar(hook = "OnFoodAmountChange")]
     public int foodAmount;
-
     [SyncVar(hook = "OnFoodMaxAmountChange")]
     public int foodMaxAmount;
-
     public SelectController selectController;
     public ActionButtonsController actionButtonsController;
 

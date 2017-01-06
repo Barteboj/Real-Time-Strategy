@@ -31,6 +31,7 @@ public class LobbyMenu : MonoBehaviour
     public GameObject chooseMapMenu;
     public Text chosenMapNameText;
     public GameObject lobbyMainMenu;
+    public Text MapLoadErrorMessageText;
 
     private void Start()
     {
@@ -40,10 +41,18 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        MultiplayerController.Instance.startingGold = LobbyMenuController.startingGold;
-        MultiplayerController.Instance.startingLumber = LobbyMenuController.startingLumber;
-        NetworkServer.Destroy(LobbyMenuController.gameObject);
-        MultiplayerController.Instance.StartGame();
+        if (MapLoadController.CheckMap(MultiplayerController.Instance.mapName))
+        {
+            MultiplayerController.Instance.startingGold = LobbyMenuController.startingGold;
+            MultiplayerController.Instance.startingLumber = LobbyMenuController.startingLumber;
+            NetworkServer.Destroy(LobbyMenuController.gameObject);
+            MultiplayerController.Instance.StartGame();
+        }
+        else
+        {
+            LobbyMenuController.Instance.ShowMapErrorMessage();
+        }
+        
     }
 
     public void GoBackToMainMenu()

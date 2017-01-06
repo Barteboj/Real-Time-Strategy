@@ -62,6 +62,19 @@ public class Mine : NetworkBehaviour
             }
         }
     }
+
+    public IntVector2[] GetMapPositions(IntVector2 minePositionInMap)
+    {
+        List<IntVector2> positionsInMap = new List<IntVector2>();
+        for (int row = 0; row < height; ++row)
+        {
+            for (int column = 0; column < width; ++column)
+            {
+                positionsInMap.Add(new IntVector2(minePositionInMap.x + column, minePositionInMap.y + row));
+            }
+        }
+        return positionsInMap.ToArray();
+    }
     
     public int TakeGold(int amount)
     {

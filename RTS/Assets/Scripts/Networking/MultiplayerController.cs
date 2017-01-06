@@ -6,23 +6,14 @@ using System.Collections.Generic;
 public class MultiplayerController : NetworkBehaviour
 {
     public List<PlayerOnline> players = new List<PlayerOnline>();
-
     public PlayerOnline localPlayer;
-
     public string gameSceneName;
-
     private static MultiplayerController instance;
-
     public int startingGold;
-
     public int startingLumber;
-
     public Color[] playerColors;
-
     public bool isGameInitialized = false;
-
     public bool hasGameEnded = false;
-
     public string mapName;
 
     [SyncVar]
@@ -34,8 +25,7 @@ public class MultiplayerController : NetworkBehaviour
         {
             if (instance == null)
             {
-                MultiplayerController foundInstance = FindObjectOfType<MultiplayerController>();
-                instance = foundInstance;
+                instance = FindObjectOfType<MultiplayerController>();
             }
             return instance;
         }
@@ -90,7 +80,9 @@ public class MultiplayerController : NetworkBehaviour
             foreach (PlayerOnline player in players)
             {
                 player.goldAmount = startingGold;
+                player.allGatheredGold = startingGold;
                 player.lumberAmount = startingLumber;
+                player.allGatheredLumber = startingLumber;
                 player.foodMaxAmount = 1;
             }
             isGameInitialized = true;

@@ -113,7 +113,7 @@ public class SelectController : NetworkBehaviour
         {
             selectionHighlight.transform.localScale = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - startSelectionPosition.x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y - startSelectionPosition.y, 1f);
         }*/
-        if (!hasAuthority || SceneManager.GetActiveScene().name != "Game" || MapGridded.Instance.mapGrid == null || !CheckIfIsInSelectionArea())
+        if (!hasAuthority || SceneManager.GetActiveScene().name != "Game" || MapGridded.Instance.mapGrid == null)
         {
             return;
         }
@@ -168,10 +168,17 @@ public class SelectController : NetworkBehaviour
                 }
             }
             RaycastHit2D underMouseCursorInfo = GetWhatIsUnderMouseCursor();
-            if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<Cost>())
+            if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<TrainingButton>())
             {
-                Cost costToShow = underMouseCursorInfo.collider.GetComponent<Cost>();
-                CostGUI.Instance.ShowCostGUI(costToShow.goldCost, costToShow.lumberCost, costToShow.foodCost);
+                TrainingButton buttonUnderMouse = underMouseCursorInfo.collider.GetComponent<TrainingButton>();
+                Unit unitToViewCost = Units.Instance.unitsList.Find(item => item.unitType == buttonUnderMouse.unitType);
+                CostGUI.Instance.ShowCostGUI(unitToViewCost.goldCost, unitToViewCost.lumberCost, unitToViewCost.foodCost);
+            }
+            else if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<BuildButton>())
+            {
+                BuildButton buttonUnderMouse = underMouseCursorInfo.collider.GetComponent<BuildButton>();
+                Building buildingToViewCost = Buildings.Instance.buildingsList.Find(item => item.buildingType == buttonUnderMouse.buildingType);
+                CostGUI.Instance.ShowCostGUI(buildingToViewCost.goldCost, buildingToViewCost.lumberCost, 0);
             }
             else if (CostGUI.Instance.IsVisible)
             {

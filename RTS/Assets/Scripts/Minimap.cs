@@ -73,7 +73,7 @@ public class Minimap : MonoBehaviour
 
     public void SetMinimapElement(Image image, Vector2 positionInWorld, int width, int height, int mapSize)
     {
-        image.transform.parent = gameObject.transform;
+        image.transform.SetParent(gameObject.transform);
         image.rectTransform.sizeDelta = new Vector2((float)size / mapSize * width, (float)size / mapSize * height);
         image.rectTransform.anchoredPosition = WorldToMinimapPosition(positionInWorld, mapSize);
     }

@@ -35,6 +35,8 @@ public class LobbyMenuController : NetworkBehaviour
 
     private LobbyMenu lobbyMenu;
 
+    private Coroutine MapLoadErrorMessageCoroutine;
+
     public LobbyMenu LobbyMenu
     {
         get
@@ -136,6 +138,22 @@ public class LobbyMenuController : NetworkBehaviour
         }
     }
 
+    public IEnumerator MapLoadErrorMessageRoutine()
+    {
+        LobbyMenu.MapLoadErrorMessageText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        LobbyMenu.MapLoadErrorMessageText.gameObject.SetActive(false);
+    }
+
+    public void ShowMapErrorMessage()
+    {
+        if (MapLoadErrorMessageCoroutine != null)
+        {
+            StopCoroutine(MapLoadErrorMessageCoroutine);
+        }
+        MapLoadErrorMessageCoroutine = StartCoroutine(MapLoadErrorMessageRoutine());
+    }
+
     public void InitializeLobbyGUI()
     {
         if (!isServer)
@@ -149,12 +167,13 @@ public class LobbyMenuController : NetworkBehaviour
             LobbyMenu.player2StatusText.text = "Connected";
             LobbyMenu.startingGoldSlider.value = startingGold;
             LobbyMenu.startingLumberSlider.value = startingLumber;
-            LobbyMenu.chosenMapNameText.text = mapName;
+            if (mapName != "")
+            {
+                LobbyMenu.chosenMapNameText.text = mapName;
+            }
         }
         else
         {
-            //UpdateStartingGoldValue();
-            //UpdateStartingLumberValue();
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null)
             {
                 LobbyMenu.player1StatusText.text = "Connected";

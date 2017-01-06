@@ -63,8 +63,15 @@ public class NetworkController : NetworkManager
             ++readyClientsOnGameScene;
             if (readyClientsOnGameScene == 2)
             {
-                MapLoadController.Instance.LoadChosenMap();
-                MultiplayerController.Instance.RpcInitializeGame();
+                if (MapLoadController.CheckMap(MultiplayerController.Instance.mapName))
+                {
+                    MapLoadController.Instance.LoadChosenMap();
+                    MultiplayerController.Instance.RpcInitializeGame();
+                }
+                else
+                {
+                    LobbyMenuController.Instance.ShowMapErrorMessage();
+                }
             }
         }
     }
