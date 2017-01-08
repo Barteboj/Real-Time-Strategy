@@ -15,7 +15,7 @@ public class Unit : NetworkBehaviour
 {
     protected bool isFollowingPath = false;
     protected MapGridElement nextNodeToFollow;
-    protected IntVector2 positionInGrid;
+    public IntVector2 positionInGrid;
     protected int indexOfFollowedPathNode;
     protected IntVector2 requestedTargetPositionInGrid;
     protected bool hasFinishedGoingToLastStep = false;
@@ -208,18 +208,51 @@ public class Unit : NetworkBehaviour
         }
     }
 
+    public virtual void RequestGoTo(List<MapGridElement> targetPath)
+    {
+        if (isFollowingPath)
+        {
+            if (targetPath.Count > 0)
+            {
+                requestedTargetPositionInGrid = new IntVector2(targetPath[targetPath.Count - 1].x, targetPath[targetPath.Count - 1].y);
+            }
+            else
+            {
+                requestedTargetPositionInGrid = positionInGrid;
+            }
+        }
+        else
+        {
+            StartFollowingPath(targetPath);
+        }
+    }
+
     public virtual void StartFollowingPath(List<MapGridElement> pathToFollow)
     {
         hasFinishedGoingToLastStep = true;
-        if (pathToFollow != null && pathToFollow.Count > 0)
+        if (pathToFollow != null)
         {
             followedPath = pathToFollow;
-            nextNodeToFollow = pathToFollow[0];
+            if (pathToFollow.Count > 0)
+            {
+                nextNodeToFollow = pathToFollow[0];
+            }
+            else
+            {
+                nextNodeToFollow = MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x];
+            }
             indexOfFollowedPathNode = 0;
-            if (MapGridded.Instance.mapGrid[nextNodeToFollow.y, nextNodeToFollow.x].isWalkable)
+            if (MapGridded.Instance.mapGrid[nextNodeToFollow.y, nextNodeToFollow.x].ChecklIfIsWalkableForUnit(this))
             {
                 SetNewPositionOnMap(new IntVector2(nextNodeToFollow.x, nextNodeToFollow.y));
-                requestedTargetPositionInGrid = new IntVector2(pathToFollow[pathToFollow.Count - 1].x, pathToFollow[pathToFollow.Count - 1].y);
+                if (pathToFollow.Count > 0)
+                {
+                    requestedTargetPositionInGrid = new IntVector2(pathToFollow[pathToFollow.Count - 1].x, pathToFollow[pathToFollow.Count - 1].y);
+                }
+                else
+                {
+                    requestedTargetPositionInGrid = positionInGrid;
+                }
                 isFollowingPath = true;
                 RpcMoveFromTo(gameObject.transform.position, new Vector2(nextNodeToFollow.x, nextNodeToFollow.y));
             }
@@ -252,7 +285,7 @@ public class Unit : NetworkBehaviour
                 requestedTargetPositionInGrid = null;
                 return;
             }
-            if (nextNodeToFollow == followedPath[followedPath.Count - 1])
+            if (followedPath.Count == 0 || nextNodeToFollow == followedPath[followedPath.Count - 1])
             {
                 isFollowingPath = false;
             }

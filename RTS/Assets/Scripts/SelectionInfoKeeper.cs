@@ -38,21 +38,9 @@ public class SelectionInfoKeeper : MonoBehaviour
         {
             if (instance == null)
             {
-                if (FindObjectOfType<SelectionInfoKeeper>())
-                {
-                    instance = FindObjectOfType<SelectionInfoKeeper>();
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("SelectionInfoKeeper instance not added to scene and is tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<SelectionInfoKeeper>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
 

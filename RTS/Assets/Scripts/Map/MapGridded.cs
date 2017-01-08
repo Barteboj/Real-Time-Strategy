@@ -63,34 +63,34 @@ public class MapGridded : MonoBehaviour
 
     public IntVector2 GetFirstFreePlaceAround(IntVector2 position, int width, int height)
     {
-        for (int i = 0; i < height; ++i)
+        for (int i = 0; i <= height; ++i)
         {
             IntVector2 checkedPosition = new IntVector2(position.x - 1, position.y + i);
-            if (IsInMap(checkedPosition) && mapGrid[position.y + i, position.x - 1].isWalkable)
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }
         }
-        for (int i = 0; i < width; ++i)
+        for (int i = 0; i <= width; ++i)
         {
             IntVector2 checkedPosition = new IntVector2(position.x + i, position.y + height);
-            if (IsInMap(checkedPosition) && mapGrid[position.y + height, position.x + i].isWalkable)
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }
         }
-        for (int i = 0; i < height; ++i)
+        for (int i = 0; i <= height; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x + width, position.y + i);
-            if (IsInMap(checkedPosition) && mapGrid[position.y + i, position.x + width].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.x + width, position.y + height - 1 - i);
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }
         }
-        for (int i = 0; i < width; ++i)
+        for (int i = 0; i <= width; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x + i, position.y - 1);
-            if (IsInMap(checkedPosition) && mapGrid[position.y - 1, position.x + i].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.x + width - 1 - i, position.y - 1);
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }
@@ -100,34 +100,34 @@ public class MapGridded : MonoBehaviour
 
     public IntVector2 GetStrictFirstFreePlaceAround(IntVector2 position, int width, int height)
     {
-        for (int i = 0; i < height; ++i)
+        for (int i = 0; i <= height; ++i)
         {
             IntVector2 checkedPosition = new IntVector2(position.x - 1, position.y + i);
-            if (IsInMap(checkedPosition) && mapGrid[position.y + i, position.x - 1].isWalkable)
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }
         }
-        for (int i = 0; i < width; ++i)
+        for (int i = 0; i <= width; ++i)
         {
             IntVector2 checkedPosition = new IntVector2(position.x + i, position.y + height);
-            if (IsInMap(checkedPosition) && mapGrid[position.y + height, position.x + i].isWalkable)
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }
         }
-        for (int i = 0; i < height; ++i)
+        for (int i = 0; i <= height; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x + width, position.y + i);
-            if (IsInMap(checkedPosition) && mapGrid[position.y + i, position.x + width].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.x + width, position.y + height - 1 - i);
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }
         }
-        for (int i = 0; i < width; ++i)
+        for (int i = 0; i <= width; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x + i, position.y - 1);
-            if (IsInMap(checkedPosition) && mapGrid[position.y - 1, position.x + i].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.x + width - 1 - i, position.y - 1);
+            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
             {
                 return checkedPosition;
             }

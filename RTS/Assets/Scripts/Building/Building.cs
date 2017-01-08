@@ -66,6 +66,8 @@ public class Building : NetworkBehaviour
     [SyncVar]
     public float actualBuildTime = 0f;
 
+    public List<Unit> visiters = new List<Unit>();
+
     public void OnChangeActualHealth(int newValue)
     {
         actualHealth = newValue;
@@ -449,6 +451,10 @@ public class Building : NetworkBehaviour
 
     public virtual void DestroyYourself()
     {
+        foreach (Unit visiter in visiters)
+        {
+            visiter.Die();
+        }
         NetworkServer.Destroy(gameObject);
     }
 }

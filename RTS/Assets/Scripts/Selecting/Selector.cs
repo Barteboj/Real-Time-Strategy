@@ -78,6 +78,12 @@ public class Selector : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            if (Input.GetMouseButtonUp(0) && selectionHighlight.enabled && MultiplayerController.Instance.isGameInitialized)
+            {
+                wasShiftPressedOnActualTest = Input.GetKey(KeyCode.LeftShift);
+                CmdTestSelection(startSelectionPosition, selectionHighlight.transform.localScale, wasShiftPressedOnActualTest);
+                selectionHighlight.enabled = false;
+            }
             if (CheckIfIsInSelectionArea() && !player.commander.isSelectingBuildingPlace && MultiplayerController.Instance.isGameInitialized)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -85,12 +91,6 @@ public class Selector : NetworkBehaviour
                     selectionHighlight.enabled = true;
                     startSelectionPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     selectionHighlight.transform.position = startSelectionPosition;
-                }
-                else if (Input.GetMouseButtonUp(0))
-                {
-                    wasShiftPressedOnActualTest = Input.GetKey(KeyCode.LeftShift);
-                    CmdTestSelection(startSelectionPosition, selectionHighlight.transform.localScale, wasShiftPressedOnActualTest);
-                    selectionHighlight.enabled = false;
                 }
                 if (Input.GetMouseButton(0))
                 {

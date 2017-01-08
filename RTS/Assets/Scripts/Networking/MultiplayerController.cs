@@ -53,7 +53,7 @@ public class MultiplayerController : NetworkBehaviour
             if (players.Find(item => item.activeUnits.Count == 0 && item.activeBuildings.Count == 0) != null)
             {
                 winner = players.Find(item => item.activeUnits.Count > 0 || item.activeBuildings.Count > 0).playerType;
-                RpcTurnOffSelectors();
+                RpcTurnOffSelectors(winner);
                 NetworkManager.singleton.ServerChangeScene("Ending");
                 hasGameEnded = true;
             }
@@ -61,8 +61,9 @@ public class MultiplayerController : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcTurnOffSelectors()
+    void RpcTurnOffSelectors(PlayerType winner)
     {
+        this.winner = winner;
         localPlayer.selector.enabled = false;
     }
 

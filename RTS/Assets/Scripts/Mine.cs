@@ -137,7 +137,18 @@ public class Mine : NetworkBehaviour
 
     public void Deplete()
     {
-        //Destroy(gameObject);
+        NetworkServer.Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        if (MultiplayerController.Instance != null)
+        {
+            if (MultiplayerController.Instance.localPlayer.selector.selectedMine == this)
+            {
+                MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+            }
+        }
     }
 
     public IEnumerator Mining(Worker miner)
@@ -145,41 +156,5 @@ public class Mine : NetworkBehaviour
         yield return new WaitForSeconds(timeOfMining);
         miner.takenGoldAmount = TakeGold(100);
         LeaveMine(miner);
-    }
-
-    /*public void Select()
-    {
-        selectionIndicator.SetActive(true);
-        SelectionInfoKeeper.Instance.unitName.text = mineName;
-        SelectionInfoKeeper.Instance.goldLeftAmountText.text = goldLeft.ToString();
-        SelectionInfoKeeper.Instance.unitLevelValueText.enabled = false;
-        SelectionInfoKeeper.Instance.maxHealth.enabled = false;
-        SelectionInfoKeeper.Instance.actualHealth.enabled = false;
-        SelectionInfoKeeper.Instance.healthInfoGameObject.SetActive(false);
-        SelectionInfoKeeper.Instance.levelInfoGameObject.SetActive(false);
-        SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(true);
-        SelectionInfoKeeper.Instance.unitPortrait.sprite = portrait;
-        MultiplayerController.Instance.localPlayer.commander.selectedUnit = null;
-        MultiplayerController.Instance.localPlayer.commander.selectedBuilding = null;
-        MultiplayerController.Instance.localPlayer.commander.selectedMine = this;
-        SelectionInfoKeeper.Instance.Show();
-    }
-
-    public void Unselect()
-    {
-        selectionIndicator.SetActive(false);
-        SelectionInfoKeeper.Instance.unitLevelValueText.enabled = true;
-        SelectionInfoKeeper.Instance.maxHealth.enabled = true;
-        SelectionInfoKeeper.Instance.actualHealth.enabled = true;
-        SelectionInfoKeeper.Instance.healthInfoGameObject.SetActive(true);
-        SelectionInfoKeeper.Instance.levelInfoGameObject.SetActive(true);
-        SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(false);
-        SelectionInfoKeeper.Instance.Hide();
-    }*/
-
-    public bool CheckIfIsWithinMine(IntVector2 mapPosition)
-    {
-        IntVector2 minePositionOnMap = MapGridded.WorldToMapPosition(gameObject.transform.position);
-        return mapPosition.x >= minePositionOnMap.x && mapPosition.x <= minePositionOnMap.x + 2 && mapPosition.y >= minePositionOnMap.y && mapPosition.y <= minePositionOnMap.y + 2;
     }
 }

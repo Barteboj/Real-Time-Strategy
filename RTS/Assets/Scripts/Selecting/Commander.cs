@@ -38,7 +38,7 @@ public class Commander : NetworkBehaviour
                         }
                         else if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<LumberInGame>() && !hitInfo.collider.transform.parent.GetComponent<LumberInGame>().IsDepleted)
                         {
-                            ((Worker)selectedUnit).GoForLumber(hitInfo.collider.transform.parent.GetComponent<LumberInGame>());
+                            ((Worker)selectedUnit).GoForLumber();
                         }
                         else
                         {

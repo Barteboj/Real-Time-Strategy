@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class Worker : Unit
 {
+    private bool isCuttingLumber = false;
     public bool isSelectingPlaceForBuilding = false;
     private bool isGoingToBuildPlace = false;
     public bool haveFinishedPlacingBuilding = false;
@@ -151,15 +152,22 @@ public class Worker : Unit
 
     public void UpdateGoingForGold()
     {
-        if (CheckIfIsNextToMine() && hasFinishedGoingToLastStep)
+        if (mineToGoForGold == null)
         {
-            isFollowingPath = false;
-            isGoingForGold = false;
-            TakeGold();
+            CancelGatheringGold();
         }
-        else if (!isFollowingPath)
+        else
         {
-            GoForGold(mineToGoForGold);
+            if (CheckIfIsNextToMine() && hasFinishedGoingToLastStep)
+            {
+                isFollowingPath = false;
+                isGoingForGold = false;
+                TakeGold();
+            }
+            else if (!isFollowingPath)
+            {
+                GoForGold(mineToGoForGold);
+            }
         }
     }
 
@@ -185,25 +193,32 @@ public class Worker : Unit
     public void GoForGold(Mine mine)
     {
         mineToGoForGold = mine;
-        IntVector2 placeToGoInToMine = MapGridded.Instance.GetStrictFirstFreePlaceAround(MapGridded.WorldToMapPosition(mine.transform.position), 2, 2);
-        if (placeToGoInToMine != null)
+        List<MapGridElement> pathToMine = ASTARPathfinder.Instance.FindPathForMine(positionInGrid, mine);
+        if (pathToMine != null)
         {
-            RequestGoTo(placeToGoInToMine);
+            RequestGoTo(pathToMine);
         }
         isGoingForGold = true;
     }
 
     public void UpdateReturningWithGold()
     {
-        if (CheckIfIsNextToCastleToReturnGoods() && hasFinishedGoingToLastStep)
+        if (castleToReturnWithGoods == null)
         {
-            isFollowingPath = false;
-            isReturningWithGold = false;
-            RpcGiveGold();
+            CancelGatheringGold();
         }
-        else if (!isFollowingPath)
+        else
         {
-            ReturnWithGold();
+            if (CheckIfIsNextToCastleToReturnGoods() && hasFinishedGoingToLastStep)
+            {
+                isFollowingPath = false;
+                isReturningWithGold = false;
+                RpcGiveGold();
+            }
+            else if (!isFollowingPath)
+            {
+                ReturnWithGold();
+            }
         }
     }
 
@@ -240,14 +255,23 @@ public class Worker : Unit
 
     public IEnumerator GivingGold()
     {
+        castleToReturnWithGoods.visiters.Add(this);
         yield return new WaitForSeconds(timeOfGivingGold);
+        castleToReturnWithGoods.visiters.Remove(this);
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).goldAmount += takenGoldAmount;
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).allGatheredGold += takenGoldAmount;
         takenGoldAmount = 0;
         IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         RpcShowYourself();
-        GoForGold(mineToGoForGold);
+        if (mineToGoForGold == null)
+        {
+            CancelGatheringGold();
+        }
+        else
+        {
+            GoForGold(mineToGoForGold);
+        }
     }
 
     public void ReturnWithGold()
@@ -288,7 +312,7 @@ public class Worker : Unit
             isGoingForLumber = false;
             if (lumberToCut.IsDepleted || lumberToCut.isBeingCut)
             {
-                GoForNewLumber();
+                GoForLumber();
             }
             else
             {
@@ -297,7 +321,7 @@ public class Worker : Unit
         }
         else if (!isFollowingPath)
         {
-            GoForLumber(lumberToCut);
+            GoForLumber();
         }
     }
 
@@ -340,6 +364,22 @@ public class Worker : Unit
         isGoingForLumber = true;
     }
 
+    public void GoForLumber()
+    {
+        LumberInGame lumberToCut;
+        List<MapGridElement> pathForLumber = ASTARPathfinder.Instance.FindPathForLumber(positionInGrid, out lumberToCut);
+        if (pathForLumber != null)
+        {
+            RequestGoTo(pathForLumber);
+            this.lumberToCut = lumberToCut;
+            isGoingForLumber = true;
+        }
+        else
+        {
+            isGoingForLumber = false;
+        }
+    }
+
     public void TakeLumber()
     {
         GatherLumberCoroutine = StartCoroutine(GatherLumber());
@@ -348,7 +388,9 @@ public class Worker : Unit
     private IEnumerator GatherLumber()
     {
         lumberToCut.isBeingCut = true;
+        isCuttingLumber = true;
         yield return new WaitForSeconds(timeOfGatheringLumber);
+        isCuttingLumber = false;
         takenLumberAmount = 50;
         lumberToCut.RpcDeplete();
         ReturnWithLumber();
@@ -414,14 +456,16 @@ public class Worker : Unit
 
     public IEnumerator GivingLumber()
     {
+        castleToReturnWithGoods.visiters.Add(this);
         yield return new WaitForSeconds(timeOfGivingLumber);
+        castleToReturnWithGoods.visiters.Remove(this);
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).lumberAmount += takenLumberAmount;
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).allGatheredLumber += takenLumberAmount;
         takenLumberAmount = 0;
         IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         RpcShowYourself();
-        GoForLumber(lumberToCut);
+        GoForLumber();
     }
 
     public void PrepareBuild(Building buildingToBuildPrefab)
@@ -507,7 +551,10 @@ public class Worker : Unit
     {
         isGoingForLumber = false;
         isReturningWithLumber = false;
-
+        if (isCuttingLumber)
+        {
+            lumberToCut.isBeingCut = false;
+        }
         if (GatherLumberCoroutine != null)
         {
             StopCoroutine(GatherLumberCoroutine);

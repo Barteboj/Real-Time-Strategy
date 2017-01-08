@@ -24,6 +24,24 @@ public class MapGridElement
         }
     }
 
+    public bool isGoodForPath
+    {
+        get
+        {
+            return (unit == null || !unit.isMoving) && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
+        }
+    }
+
+    public bool CheckIfIsGoodForPath(IntVector2 pathStartPosition)
+    {
+        return (this.unit == null || ((Mathf.Abs(this.unit.positionInGrid.x - pathStartPosition.x) > 1 || Mathf.Abs(this.unit.positionInGrid.y - pathStartPosition.y) > 1) && this.unit.isMoving)) && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
+    }
+
+    public bool ChecklIfIsWalkableForUnit(Unit unit)
+    {
+        return (this.unit == null || this.unit == unit) && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
+    }
+
     public void ShowCanBuildIndicator()
     {
         canBuildIndicator.GetComponent<SpriteRenderer>().enabled = true;
