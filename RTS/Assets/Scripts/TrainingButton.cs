@@ -14,7 +14,7 @@ public class TrainingButton : ActionButton
 
     public override void GiveActionButtonsControllerToExecuteOnServer()
     {
-        MultiplayerController.Instance.localPlayer.actionButtonsController.CmdExecuteButtonAction(buttonType, MultiplayerController.Instance.localPlayer.selectController.selectedBuilding.GetComponent<NetworkIdentity>());
+        MultiplayerController.Instance.localPlayer.actionButtonsController.CmdExecuteButtonAction(buttonType, MultiplayerController.Instance.localPlayer.selector.selectedBuilding.GetComponent<NetworkIdentity>());
     }
 
     public override void Act(GameObject executioner)

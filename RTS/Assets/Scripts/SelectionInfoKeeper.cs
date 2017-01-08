@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SelectionInfoKeeper : MonoBehaviour
 {
     public Text unitName;
-    public Text unitLevel;
+    public Text unitLevelValueText;
     public Image unitPortrait;
     public GameObject viewGameObject;
     public Text actualHealth;
@@ -26,6 +27,8 @@ public class SelectionInfoKeeper : MonoBehaviour
     public GameObject goldLeftInfoGameObject;
 
     public Text goldLeftAmountText;
+
+    public List<Selection> selections;
 
     private static SelectionInfoKeeper instance;
 
@@ -79,7 +82,7 @@ public class SelectionInfoKeeper : MonoBehaviour
     public void Assign(Unit unit)
     {
         unitName.text = unit.unitName;
-        unitLevel.text = unit.level.ToString();
+        unitLevelValueText.text = unit.level.ToString();
         unitPortrait.sprite = unit.portrait;
         actualHealth.text = unit.actualHealth.ToString();
         maxHealth.text = unit.maxHealth.ToString();
@@ -88,7 +91,7 @@ public class SelectionInfoKeeper : MonoBehaviour
     public void Assign(Building building)
     {
         unitName.text = building.buildingName;
-        unitLevel.text = building.level.ToString();
+        unitLevelValueText.text = building.level.ToString();
         unitPortrait.sprite = building.portrait;
         actualHealth.text = building.actualHealth.ToString();
         maxHealth.text = building.maxHealth.ToString();

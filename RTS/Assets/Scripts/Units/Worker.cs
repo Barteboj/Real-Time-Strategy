@@ -109,9 +109,10 @@ public class Worker : Unit
     [ClientRpc]
     void RpcSelectBuildedBuilding(NetworkIdentity buildingNetworkIdentity)
     {
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selectController.SelectBuildingLocally(buildingNetworkIdentity.GetComponent<Building>());
+            MultiplayerController.Instance.localPlayer.selector.UnSelectAll();
+            MultiplayerController.Instance.localPlayer.selector.Select(buildingNetworkIdentity.GetComponent<Building>());
         }
     }
 
@@ -130,7 +131,7 @@ public class Worker : Unit
     [ClientRpc]
     void RpcShowBuildButtons()
     {
-        if (MultiplayerController.Instance.localPlayer.playerType == owner)
+        if (MultiplayerController.Instance.localPlayer.playerType == owner && MultiplayerController.Instance.localPlayer.selector.selectedUnits.Count == 1 && MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
         {
             ShowBuildButtons();
         }
@@ -222,11 +223,9 @@ public class Worker : Unit
     [ClientRpc]
     void RpcGiveGold()
     {
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selectController.Unselect();
-            SelectionInfoKeeper.Instance.Hide();
-            Unselect();
+            MultiplayerController.Instance.localPlayer.selector.Unselect(this);
         }
         if (isServer)
         {
@@ -396,11 +395,9 @@ public class Worker : Unit
     [ClientRpc]
     void RpcGiveLumber()
     {
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selectController.Unselect();
-            SelectionInfoKeeper.Instance.Hide();
-            Unselect();
+            MultiplayerController.Instance.localPlayer.selector.Unselect(this);
         }
         if (isServer)
         {
@@ -429,7 +426,10 @@ public class Worker : Unit
 
     public void PrepareBuild(Building buildingToBuildPrefab)
     {
-        HideBuildButtons();
+        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Count == 1 && MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+        {
+            HideBuildButtons();
+        }
         haveFinishedPlacingBuilding = false;
         isSelectingPlaceForBuilding = true;
         this.buildingToBuild = Instantiate(buildingToBuildPrefab);

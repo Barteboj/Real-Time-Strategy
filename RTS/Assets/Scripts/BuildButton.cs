@@ -29,7 +29,7 @@ public class BuildButton : ActionButton
     public override void GiveActionButtonsControllerToExecuteOnServer()
     {
         
-        Unit actingUnit = MultiplayerController.Instance.localPlayer.selectController.selectedUnit;
+        Unit actingUnit = MultiplayerController.Instance.localPlayer.selector.selectedUnits[0];
         Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, actingUnit.owner).GetComponent<Building>();
         if (buildingToBuild.goldCost > MultiplayerController.Instance.players.Find(item => item.playerType == actingUnit.owner).goldAmount)
         {
@@ -37,7 +37,7 @@ public class BuildButton : ActionButton
         }
         else
         {
-            MultiplayerController.Instance.localPlayer.selectController.PlaceBuilding(buildingType);
+            MultiplayerController.Instance.localPlayer.commander.PlaceBuilding(buildingType);
         }
     }
 }

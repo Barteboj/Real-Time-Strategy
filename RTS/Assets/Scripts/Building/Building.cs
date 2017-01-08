@@ -64,7 +64,7 @@ public class Building : NetworkBehaviour
     public float criticalDamageFactor = 0.3f;
 
     [SyncVar]
-    private float actualBuildTime = 0f;
+    public float actualBuildTime = 0f;
 
     public void OnChangeActualHealth(int newValue)
     {
@@ -107,16 +107,16 @@ public class Building : NetworkBehaviour
                 UpdateTrainingProcess();
             }
         }
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
-        {
-            ShowActualInfo();
-        }
     }
 
     public void UpdateBuildingProcess()
     {
         actualBuildTime += Time.deltaTime;
-        actualHealth = Mathf.RoundToInt(actualBuildTime / buildTime * maxHealth);
+        actualHealth =  Mathf.RoundToInt(actualBuildTime / buildTime * maxHealth);
+        if (actualHealth > maxHealth)
+        {
+            actualHealth = maxHealth;
+        }
         if (actualBuildTime >= buildTime)
         {
             FinishBuild();
@@ -136,18 +136,10 @@ public class Building : NetworkBehaviour
         buildField.SetActive(false);
         isInBuildingProcess = false;
         isBuilded = true;
-        actualHealth = maxHealth;
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this && MultiplayerController.Instance.localPlayer.playerType == owner)
         {
-            SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
             SelectionInfoKeeper.Instance.HideBuildCompletitionBar();
-            if (buttonTypes != null)
-            {
-                foreach (ActionButtonType buttonType in buttonTypes)
-                {
-                    ActionButtons.Instance.buttons.Find(button => button.buttonType == buttonType).Show();
-                }
-            }
+            MultiplayerController.Instance.localPlayer.actionButtonsController.ShowButtons(this);
         }
     }
 
@@ -175,18 +167,10 @@ public class Building : NetworkBehaviour
     {
         if (MultiplayerController.Instance.localPlayer.playerType == owner)
         {
-            if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
+            if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this)
             {
                 SelectionInfoKeeper.Instance.HideTrainingInfo();
-
-                foreach (ActionButtonType buttonType in buttonTypes)
-                {
-                    ActionButton button = ActionButtons.Instance.buttons.Find(item => item.buttonType == buttonType);
-                    if (button.GetType() == typeof(TrainingButton))
-                    {
-                        button.Show();
-                    }
-                }
+                MultiplayerController.Instance.localPlayer.actionButtonsController.ShowButtons(this);
             }
             isTraining = false;
         }
@@ -278,7 +262,7 @@ public class Building : NetworkBehaviour
         }
         selectionIndicator.SetActive(true);
         SelectionInfoKeeper.Instance.unitName.text = buildingName;
-        SelectionInfoKeeper.Instance.unitLevel.text = level.ToString();
+        SelectionInfoKeeper.Instance.unitLevelValueText.text = level.ToString();
         if (actualBuildTime < buildTime)
         {
             SelectionInfoKeeper.Instance.SetCompletitionBar(actualBuildTime / buildTime);
@@ -326,7 +310,7 @@ public class Building : NetworkBehaviour
     [ClientRpc]
     void RpcUnselect()
     {
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this)
         {
             Unselect();
         }
@@ -454,9 +438,9 @@ public class Building : NetworkBehaviour
         {
             if (actualBuildTime > 0f)
             {
-                if (MultiplayerController.Instance.localPlayer.selectController.selectedBuilding == this)
+                if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this)
                 {
-                    Unselect();
+                    MultiplayerController.Instance.localPlayer.selector.Unselect(this);
                 }
                 MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Remove(this);
             }
@@ -465,8 +449,6 @@ public class Building : NetworkBehaviour
 
     public virtual void DestroyYourself()
     {
-        //RpcUnselect();
-        //RpcRemoveFromPlayerBuildings();
         NetworkServer.Destroy(gameObject);
     }
 }

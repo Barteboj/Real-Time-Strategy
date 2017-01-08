@@ -95,11 +95,9 @@ public class Mine : NetworkBehaviour
     {
         miners.Add(visiter);
         spriteRenderer.sprite = visitedSprite;
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == visiter)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(visiter))
         {
-            MultiplayerController.Instance.localPlayer.selectController.Unselect();
-            SelectionInfoKeeper.Instance.Hide();
-            visiter.Unselect();
+            MultiplayerController.Instance.localPlayer.selector.Unselect(visiter);
         }
         visiter.RpcClearPositionInGrid();
         visiter.RpcHideYourself();
@@ -112,11 +110,9 @@ public class Mine : NetworkBehaviour
     {
         Worker visiter = visiterNetworkIdentity.GetComponent<Worker>();
         spriteRenderer.sprite = visitedSprite;
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == visiter)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(visiter))
         {
-            MultiplayerController.Instance.localPlayer.selectController.Unselect();
-            SelectionInfoKeeper.Instance.Hide();
-            visiter.Unselect();
+            MultiplayerController.Instance.localPlayer.selector.Unselect(visiter);
         }
     }
 
@@ -151,35 +147,35 @@ public class Mine : NetworkBehaviour
         LeaveMine(miner);
     }
 
-    public void Select()
+    /*public void Select()
     {
         selectionIndicator.SetActive(true);
         SelectionInfoKeeper.Instance.unitName.text = mineName;
         SelectionInfoKeeper.Instance.goldLeftAmountText.text = goldLeft.ToString();
-        SelectionInfoKeeper.Instance.unitLevel.enabled = false;
+        SelectionInfoKeeper.Instance.unitLevelValueText.enabled = false;
         SelectionInfoKeeper.Instance.maxHealth.enabled = false;
         SelectionInfoKeeper.Instance.actualHealth.enabled = false;
         SelectionInfoKeeper.Instance.healthInfoGameObject.SetActive(false);
         SelectionInfoKeeper.Instance.levelInfoGameObject.SetActive(false);
         SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(true);
         SelectionInfoKeeper.Instance.unitPortrait.sprite = portrait;
-        MultiplayerController.Instance.localPlayer.selectController.selectedUnit = null;
-        MultiplayerController.Instance.localPlayer.selectController.selectedBuilding = null;
-        MultiplayerController.Instance.localPlayer.selectController.selectedMine = this;
+        MultiplayerController.Instance.localPlayer.commander.selectedUnit = null;
+        MultiplayerController.Instance.localPlayer.commander.selectedBuilding = null;
+        MultiplayerController.Instance.localPlayer.commander.selectedMine = this;
         SelectionInfoKeeper.Instance.Show();
     }
 
     public void Unselect()
     {
         selectionIndicator.SetActive(false);
-        SelectionInfoKeeper.Instance.unitLevel.enabled = true;
+        SelectionInfoKeeper.Instance.unitLevelValueText.enabled = true;
         SelectionInfoKeeper.Instance.maxHealth.enabled = true;
         SelectionInfoKeeper.Instance.actualHealth.enabled = true;
         SelectionInfoKeeper.Instance.healthInfoGameObject.SetActive(true);
         SelectionInfoKeeper.Instance.levelInfoGameObject.SetActive(true);
         SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(false);
         SelectionInfoKeeper.Instance.Hide();
-    }
+    }*/
 
     public bool CheckIfIsWithinMine(IntVector2 mapPosition)
     {

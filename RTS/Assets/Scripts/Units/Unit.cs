@@ -97,10 +97,10 @@ public class Unit : NetworkBehaviour
                 FollowPath();
             }
         }
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
+        /*if (MultiplayerController.Instance.localPlayer.commander.selectedUnit == this)
         {
             ShowActualInfo();
-        }
+        }*/
     }
 
     public void ShowActualInfo()
@@ -122,6 +122,12 @@ public class Unit : NetworkBehaviour
         }
     }
 
+    public void ShowExtraInfo()
+    {
+        SelectionInfoKeeper.Instance.unitName.text = unitName;
+        SelectionInfoKeeper.Instance.unitLevelValueText.text = level.ToString();
+    }
+
     public void OnChangePositionInGridSyncVar(Vector2 newPosition)
     {
         if (positionInGrid != null)
@@ -135,10 +141,6 @@ public class Unit : NetworkBehaviour
     void OnActualHealthChange(int newValue)
     {
         actualHealth = newValue;
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
-        {
-            SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
-        }
     }
 
     public virtual void GetHit(int damage, Warrior attacker)
@@ -174,11 +176,9 @@ public class Unit : NetworkBehaviour
 
     public virtual void Die()
     {
-        if (MultiplayerController.Instance.localPlayer.selectController.selectedUnit == this)
+        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selectController.Unselect();
-            SelectionInfoKeeper.Instance.Hide();
-            Unselect();
+            MultiplayerController.Instance.localPlayer.selector.Unselect(this);
         }
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodAmount -= foodCost;
         NetworkServer.Destroy(gameObject);
@@ -186,8 +186,12 @@ public class Unit : NetworkBehaviour
 
     private void OnDestroy()
     {
-        if (MultiplayerController.Instance != null)
+        if (MultiplayerController.Instance != null && SelectionInfoKeeper.Instance != null)
         {
+            if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+            {
+                MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+            }
             MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeUnits.Remove(this);
         }
     }
@@ -361,12 +365,6 @@ public class Unit : NetworkBehaviour
     public void RpcSetNewPosition(Vector2 position)
     {
         gameObject.transform.position = position;
-    }
-
-    public void Unselect()
-    {
-        selectionIndicator.SetActive(false);
-        SelectionInfoKeeper.Instance.Hide();
     }
 
     public bool CheckIfCanGoTo(IntVector2 targetPosition)

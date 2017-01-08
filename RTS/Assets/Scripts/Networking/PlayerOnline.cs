@@ -36,7 +36,8 @@ public class PlayerOnline : NetworkBehaviour
     public int foodAmount;
     [SyncVar(hook = "OnFoodMaxAmountChange")]
     public int foodMaxAmount;
-    public SelectController selectController;
+    public Commander commander;
+    public Selector selector;
     public ActionButtonsController actionButtonsController;
 
     void Awake()

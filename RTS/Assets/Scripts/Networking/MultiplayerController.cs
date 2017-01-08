@@ -12,7 +12,9 @@ public class MultiplayerController : NetworkBehaviour
     public int startingGold;
     public int startingLumber;
     public Color[] playerColors;
+    [SyncVar]
     public bool isGameInitialized = false;
+    [SyncVar]
     public bool hasGameEnded = false;
     public string mapName;
 
@@ -51,10 +53,17 @@ public class MultiplayerController : NetworkBehaviour
             if (players.Find(item => item.activeUnits.Count == 0 && item.activeBuildings.Count == 0) != null)
             {
                 winner = players.Find(item => item.activeUnits.Count > 0 || item.activeBuildings.Count > 0).playerType;
+                RpcTurnOffSelectors();
                 NetworkManager.singleton.ServerChangeScene("Ending");
                 hasGameEnded = true;
             }
         }
+    }
+
+    [ClientRpc]
+    void RpcTurnOffSelectors()
+    {
+        localPlayer.selector.enabled = false;
     }
 
     public void StartGame()

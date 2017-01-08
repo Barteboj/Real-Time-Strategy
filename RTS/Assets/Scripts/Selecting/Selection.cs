@@ -11,6 +11,8 @@ public class Selection : MonoBehaviour
     public Text maxHealthText;
     public Unit selectedUnit;
     public Building selectedBuilding;
+    public Mine selectedMine;
+    public GameObject healthInfoGameObject;
 
     private void Update()
     {
@@ -21,6 +23,18 @@ public class Selection : MonoBehaviour
         else if (selectedBuilding != null)
         {
             UpdateBuildingSelectionView();
+        }
+        else if (selectedMine != null)
+        {
+            UpdateMineSelectionView();
+        }
+    }
+
+    public bool IsSomethingSelected
+    {
+        get
+        {
+            return selectedBuilding != null || selectedUnit != null || selectedMine != null;
         }
     }
 
@@ -47,14 +61,14 @@ public class Selection : MonoBehaviour
     public void UpdateBuildingSelectionView()
     {
         portrait.sprite = selectedBuilding.portrait;
-        actualHealthText.text = selectedBuilding.actualHealth.ToString();
         maxHealthText.text = selectedBuilding.maxHealth.ToString();
+        actualHealthText.text = selectedBuilding.actualHealth.ToString();
         healthBar.fillAmount = (float)selectedBuilding.actualHealth / selectedBuilding.maxHealth;
-        if (healthBar.fillAmount <= selectedBuilding.criticalDamageFactor)
+        if ((float)selectedBuilding.actualHealth / selectedBuilding.maxHealth < selectedBuilding.criticalDamageFactor)
         {
             healthBar.color = Color.red;
         }
-        else if (healthBar.fillAmount <= selectedBuilding.averageDamageFactor)
+        else if ((float)selectedBuilding.actualHealth / selectedBuilding.maxHealth < selectedBuilding.averageDamageFactor)
         {
             healthBar.color = Color.yellow;
         }
@@ -62,6 +76,22 @@ public class Selection : MonoBehaviour
         {
             healthBar.color = Color.green;
         }
+        if (MultiplayerController.Instance.localPlayer.playerType == selectedBuilding.owner)
+        {
+            if (selectedBuilding.actualBuildTime < selectedBuilding.buildTime)
+            {
+                SelectionInfoKeeper.Instance.SetCompletitionBar(selectedBuilding.actualBuildTime / selectedBuilding.buildTime);
+            }
+            if (selectedBuilding.isTraining)
+            {
+                SelectionInfoKeeper.Instance.SetTrainingBar(selectedBuilding.actualTrainingTime / selectedBuilding.trainedUnit.trainingTime);
+            }
+        }
+    }
+
+    public void UpdateMineSelectionView()
+    {
+        portrait.sprite = selectedMine.portrait;
     }
 
     public void ShowSelection()
@@ -74,10 +104,27 @@ public class Selection : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void SelectUnit(Unit unit)
+    public void Select(Unit unit)
     {
+        healthInfoGameObject.SetActive(true);
         selectedUnit = unit;
         UpdateUnitSelectionView();
+        ShowSelection();
+    }
+
+    public void Select(Building building)
+    {
+        healthInfoGameObject.SetActive(true);
+        selectedBuilding = building;
+        UpdateBuildingSelectionView();
+        ShowSelection();
+    }
+
+    public void Select(Mine mine)
+    {
+        healthInfoGameObject.SetActive(true);
+        selectedMine = mine;
+        UpdateMineSelectionView();
         ShowSelection();
     }
 
@@ -85,6 +132,7 @@ public class Selection : MonoBehaviour
     {
         selectedUnit = null;
         selectedBuilding = null;
+        selectedMine = null;
         HideSelection();
     }
 }
