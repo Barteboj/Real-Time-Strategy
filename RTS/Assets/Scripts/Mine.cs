@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class Mine : NetworkBehaviour
 {
+    private bool toDestroy = false;
+
     public Sprite nonVisitedSprite;
     public Sprite visitedSprite;
     public SpriteRenderer spriteRenderer;
@@ -45,6 +47,14 @@ public class Mine : NetworkBehaviour
         FillPositionInGrid();
     }
 
+    private void Update()
+    {
+        if (toDestroy && miners.Count == 0)
+        {
+            Deplete();
+        }
+    }
+
     public void OnGoldLeftChange(int newValue)
     {
         goldLeft = newValue;
@@ -82,7 +92,7 @@ public class Mine : NetworkBehaviour
         {
             amount = goldLeft;
             goldLeft = 0;
-            Deplete();
+            toDestroy = true;
         }
         else
         {
@@ -125,6 +135,7 @@ public class Mine : NetworkBehaviour
         }
         IntVector2 firstFreePlaceOnMapAroundMine = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(gameObject.transform.position), width, height);
         visiter.SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundMine);
+        visiter.RpcMoveFromTo(visiter.transform.position, visiter.transform.position);
         visiter.RpcShowYourself();
         visiter.ReturnWithGold();
     }

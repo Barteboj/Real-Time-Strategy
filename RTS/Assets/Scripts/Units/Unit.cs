@@ -265,11 +265,17 @@ public class Unit : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcMoveFromTo(Vector2 startingPosition, Vector2 goalPosition)
+    public void RpcMoveFromTo(Vector2 startingPosition, Vector2 goalPosition)
     {
         gameObject.transform.position = startingPosition;
         this.goalPosition = goalPosition;
         isMoving = true;
+    }
+
+    [ClientRpc]
+    public void RpcStopMoving()
+    {
+        isMoving = false;
     }
 
     public virtual void FollowPath()
@@ -315,7 +321,23 @@ public class Unit : NetworkBehaviour
     public void SetNewPositionOnMapSettingWorldPosition(IntVector2 newPosition)
     {
         positionInGridSyncVar = new Vector2(newPosition.x, newPosition.y);
+        if (positionInGrid != null)
+        {
+            ClearPositionInGrid();
+        }
+        positionInGrid = new IntVector2((int)newPosition.x, (int)newPosition.y);
+        FillPositionInGrid();
         gameObject.transform.position = MapGridded.MapToWorldPosition(newPosition);
+    }
+
+    [ClientRpc]
+    public void RpcSetNewPositionOnMapSettingWorldPosition(Vector2 newPosition)
+    {
+        if (isServer)
+        {
+            positionInGridSyncVar = newPosition;
+        }
+        gameObject.transform.position = newPosition;
     }
 
     public void SetNewPositionOnMap(IntVector2 newPosition)

@@ -44,21 +44,21 @@ public class Warrior : Unit
             List<MapGridElement> shortestPath;
             if (attackedUnit != null)
             {
-                shortestPath = ASTARPathfinder.Instance.FindPath(positionInGrid, MapGridded.Instance.GetStrictFirstFreePlaceAround(MapGridded.WorldToMapPosition(attackedUnit.transform.position), 1, 1));
+                shortestPath = ASTARPathfinder.Instance.FindPathForUnit(positionInGrid, attackedUnit);
             }
             else
             {
-                shortestPath = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(attackedBuilding.transform.position), attackedBuilding.width, attackedBuilding.height);
+                shortestPath = ASTARPathfinder.Instance.FindPathForBuilding(positionInGrid, attackedBuilding);
             }
             if (shortestPath != null)
             {
                 if (shortestPath.Count == 0)
                 {
-                    RequestGoTo(positionInGrid);
+                    RequestGoTo(shortestPath);
                 }
                 else
                 {
-                    RequestGoTo(new IntVector2(shortestPath[shortestPath.Count - 1].x, shortestPath[shortestPath.Count - 1].y));
+                    RequestGoTo(shortestPath);
                 }
             }
         }

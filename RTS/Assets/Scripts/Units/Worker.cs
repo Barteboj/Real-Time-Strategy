@@ -192,13 +192,20 @@ public class Worker : Unit
 
     public void GoForGold(Mine mine)
     {
-        mineToGoForGold = mine;
-        List<MapGridElement> pathToMine = ASTARPathfinder.Instance.FindPathForMine(positionInGrid, mine);
-        if (pathToMine != null)
+        if (mine != null)
         {
-            RequestGoTo(pathToMine);
+            mineToGoForGold = mine;
+            List<MapGridElement> pathToMine = ASTARPathfinder.Instance.FindPathForMine(positionInGrid, mine);
+            if (pathToMine != null)
+            {
+                RequestGoTo(pathToMine);
+            }
+            isGoingForGold = true;
         }
-        isGoingForGold = true;
+        else
+        {
+            isGoingForGold = false;
+        }
     }
 
     public void UpdateReturningWithGold()
@@ -246,7 +253,9 @@ public class Worker : Unit
         {
             RpcClearPositionInGrid();
         }
-        HideYourself();
+        spriteRenderer.enabled = false;
+        selectionCollider.SetActive(false);
+        gameObject.GetComponent<MinimapElement>().Hide();
         if (isServer)
         {
             StartCoroutine(GivingGold());
@@ -263,32 +272,29 @@ public class Worker : Unit
         takenGoldAmount = 0;
         IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
+        RpcMoveFromTo(gameObject.transform.position, gameObject.transform.position);
         RpcShowYourself();
-        if (mineToGoForGold == null)
-        {
-            CancelGatheringGold();
-        }
-        else
-        {
-            GoForGold(mineToGoForGold);
-        }
+        FillPositionInGrid();
+        GoForGold(mineToGoForGold);
     }
 
     public void ReturnWithGold()
     {
         gameObject.GetComponent<MinimapElement>().Show();
-        castleToReturnWithGoods = FindNearestCastle();
+        List<MapGridElement> shortestPathToCastle = null;
+        if (MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Find(item => item.buildingType == BuildingType.Castle))
+        {
+            shortestPathToCastle = ASTARPathfinder.Instance.FindPathForNearestCastle(positionInGrid, owner, out castleToReturnWithGoods);
+        }
         if (castleToReturnWithGoods != null)
         {
-            List<MapGridElement> shortestPathToCastle;
-            shortestPathToCastle = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
             if (shortestPathToCastle != null && shortestPathToCastle.Count == 0)
             {
-                RequestGoTo(positionInGrid);
+                RequestGoTo(shortestPathToCastle);
             }
             else if (shortestPathToCastle != null)
             {
-                RequestGoTo(new IntVector2(shortestPathToCastle[shortestPathToCastle.Count - 1].x, shortestPathToCastle[shortestPathToCastle.Count - 1].y));
+                RequestGoTo(shortestPathToCastle);
             }
             StartReturningWithGold();
         }
@@ -398,21 +404,24 @@ public class Worker : Unit
 
     public void ReturnWithLumber()
     {
-        castleToReturnWithGoods = FindNearestCastle();
+        List<MapGridElement> shortestPathToCastle = null;
+        if (MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Find(item => item.buildingType == BuildingType.Castle))
+        {
+            shortestPathToCastle = ASTARPathfinder.Instance.FindPathForNearestCastle(positionInGrid, owner, out castleToReturnWithGoods);
+        }
         if (castleToReturnWithGoods != null)
         {
-            List<MapGridElement> shortestPathToCastle;
-            shortestPathToCastle = ASTARPathfinder.Instance.FindNearestEntrancePath(positionInGrid, MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
             if (shortestPathToCastle != null && shortestPathToCastle.Count == 0)
             {
-                RequestGoTo(positionInGrid);
+                RequestGoTo(shortestPathToCastle);
             }
             else if (shortestPathToCastle != null)
             {
-                RequestGoTo(new IntVector2(shortestPathToCastle[shortestPathToCastle.Count - 1].x, shortestPathToCastle[shortestPathToCastle.Count - 1].y));
+                RequestGoTo(shortestPathToCastle);
             }
             StartReturningWithLumber();
         }
+
     }
 
     public void StartReturningWithLumber()
@@ -422,15 +431,22 @@ public class Worker : Unit
 
     public void UpdateReturningWithLumber()
     {
-        if (CheckIfIsNextToCastleToReturnGoods() && hasFinishedGoingToLastStep)
+        if (castleToReturnWithGoods == null)
         {
-            isFollowingPath = false;
-            isReturningWithLumber = false;
-            RpcGiveLumber();
+            CancelGatheringLumber();
         }
-        else if (!isFollowingPath)
+        else
         {
-            ReturnWithLumber();
+            if (CheckIfIsNextToCastleToReturnGoods() && hasFinishedGoingToLastStep)
+            {
+                isFollowingPath = false;
+                isReturningWithLumber = false;
+                RpcGiveLumber();
+            }
+            else if (!isFollowingPath)
+            {
+                ReturnWithLumber();
+            }
         }
     }
 
@@ -464,6 +480,7 @@ public class Worker : Unit
         takenLumberAmount = 0;
         IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
+        RpcMoveFromTo(gameObject.transform.position, gameObject.transform.position);
         RpcShowYourself();
         GoForLumber();
     }
