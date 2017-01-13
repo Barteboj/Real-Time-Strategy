@@ -1,6 +1,6 @@
 MapSize 30 30
-Player1Position 0 0
-Player2Position 5 4
+Player1Position 3 4
+Player2Position 4 20
 Tile 0 0 Grass
 Tile 1 0 Grass
 Tile 2 0 Grass
@@ -16,8 +16,8 @@ Tile 11 0 Grass
 Tile 12 0 Grass
 Tile 13 0 Grass
 Tile 14 0 Grass
-Tile 15 0 Grass
-Tile 16 0 Grass
+Tile 15 0 Rocks
+Tile 16 0 Rocks
 Tile 17 0 Grass
 Tile 18 0 Grass
 Tile 19 0 Grass
@@ -46,8 +46,8 @@ Tile 11 1 Grass
 Tile 12 1 Grass
 Tile 13 1 Grass
 Tile 14 1 Grass
-Tile 15 1 Grass
-Tile 16 1 Grass
+Tile 15 1 Rocks
+Tile 16 1 Rocks
 Tile 17 1 Grass
 Tile 18 1 Grass
 Tile 19 1 Grass
@@ -76,8 +76,8 @@ Tile 11 2 Grass
 Tile 12 2 Grass
 Tile 13 2 Grass
 Tile 14 2 Grass
-Tile 15 2 Grass
-Tile 16 2 Grass
+Tile 15 2 Rocks
+Tile 16 2 Rocks
 Tile 17 2 Grass
 Tile 18 2 Grass
 Tile 19 2 Grass
@@ -106,8 +106,8 @@ Tile 11 3 Grass
 Tile 12 3 Grass
 Tile 13 3 Grass
 Tile 14 3 Grass
-Tile 15 3 Grass
-Tile 16 3 Grass
+Tile 15 3 Rocks
+Tile 16 3 Rocks
 Tile 17 3 Grass
 Tile 18 3 Grass
 Tile 19 3 Grass
@@ -136,8 +136,8 @@ Tile 11 4 Grass
 Tile 12 4 Grass
 Tile 13 4 Grass
 Tile 14 4 Grass
-Tile 15 4 Grass
-Tile 16 4 Grass
+Tile 15 4 Rocks
+Tile 16 4 Rocks
 Tile 17 4 Grass
 Tile 18 4 Grass
 Tile 19 4 Grass
@@ -166,8 +166,8 @@ Tile 11 5 Grass
 Tile 12 5 Grass
 Tile 13 5 Grass
 Tile 14 5 Grass
-Tile 15 5 Grass
-Tile 16 5 Grass
+Tile 15 5 Rocks
+Tile 16 5 Rocks
 Tile 17 5 Grass
 Tile 18 5 Grass
 Tile 19 5 Grass
@@ -317,7 +317,7 @@ Tile 12 10 Grass
 Tile 13 10 Grass
 Tile 14 10 Grass
 Tile 15 10 Grass
-Tile 16 10 Grass
+Tile 16 10 Rocks
 Tile 17 10 Grass
 Tile 18 10 Grass
 Tile 19 10 Grass
@@ -346,8 +346,8 @@ Tile 11 11 Grass
 Tile 12 11 Grass
 Tile 13 11 Grass
 Tile 14 11 Grass
-Tile 15 11 Grass
-Tile 16 11 Grass
+Tile 15 11 Rocks
+Tile 16 11 Rocks
 Tile 17 11 Grass
 Tile 18 11 Grass
 Tile 19 11 Grass
@@ -376,8 +376,8 @@ Tile 11 12 Grass
 Tile 12 12 Grass
 Tile 13 12 Grass
 Tile 14 12 Grass
-Tile 15 12 Grass
-Tile 16 12 Grass
+Tile 15 12 Rocks
+Tile 16 12 Rocks
 Tile 17 12 Grass
 Tile 18 12 Grass
 Tile 19 12 Grass
@@ -405,9 +405,9 @@ Tile 10 13 Grass
 Tile 11 13 Grass
 Tile 12 13 Grass
 Tile 13 13 Grass
-Tile 14 13 Grass
-Tile 15 13 Grass
-Tile 16 13 Grass
+Tile 14 13 Rocks
+Tile 15 13 Rocks
+Tile 16 13 Rocks
 Tile 17 13 Grass
 Tile 18 13 Grass
 Tile 19 13 Grass
@@ -432,12 +432,12 @@ Tile 7 14 Grass
 Tile 8 14 Grass
 Tile 9 14 Grass
 Tile 10 14 Grass
-Tile 11 14 Grass
-Tile 12 14 Grass
-Tile 13 14 Grass
-Tile 14 14 Grass
-Tile 15 14 Grass
-Tile 16 14 Grass
+Tile 11 14 Rocks
+Tile 12 14 Rocks
+Tile 13 14 Rocks
+Tile 14 14 Rocks
+Tile 15 14 Rocks
+Tile 16 14 Rocks
 Tile 17 14 Grass
 Tile 18 14 Grass
 Tile 19 14 Grass
@@ -463,11 +463,11 @@ Tile 8 15 Grass
 Tile 9 15 Grass
 Tile 10 15 Grass
 Tile 11 15 Grass
-Tile 12 15 Grass
-Tile 13 15 Grass
-Tile 14 15 Grass
-Tile 15 15 Grass
-Tile 16 15 Grass
+Tile 12 15 Rocks
+Tile 13 15 Rocks
+Tile 14 15 Rocks
+Tile 15 15 Rocks
+Tile 16 15 Rocks
 Tile 17 15 Grass
 Tile 18 15 Grass
 Tile 19 15 Grass
@@ -494,10 +494,10 @@ Tile 9 16 Grass
 Tile 10 16 Grass
 Tile 11 16 Grass
 Tile 12 16 Grass
-Tile 13 16 Grass
-Tile 14 16 Grass
-Tile 15 16 Grass
-Tile 16 16 Grass
+Tile 13 16 Rocks
+Tile 14 16 Rocks
+Tile 15 16 Rocks
+Tile 16 16 Rocks
 Tile 17 16 Grass
 Tile 18 16 Grass
 Tile 19 16 Grass
@@ -526,8 +526,8 @@ Tile 11 17 Grass
 Tile 12 17 Grass
 Tile 13 17 Grass
 Tile 14 17 Grass
-Tile 15 17 Grass
-Tile 16 17 Grass
+Tile 15 17 Rocks
+Tile 16 17 Rocks
 Tile 17 17 Grass
 Tile 18 17 Grass
 Tile 19 17 Grass
@@ -676,9 +676,9 @@ Tile 11 22 Grass
 Tile 12 22 Grass
 Tile 13 22 Grass
 Tile 14 22 Grass
-Tile 15 22 Grass
-Tile 16 22 Grass
-Tile 17 22 Grass
+Tile 15 22 Rocks
+Tile 16 22 Rocks
+Tile 17 22 Rocks
 Tile 18 22 Grass
 Tile 19 22 Grass
 Tile 20 22 Grass
@@ -706,9 +706,9 @@ Tile 11 23 Grass
 Tile 12 23 Grass
 Tile 13 23 Grass
 Tile 14 23 Grass
-Tile 15 23 Grass
-Tile 16 23 Grass
-Tile 17 23 Grass
+Tile 15 23 Rocks
+Tile 16 23 Rocks
+Tile 17 23 Rocks
 Tile 18 23 Grass
 Tile 19 23 Grass
 Tile 20 23 Grass
@@ -736,9 +736,9 @@ Tile 11 24 Grass
 Tile 12 24 Grass
 Tile 13 24 Grass
 Tile 14 24 Grass
-Tile 15 24 Grass
-Tile 16 24 Grass
-Tile 17 24 Grass
+Tile 15 24 Rocks
+Tile 16 24 Rocks
+Tile 17 24 Rocks
 Tile 18 24 Grass
 Tile 19 24 Grass
 Tile 20 24 Grass
@@ -766,9 +766,9 @@ Tile 11 25 Grass
 Tile 12 25 Grass
 Tile 13 25 Grass
 Tile 14 25 Grass
-Tile 15 25 Grass
-Tile 16 25 Grass
-Tile 17 25 Grass
+Tile 15 25 Rocks
+Tile 16 25 Rocks
+Tile 17 25 Rocks
 Tile 18 25 Grass
 Tile 19 25 Grass
 Tile 20 25 Grass
@@ -796,9 +796,9 @@ Tile 11 26 Grass
 Tile 12 26 Grass
 Tile 13 26 Grass
 Tile 14 26 Grass
-Tile 15 26 Grass
-Tile 16 26 Grass
-Tile 17 26 Grass
+Tile 15 26 Rocks
+Tile 16 26 Rocks
+Tile 17 26 Rocks
 Tile 18 26 Grass
 Tile 19 26 Grass
 Tile 20 26 Grass
@@ -826,9 +826,9 @@ Tile 11 27 Grass
 Tile 12 27 Grass
 Tile 13 27 Grass
 Tile 14 27 Grass
-Tile 15 27 Grass
-Tile 16 27 Grass
-Tile 17 27 Grass
+Tile 15 27 Rocks
+Tile 16 27 Rocks
+Tile 17 27 Rocks
 Tile 18 27 Grass
 Tile 19 27 Grass
 Tile 20 27 Grass
@@ -856,9 +856,9 @@ Tile 11 28 Grass
 Tile 12 28 Grass
 Tile 13 28 Grass
 Tile 14 28 Grass
-Tile 15 28 Grass
-Tile 16 28 Grass
-Tile 17 28 Grass
+Tile 15 28 Rocks
+Tile 16 28 Rocks
+Tile 17 28 Rocks
 Tile 18 28 Grass
 Tile 19 28 Grass
 Tile 20 28 Grass
@@ -886,9 +886,9 @@ Tile 11 29 Grass
 Tile 12 29 Grass
 Tile 13 29 Grass
 Tile 14 29 Grass
-Tile 15 29 Grass
-Tile 16 29 Grass
-Tile 17 29 Grass
+Tile 15 29 Rocks
+Tile 16 29 Rocks
+Tile 17 29 Rocks
 Tile 18 29 Grass
 Tile 19 29 Grass
 Tile 20 29 Grass
@@ -901,3 +901,132 @@ Tile 26 29 Grass
 Tile 27 29 Grass
 Tile 28 29 Grass
 Tile 29 29 Grass
+GoldMine 10 7
+GoldMine 8 22
+Lumber 1 25
+Lumber 2 25
+Lumber 3 25
+Lumber 3 26
+Lumber 4 26
+Lumber 2 26
+Lumber 1 26
+Lumber 0 26
+Lumber 5 26
+Lumber 6 26
+Lumber 7 26
+Lumber 8 26
+Lumber 9 26
+Lumber 10 26
+Lumber 10 27
+Lumber 9 27
+Lumber 8 27
+Lumber 7 27
+Lumber 6 27
+Lumber 5 27
+Lumber 4 27
+Lumber 3 27
+Lumber 2 27
+Lumber 5 28
+Lumber 6 28
+Lumber 7 28
+Lumber 8 28
+Lumber 9 28
+Lumber 10 28
+Lumber 4 28
+Lumber 3 28
+Lumber 2 29
+Lumber 1 29
+Lumber 0 29
+Lumber 3 29
+Lumber 5 29
+Lumber 2 28
+Lumber 1 28
+Lumber 0 28
+Lumber 1 27
+Lumber 6 29
+Lumber 7 29
+Lumber 8 29
+Lumber 4 29
+Lumber 10 29
+Lumber 11 29
+Lumber 9 29
+Lumber 0 18
+Lumber 1 18
+Lumber 1 17
+Lumber 2 17
+Lumber 3 17
+Lumber 4 17
+Lumber 5 17
+Lumber 6 16
+Lumber 7 16
+Lumber 8 16
+Lumber 9 16
+Lumber 9 15
+Lumber 8 15
+Lumber 7 15
+Lumber 6 15
+Lumber 5 16
+Lumber 4 16
+Lumber 5 15
+Lumber 3 16
+Lumber 2 16
+Lumber 0 17
+Lumber 1 16
+Lumber 1 15
+Lumber 0 15
+Lumber 2 15
+Lumber 3 15
+Lumber 4 15
+Lumber 2 14
+Lumber 3 14
+Lumber 4 14
+Lumber 5 14
+Lumber 6 14
+Lumber 1 14
+Lumber 7 14
+Lumber 8 14
+Lumber 9 14
+Lumber 10 14
+Lumber 0 2
+Lumber 0 1
+Lumber 1 1
+Lumber 2 1
+Lumber 2 0
+Lumber 3 0
+Lumber 4 0
+Lumber 5 0
+Lumber 8 0
+Lumber 7 0
+Lumber 6 0
+Lumber 3 1
+Lumber 4 1
+Lumber 9 0
+Lumber 10 0
+Lumber 11 0
+Lumber 8 1
+Lumber 7 1
+Lumber 0 11
+Lumber 1 11
+Lumber 2 11
+Lumber 3 11
+Lumber 3 12
+Lumber 4 12
+Lumber 5 12
+Lumber 5 13
+Lumber 6 13
+Lumber 7 13
+Lumber 8 13
+Lumber 4 13
+Lumber 3 13
+Lumber 2 13
+Lumber 1 12
+Lumber 1 13
+Lumber 2 12
+Lumber 0 12
+Lumber 0 13
+Lumber 0 14
+Lumber 0 16
+Lumber 1 0
+Lumber 0 0
+Lumber 5 1
+Lumber 6 1

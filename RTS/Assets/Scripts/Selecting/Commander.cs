@@ -32,13 +32,25 @@ public class Commander : NetworkBehaviour
                         ((Worker)selectedUnit).CancelGatheringGold();
                         ((Worker)selectedUnit).CancelGatheringLumber();
                         RaycastHit2D hitInfo = Physics2D.GetRayIntersection(new Ray((Vector3)mousePositionInWorld - Vector3.forward, Vector3.forward), Mathf.Infinity, 1 << LayerMask.NameToLayer("Select"));
-                        if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Mine>())
+                        if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Mine>() && ((Worker)selectedUnit).takenGoldAmount == 0 && ((Worker)selectedUnit).takenLumberAmount == 0)
                         {
                             ((Worker)selectedUnit).GoForGold(hitInfo.collider.transform.parent.GetComponent<Mine>());
                         }
-                        else if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<LumberInGame>() && !hitInfo.collider.transform.parent.GetComponent<LumberInGame>().IsDepleted)
+                        else if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<LumberInGame>() && !hitInfo.collider.transform.parent.GetComponent<LumberInGame>().IsDepleted && ((Worker)selectedUnit).takenGoldAmount == 0 && ((Worker)selectedUnit).takenLumberAmount == 0)
                         {
                             ((Worker)selectedUnit).GoForLumber();
+                        }
+                        else if (hitInfo.collider != null && hitInfo.collider.transform.parent.GetComponent<Building>() && hitInfo.collider.transform.parent.GetComponent<Building>().buildingType == BuildingType.Castle && hitInfo.collider.transform.parent.GetComponent<Building>().owner == selectedUnit.owner)
+                        {
+                            if (((Worker)selectedUnit).takenGoldAmount > 0)
+                            {
+                                ((Worker)selectedUnit).ReturnWithGold();
+                            }
+                            else if (((Worker)selectedUnit).takenLumberAmount > 0)
+                            {
+                                ((Worker)selectedUnit).ReturnWithLumber();
+                            }
+                            
                         }
                         else
                         {

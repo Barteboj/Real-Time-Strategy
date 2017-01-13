@@ -369,6 +369,7 @@ public class Selector : NetworkBehaviour
             selectionToSelect.Select(mineToSelect);
             SelectionInfoKeeper.Instance.unitName.text = Mine.mineName;
             SelectionInfoKeeper.Instance.unitName.enabled = true;
+            SelectionInfoKeeper.Instance.goldLeftAmountText.text = mineToSelect.GoldLeft.ToString();
             SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(true);
         }
     }

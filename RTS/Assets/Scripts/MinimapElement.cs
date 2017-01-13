@@ -5,8 +5,8 @@ using System.Collections;
 
 public class MinimapElement : MonoBehaviour
 {
-    public int width;
-    public int height;
+    public float width;
+    public float height;
     public Image image;
     public bool isStatic = false;
 

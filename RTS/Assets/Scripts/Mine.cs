@@ -137,7 +137,11 @@ public class Mine : NetworkBehaviour
         visiter.SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundMine);
         visiter.RpcMoveFromTo(visiter.transform.position, visiter.transform.position);
         visiter.RpcShowYourself();
-        visiter.ReturnWithGold();
+        if (visiter.takenGoldAmount > 0)
+        {
+            visiter.RpcSetGoldVisibility(true);
+            visiter.ReturnWithGold();
+        }
     }
 
     [ClientRpc]

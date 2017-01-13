@@ -101,5 +101,6 @@ public class MultiplayerController : NetworkBehaviour
         {
             Camera.main.transform.position = new Vector3(MapLoadController.Instance.player2StartingPosition.x, MapLoadController.Instance.player2StartingPosition.y, Camera.main.transform.position.z);
         }
+        FindObjectOfType<GameCameraController>().selectionArea.GetComponent<MinimapElement>().enabled = true;
     }
 }

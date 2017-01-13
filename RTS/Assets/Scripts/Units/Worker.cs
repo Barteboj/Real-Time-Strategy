@@ -31,6 +31,9 @@ public class Worker : Unit
     public List<IntVector2> buildingToBuildPositionsInGrid;
     private Coroutine GatherLumberCoroutine;
 
+    public SpriteRenderer lumber;
+    public SpriteRenderer gold;
+
     public override void Update()
     {
         base.Update();
@@ -252,6 +255,7 @@ public class Worker : Unit
         if (isServer)
         {
             RpcClearPositionInGrid();
+            RpcSetGoldVisibility(false);
         }
         spriteRenderer.enabled = false;
         selectionCollider.SetActive(false);
@@ -399,6 +403,7 @@ public class Worker : Unit
         isCuttingLumber = false;
         takenLumberAmount = 50;
         lumberToCut.RpcDeplete();
+        RpcSetLumberVisibility(true);
         ReturnWithLumber();
     }
 
@@ -441,6 +446,7 @@ public class Worker : Unit
             {
                 isFollowingPath = false;
                 isReturningWithLumber = false;
+                RpcSetLumberVisibility(false);
                 RpcGiveLumber();
             }
             else if (!isFollowingPath)
@@ -550,6 +556,20 @@ public class Worker : Unit
         RpcStop();
     }
 
+    public override void ShowYourself()
+    {
+        base.ShowYourself();
+        gold.gameObject.SetActive(true);
+        lumber.gameObject.SetActive(true);
+    }
+
+    public override void HideYourself()
+    {
+        base.HideYourself();
+        gold.gameObject.SetActive(false);
+        lumber.gameObject.SetActive(false);
+    }
+
     [ClientRpc]
     void RpcStop()
     {
@@ -576,5 +596,17 @@ public class Worker : Unit
         {
             StopCoroutine(GatherLumberCoroutine);
         }
+    }
+
+    [ClientRpc]
+    public void RpcSetLumberVisibility(bool shouldBeVisible)
+    {
+        lumber.enabled = shouldBeVisible;
+    }
+
+    [ClientRpc]
+    public void RpcSetGoldVisibility(bool shouldBeVisible)
+    {
+        gold.enabled = shouldBeVisible;
     }
 }
