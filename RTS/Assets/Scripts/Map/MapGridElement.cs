@@ -9,8 +9,6 @@ public class MapGridElement
     public Mine mine;
     public LumberInGame lumber;
     public PathNode pathNode = new PathNode();
-    public bool isFogged;
-    public bool isSighted;
     public int x;
     public int y;
     public GameObject canBuildIndicator;
@@ -21,14 +19,6 @@ public class MapGridElement
         get
         {
             return unit == null && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
-        }
-    }
-
-    public bool isGoodForPath
-    {
-        get
-        {
-            return (unit == null || !unit.isMoving) && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
         }
     }
 

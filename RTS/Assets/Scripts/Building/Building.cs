@@ -30,15 +30,12 @@ public class Building : NetworkBehaviour
 
     public bool isInBuildingProcess = true;
     public bool isBuilded = false;
-    public float buildCompletition = 0f;
     public float buildTime;
 
     public GameObject selectionIndicator;
     public BoxCollider2D selectionIndicatorCollider;
 
     public Sprite portrait;
-
-    public int level = 1;
 
     public ActionButtonType[] buttonTypes;
 
@@ -178,35 +175,6 @@ public class Building : NetworkBehaviour
         }
     }
 
-    public void ShowActualInfo()
-    {
-        SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
-        SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
-        if ((float)actualHealth / maxHealth < criticalDamageFactor)
-        {
-            SelectionInfoKeeper.Instance.healthBar.color = Color.red;
-        }
-        else if ((float)actualHealth / maxHealth < averageDamageFactor)
-        {
-            SelectionInfoKeeper.Instance.healthBar.color = Color.yellow;
-        }
-        else
-        {
-            SelectionInfoKeeper.Instance.healthBar.color = Color.green;
-        }
-        if (MultiplayerController.Instance.localPlayer.playerType == owner)
-        {
-            if (actualBuildTime < buildTime)
-            {
-                SelectionInfoKeeper.Instance.SetCompletitionBar(actualBuildTime / buildTime);
-            }
-            if (isTraining)
-            {
-                SelectionInfoKeeper.Instance.SetTrainingBar(actualTrainingTime / trainedUnit.trainingTime);
-            }
-        }
-    }
-
     public void Train(Unit unitToTrain)
     {
         trainedUnit = unitToTrain;
@@ -250,72 +218,6 @@ public class Building : NetworkBehaviour
         selectionIndicatorCollider.enabled = true;
         MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Add(this);
         ++MultiplayerController.Instance.players.Find(item => item.playerType == owner).allBuildingsAmount;
-    }
-
-    public void Select()
-    {
-        if (MultiplayerController.Instance.localPlayer.playerType == owner)
-        {
-            selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.green;
-        }
-        else
-        {
-            selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
-        }
-        selectionIndicator.SetActive(true);
-        SelectionInfoKeeper.Instance.unitName.text = buildingName;
-        SelectionInfoKeeper.Instance.unitLevelValueText.text = level.ToString();
-        if (actualBuildTime < buildTime)
-        {
-            SelectionInfoKeeper.Instance.SetCompletitionBar(actualBuildTime / buildTime);
-            SelectionInfoKeeper.Instance.ShowBuildCompletitionBar();
-            ActionButtons.Instance.HideAllButtons();
-        }
-        else
-        {
-            ActionButtons.Instance.HideAllButtons();
-            if (MultiplayerController.Instance.localPlayer.playerType == owner)
-            {
-                foreach (ActionButtonType buttonType in buttonTypes)
-                {
-                    ActionButtons.Instance.buttons.Find(button => button.buttonType == buttonType).Show();
-                }
-            }
-        }
-        if (isTraining && MultiplayerController.Instance.localPlayer.playerType == owner)
-        {
-            List<ActionButton> trainingButtons = ActionButtons.Instance.buttons.FindAll(button => button.GetType() == typeof(TrainingButton));
-            foreach (ActionButton button in trainingButtons)
-            {
-                button.Hide();
-            }
-            SelectionInfoKeeper.Instance.SetTrainingBar(actualTrainingTime / trainedUnit.trainingTime);
-            SelectionInfoKeeper.Instance.trainedUnitPortrait.sprite = trainedUnit.portrait;
-            SelectionInfoKeeper.Instance.ShowTrainingInfo();
-        }
-        SelectionInfoKeeper.Instance.maxHealth.text = maxHealth.ToString();
-        SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
-        SelectionInfoKeeper.Instance.unitPortrait.sprite = portrait;
-        SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
-        SelectionInfoKeeper.Instance.Show();
-    }
-
-    public void Unselect()
-    {
-        selectionIndicator.SetActive(false);
-        SelectionInfoKeeper.Instance.HideBuildCompletitionBar();
-        SelectionInfoKeeper.Instance.HideTrainingInfo();
-        SelectionInfoKeeper.Instance.Hide();
-        ActionButtons.Instance.HideAllButtons();
-    }
-
-    [ClientRpc]
-    void RpcUnselect()
-    {
-        if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this)
-        {
-            Unselect();
-        }
     }
 
     public bool CouldBeBuildInPlace(IntVector2 placeInGrid, Unit builder)
@@ -390,33 +292,6 @@ public class Building : NetworkBehaviour
         }
     }
 
-    public void VanishFromMap()
-    {
-        RpcVanishFromMap(gameObject.transform.position);
-    }
-
-    [ClientRpc]
-    void RpcVanishFromMap(Vector2 buildingPositioninWorld)
-    {
-        placeOnMapGrid = MapGridded.WorldToMapPosition(buildingPositioninWorld);
-        for (int row = 0; row < height; ++row)
-        {
-            for (int column = 0; column < width; ++column)
-            {
-                if (MapGridded.Instance.IsInMap(new IntVector2(placeOnMapGrid.x + column, placeOnMapGrid.y + row)) || MapGridded.Instance.mapGrid[row, column].isWalkable)
-                {
-                    MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].building = null;
-                }
-            }
-        }
-    }
-
-    public bool CheckIfIsInBuildingArea(IntVector2 positionToCheck)
-    {
-        IntVector2 buildingPlaceOnMap = MapGridded.WorldToMapPosition(gameObject.transform.position);
-        return positionToCheck.x >= buildingPlaceOnMap.x && positionToCheck.x <= buildingPlaceOnMap.x + width - 1 && positionToCheck.y >= buildingPlaceOnMap.y && positionToCheck.y <= buildingPlaceOnMap.y + height - 1;
-    }
-
     public virtual void GetHit(int damage, Warrior attacker)
     {
         actualHealth -= damage;
@@ -426,12 +301,6 @@ public class Building : NetworkBehaviour
             attacker.StopAttack();
             DestroyYourself();
         }
-    }
-
-    [ClientRpc]
-    void RpcRemoveFromPlayerBuildings()
-    {
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Remove(this);
     }
 
     private void OnDestroy()

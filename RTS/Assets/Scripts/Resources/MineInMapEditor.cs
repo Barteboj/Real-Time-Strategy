@@ -7,8 +7,6 @@ public class MineInMapEditor : MonoBehaviour
     public int width;
     public int height;
 
-    public int goldLeft;
-
     public IntVector2 placeOnMapGrid;
 
     public void SetPositionInMapGrid()

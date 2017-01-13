@@ -12,6 +12,11 @@ public class NetworkController : NetworkManager
 
     private int readyClientsOnGameScene = 0;
 
+    private const string lobbySceneName = "Lobby";
+    private const string endingSceneName = "Ending";
+    private const string offlineSceneName = "Offline";
+    private const string gameSceneName = "Game";
+
     public void HostGame()
     {
         StartHost();
@@ -26,24 +31,24 @@ public class NetworkController : NetworkManager
     public override void OnStartHost()
     {
         base.OnStartHost();
-        ServerChangeScene("Lobby");
+        ServerChangeScene(lobbySceneName);
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        if (SceneManager.GetActiveScene().name != "Ending")
+        if (SceneManager.GetActiveScene().name != endingSceneName)
         {
             Shutdown();
-            SceneManager.LoadScene("Offline");
+            SceneManager.LoadScene(offlineSceneName);
         }
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
-        if (SceneManager.GetActiveScene().name != "Ending")
+        if (SceneManager.GetActiveScene().name != endingSceneName)
         {
             Shutdown();
-            SceneManager.LoadScene("Offline");
+            SceneManager.LoadScene(offlineSceneName);
         }
     }
 
@@ -58,7 +63,7 @@ public class NetworkController : NetworkManager
     public override void OnServerReady(NetworkConnection conn)
     {
         base.OnServerReady(conn);
-        if (SceneManager.GetActiveScene().name == "Game")
+        if (SceneManager.GetActiveScene().name == gameSceneName)
         {
             ++readyClientsOnGameScene;
             if (readyClientsOnGameScene == 2)

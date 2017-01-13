@@ -25,15 +25,18 @@ public class EndingGUIController : MonoBehaviour
     private PlayerOnline player1;
     private PlayerOnline player2;
 
+    private const string playerVictoryText = "Victory";
+    private const string playerDefeatText = "Defeat";
+
     private void Start()
     {
         if (MultiplayerController.Instance.localPlayer.playerType == MultiplayerController.Instance.winner)
         {
-            outcomeText.text = "Victory";
+            outcomeText.text = playerVictoryText;
         }
         else
         {
-            outcomeText.text = "Defeat";
+            outcomeText.text = playerDefeatText;
         }
         PlayerOnline player1 = MultiplayerController.Instance.players.Find(item => item.playerType == PlayerType.Player1);
         PlayerOnline player2 = MultiplayerController.Instance.players.Find(item => item.playerType == PlayerType.Player2);

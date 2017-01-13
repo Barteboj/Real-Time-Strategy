@@ -21,6 +21,8 @@ public class MultiplayerController : NetworkBehaviour
     [SyncVar]
     public PlayerType winner;
 
+    private const string endingSceneName = "Ending";
+
     public static MultiplayerController Instance
     {
         get
@@ -53,15 +55,15 @@ public class MultiplayerController : NetworkBehaviour
             if (players.Find(item => item.activeUnits.Count == 0 && item.activeBuildings.Count == 0) != null)
             {
                 winner = players.Find(item => item.activeUnits.Count > 0 || item.activeBuildings.Count > 0).playerType;
-                RpcTurnOffSelectors(winner);
-                NetworkManager.singleton.ServerChangeScene("Ending");
+                RpcSetWinner(winner);
+                NetworkManager.singleton.ServerChangeScene(endingSceneName);
                 hasGameEnded = true;
             }
         }
     }
 
     [ClientRpc]
-    void RpcTurnOffSelectors(PlayerType winner)
+    void RpcSetWinner(PlayerType winner)
     {
         this.winner = winner;
         localPlayer.selector.enabled = false;

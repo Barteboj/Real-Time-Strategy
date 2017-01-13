@@ -4,7 +4,6 @@ using System.Collections;
 public class GameCameraController : MonoBehaviour
 {
     public float cameraMoveSpeed = 3;
-    public int outsideMapBorderLength = 5;
 
     private bool blockLeft = false;
     private bool blockRight = false;

@@ -23,11 +23,6 @@ public class MapListElement : MonoBehaviour
         }
     }
 
-    public MapListElement(string mapFilePath)
-    {
-        this.MapFilePath = mapFilePath;
-    }
-
     public void LoadMap()
     {
         MapEditor.Instance.LoadMap(mapFilePath);

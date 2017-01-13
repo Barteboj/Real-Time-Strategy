@@ -304,11 +304,6 @@ public class Worker : Unit
         }
     }
 
-    public Building FindNearestCastle()
-    {
-        return MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Find(item => item.buildingType == BuildingType.Castle && item.isBuilded);
-    }
-
     public void StartReturningWithGold()
     {
         isReturningWithGold = true;
@@ -346,32 +341,6 @@ public class Worker : Unit
             }
         }
         return false;
-    }
-
-    public void GoForNewLumber()
-    {
-        List<MapGridElement> mapGridElementsInWorkersSight = MapGridded.Instance.GetGridElementsFromArea(positionInGrid, sight, sight);
-        if (mapGridElementsInWorkersSight.Count > 0)
-        {
-            foreach (MapGridElement mapGridElementInWorkerSight in mapGridElementsInWorkersSight)
-            {
-                if (mapGridElementInWorkerSight.lumber != null && !mapGridElementInWorkerSight.lumber.IsDepleted)
-                {
-                    GoForLumber(mapGridElementInWorkerSight.lumber);
-                }
-            }
-        }
-    }
-
-    public void GoForLumber(LumberInGame lumber)
-    {
-        lumberToCut = lumber;
-        IntVector2 placeToGoToChopTree = MapGridded.Instance.GetStrictFirstFreePlaceAround(MapGridded.WorldToMapPosition(lumber.transform.position), 1, 1);
-        if (placeToGoToChopTree != null)
-        {
-            RequestGoTo(placeToGoToChopTree);
-        }
-        isGoingForLumber = true;
     }
 
     public void GoForLumber()

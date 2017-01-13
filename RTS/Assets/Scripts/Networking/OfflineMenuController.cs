@@ -5,8 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class OfflineMenuController : MonoBehaviour
 {
+    private const string mainMenuSceneName = "Main Menu";
+
     public void ReturnToMainMenu()
     {
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene(mainMenuSceneName);
     }
 }

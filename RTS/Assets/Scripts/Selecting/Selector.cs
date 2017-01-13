@@ -7,7 +7,6 @@ public class Selector : NetworkBehaviour
 {
     public SpriteRenderer selectionHighlight;
     public Vector2 startSelectionPosition;
-    public BoxCollider2D selectionCollider;
 
     public List<Unit> selectedUnits = new List<Unit>();
     public Building selectedBuilding;
@@ -26,21 +25,6 @@ public class Selector : NetworkBehaviour
     private void Awake()
     {
         player = GetComponent<PlayerOnline>();
-    }
-
-    public bool IsAlreadySelected(Unit unit)
-    {
-        return selectedUnits.Contains(unit);
-    }
-
-    public bool IsAlreadySelected(Building building)
-    {
-        return selectedBuilding == building;
-    }
-
-    public bool IsAlreadySelected(Mine mine)
-    {
-        return selectedMine == mine;
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -238,12 +222,6 @@ public class Selector : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void RpcUnselectAll()
-    {
-        UnSelectAll();
-    }
-
     public void Select(Unit unitToSelect)
     {
         if (selectedUnits.Count < SelectionInfoKeeper.Instance.selections.Count)
@@ -280,46 +258,6 @@ public class Selector : NetworkBehaviour
                     unitToSelect.selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                 }
             }
-        }
-    }
-
-    [ClientRpc]
-    public void RpcSelect(NetworkIdentity networkIdentity)
-    {
-        Unit unitToSelect = networkIdentity.GetComponent<Unit>();
-        Building buildingToSelect = networkIdentity.GetComponent<Building>();
-        Mine mineToSelect = networkIdentity.GetComponent<Mine>();
-        if (unitToSelect != null)
-        {
-            Select(unitToSelect);
-        }
-        else if (buildingToSelect != null)
-        {
-            Select(buildingToSelect);
-        }
-        else if (mineToSelect != null)
-        {
-            Select(mineToSelect);
-        }
-    }
-
-    [ClientRpc]
-    public void RpcUnselect(NetworkIdentity networkIdentity)
-    {
-        Unit unitToUnselect = networkIdentity.GetComponent<Unit>();
-        Building buildingToUnselect = networkIdentity.GetComponent<Building>();
-        Mine mineToUnselect = networkIdentity.GetComponent<Mine>();
-        if (unitToUnselect != null)
-        {
-            Unselect(unitToUnselect);
-        }
-        else if (buildingToUnselect != null)
-        {
-            Unselect(buildingToUnselect);
-        }
-        else if (mineToUnselect != null)
-        {
-            Unselect(mineToUnselect);
         }
     }
 

@@ -65,8 +65,6 @@ public class MapEditor : MonoBehaviour
     public IntVector2 player1Position;
     public IntVector2 player2Position;
 
-    public GameObject mainEditorGameObject;
-
     public GameObject minePrefab;
 
     public GameObject lumberPrefab;
@@ -139,7 +137,7 @@ public class MapEditor : MonoBehaviour
                     {
                         Destroy(player1MarkerOnMapInstance);
                     }
-                    player1MarkerOnMapInstance = (GameObject)Instantiate(player1MarkerPrefab, MapGridded.MapToWorldPosition(positionInMap), Quaternion.identity);
+                    player1MarkerOnMapInstance = Instantiate(player1MarkerPrefab, MapGridded.MapToWorldPosition(positionInMap), Quaternion.identity);
                 }
             }
             else if (player2MarkerSelectionPrefab != null)
@@ -152,7 +150,7 @@ public class MapEditor : MonoBehaviour
                     {
                         Destroy(player2MarkerOnMapInstance);
                     }
-                    player2MarkerOnMapInstance = (GameObject)Instantiate(player2MarkerPrefab, MapGridded.MapToWorldPosition(positionInMap), Quaternion.identity);
+                    player2MarkerOnMapInstance = Instantiate(player2MarkerPrefab, MapGridded.MapToWorldPosition(positionInMap), Quaternion.identity);
                 }
             }
         }
@@ -189,17 +187,6 @@ public class MapEditor : MonoBehaviour
         }
     }
 
-    public void SetMapSize(int width, int height)
-    {
-        mapWidth = width;
-        mapHeight = height;
-    }
-
-    public void SetPlayer1Position(IntVector2 positionToSet)
-    {
-        player1Position = positionToSet;
-    }
-
     public void CreateMap(string mapName, int mapWidth, int mapHeight)
     {
         this.mapName = mapName;
@@ -218,11 +205,6 @@ public class MapEditor : MonoBehaviour
                 SaveTileToMap(new IntVector2(column, row), TileType.Grass);
             }
         }
-    }
-
-    public void SetPlayer2Position(IntVector2 positionToSet)
-    {
-        player2Position = positionToSet;
     }
 
     public void SelectMine()
@@ -285,7 +267,7 @@ public class MapEditor : MonoBehaviour
         if (map[positionInMap.y, positionInMap.x] == null || map[positionInMap.y, positionInMap.x].tile.tileType != selectedTilePrefab.tileType)
         {
             Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-            Tile tile = ((GameObject)Instantiate(selectedTilePrefab.gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
+            Tile tile = (Instantiate(selectedTilePrefab.gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
             if (map[positionInMap.y, positionInMap.x] != null && map[positionInMap.y, positionInMap.x].tile != null)
             {
                 Destroy(map[positionInMap.y, positionInMap.x].tile.gameObject);
@@ -327,7 +309,7 @@ public class MapEditor : MonoBehaviour
         Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
         if (minePrefab.GetComponent<MineInMapEditor>().CouldBeBuildInPlace(positionInMap))
         {
-            MineInMapEditor mine = ((GameObject)Instantiate(minePrefab, postionToCreate, Quaternion.identity)).GetComponent<MineInMapEditor>();
+            MineInMapEditor mine = (Instantiate(minePrefab, postionToCreate, Quaternion.identity)).GetComponent<MineInMapEditor>();
             mine.SetPositionInMapGrid();
             mines.Add(mine);
             List<IntVector2> mapPositions = mine.GetPositionsOnMap();
@@ -350,7 +332,7 @@ public class MapEditor : MonoBehaviour
         Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
         if (lumberPrefab.GetComponent<LumberInMapEditor>().CouldBeBuildInPlace(positionInMap))
         {
-            LumberInMapEditor lumber = ((GameObject)Instantiate(lumberPrefab, postionToCreate, Quaternion.identity)).GetComponent<LumberInMapEditor>();
+            LumberInMapEditor lumber = (Instantiate(lumberPrefab, postionToCreate, Quaternion.identity)).GetComponent<LumberInMapEditor>();
             lumber.SetPositionInMapGrid();
             lumberList.Add(lumber);
             if (player1Position != null && positionInMap.x == player1Position.x && positionInMap.y == player1Position.y)
@@ -367,7 +349,7 @@ public class MapEditor : MonoBehaviour
     public void SaveTileToMap(IntVector2 positionInMap, TileType tileType)
     {
         Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-        Tile tile = ((GameObject)Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
+        Tile tile = (Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
         if (map[positionInMap.y, positionInMap.x] != null && map[positionInMap.y, positionInMap.x].tile != null)
         {
             Destroy(map[positionInMap.y, positionInMap.x].tile.gameObject);
@@ -410,7 +392,6 @@ public class MapEditor : MonoBehaviour
 
     public void SaveMap(string filePath)
     {
-        Debug.Log("Saving file " + filePath);
         List<string> lines = new List<string>();
         lines.Add(mapSizeFileKey + " " + mapWidth + " " + mapHeight);
         lines.Add(player1PositionKey + " " + player1Position.x + " " + player1Position.y);

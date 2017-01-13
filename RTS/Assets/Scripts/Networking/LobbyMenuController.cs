@@ -60,6 +60,8 @@ public class LobbyMenuController : NetworkBehaviour
     [SyncVar(hook = "OnMapNameChange")]
     public string mapName;
 
+    private const string playerConnectedText = "Connected";
+
     public void OnStartingGoldValueChange(int newValue)
     {
         LobbyMenu.startingGoldSlider.value = newValue;
@@ -113,8 +115,8 @@ public class LobbyMenuController : NetworkBehaviour
             LobbyMenu.waitingForHostText.gameObject.SetActive(true);
             LobbyMenu.startingGoldSlider.interactable = false;
             LobbyMenu.startingLumberSlider.interactable = false;
-            LobbyMenu.player1StatusText.text = "Connected";
-            LobbyMenu.player2StatusText.text = "Connected";
+            LobbyMenu.player1StatusText.text = playerConnectedText;
+            LobbyMenu.player2StatusText.text = playerConnectedText;
             Debug.LogError(startingGold);
             LobbyMenu.startingGoldSlider.value = startingGold;
             LobbyMenu.startingLumberSlider.value = startingLumber;
@@ -125,11 +127,11 @@ public class LobbyMenuController : NetworkBehaviour
             UpdateStartingLumberValue();
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null)
             {
-                LobbyMenu.player1StatusText.text = "Connected";
+                LobbyMenu.player1StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
-                LobbyMenu.player2StatusText.text = "Connected";
+                LobbyMenu.player2StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
@@ -163,8 +165,8 @@ public class LobbyMenuController : NetworkBehaviour
             LobbyMenu.waitingForHostText.gameObject.SetActive(true);
             LobbyMenu.startingGoldSlider.interactable = false;
             LobbyMenu.startingLumberSlider.interactable = false;
-            LobbyMenu.player1StatusText.text = "Connected";
-            LobbyMenu.player2StatusText.text = "Connected";
+            LobbyMenu.player1StatusText.text = playerConnectedText;
+            LobbyMenu.player2StatusText.text = playerConnectedText;
             LobbyMenu.startingGoldSlider.value = startingGold;
             LobbyMenu.startingLumberSlider.value = startingLumber;
             if (mapName != "")
@@ -176,11 +178,11 @@ public class LobbyMenuController : NetworkBehaviour
         {
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null)
             {
-                LobbyMenu.player1StatusText.text = "Connected";
+                LobbyMenu.player1StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
-                LobbyMenu.player2StatusText.text = "Connected";
+                LobbyMenu.player2StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
@@ -193,13 +195,13 @@ public class LobbyMenuController : NetworkBehaviour
     {
         if (isServer)
         {
-            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && LobbyMenu.player1StatusText.text != "Connected")
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && LobbyMenu.player1StatusText.text != playerConnectedText)
             {
-                LobbyMenu.player1StatusText.text = "Connected";
+                LobbyMenu.player1StatusText.text = playerConnectedText;
             }
-            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && LobbyMenu.player2StatusText.text != "Connected")
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && LobbyMenu.player2StatusText.text != playerConnectedText)
             {
-                LobbyMenu.player2StatusText.text = "Connected";
+                LobbyMenu.player2StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && !LobbyMenu.playButton.interactable)
             {

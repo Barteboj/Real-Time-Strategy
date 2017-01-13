@@ -62,7 +62,6 @@ public class Minimap : MonoBehaviour
             Vector2 positionRelativeToMinimap = mouseWorldPosition - (Vector2)gameObject.transform.position;
 
             float unitMinimapSize = size / canvasScaler.referencePixelsPerUnit * canvasScaler.matchWidthOrHeight;
-            //Camera.main.transform.position = ;
             FindObjectOfType<GameCameraController>().SetCameraPosition(new Vector3((positionRelativeToMinimap * (mapSize / 5)).x - 0.5f, (positionRelativeToMinimap * (mapSize / 5)).y - 0.5f, Camera.main.transform.position.z));
         }
     }

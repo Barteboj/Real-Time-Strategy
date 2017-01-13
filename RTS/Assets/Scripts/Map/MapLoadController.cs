@@ -39,8 +39,6 @@ public class MapLoadController : NetworkBehaviour
 
     public MapGridded map;
 
-    public string mapNameToLoad;
-
     public Vector2 player1StartingPosition;
     public Vector2 player2StartingPosition;
 
@@ -104,7 +102,7 @@ public class MapLoadController : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcAddToMap(string textToAdd)
+    void RpcAddToMapText(string textToAdd)
     {
         mapText += textToAdd;
     }
@@ -117,7 +115,7 @@ public class MapLoadController : NetworkBehaviour
         {
             int numberOfCharsToReadInPacket = Mathf.Min(5000, wholeMapText.Length - actualIndexInMapText);
             string partOfMapText = wholeMapText.Substring(actualIndexInMapText, numberOfCharsToReadInPacket);
-            RpcAddToMap(partOfMapText);
+            RpcAddToMapText(partOfMapText);
             actualIndexInMapText += numberOfCharsToReadInPacket;
         }
         RpcLoadMap();
@@ -198,8 +196,8 @@ public class MapLoadController : NetworkBehaviour
     public void SaveToMap(IntVector2 positionInMap, TileType tileType)
     {
         Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-        Tile tile = ((GameObject)Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
-        map.mapGrid[positionInMap.y, positionInMap.x] = new MapGridElement(positionInMap.x, positionInMap.y, tile, (GameObject)Instantiate(Tiles.Instance.canBuildIndicator, tile.transform.position, Quaternion.identity), (GameObject)Instantiate(Tiles.Instance.cannotBuildIndicator, tile.transform.position, Quaternion.identity));
+        Tile tile = (Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
+        map.mapGrid[positionInMap.y, positionInMap.x] = new MapGridElement(positionInMap.x, positionInMap.y, tile, Instantiate(Tiles.Instance.canBuildIndicator, tile.transform.position, Quaternion.identity), Instantiate(Tiles.Instance.cannotBuildIndicator, tile.transform.position, Quaternion.identity));
     }
 
     public void SaveMineToMap(IntVector2 positionInMap)

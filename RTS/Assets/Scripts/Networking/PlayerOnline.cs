@@ -14,8 +14,6 @@ public class PlayerOnline : NetworkBehaviour
 {
     [SyncVar]
     public PlayerType playerType;
-    [SyncVar]
-    public bool isReady = false;
     public List<Building> activeBuildings;
     public List<Unit> activeUnits;
     public int allUnitsAmount = 0;
@@ -82,13 +80,6 @@ public class PlayerOnline : NetworkBehaviour
     }
 
     [Command]
-    public void CmdSetPlayerId(PlayerType playerType)
-    {
-        this.playerType = playerType;
-        MultiplayerController.Instance.players.Add(this);
-    }
-
-    [Command]
     public void CmdUpdateMultiplayerController(NetworkIdentity networkIdentity, PlayerType playerType)
     {
         networkIdentity.GetComponent<PlayerOnline>().playerType = playerType;
@@ -123,13 +114,5 @@ public class PlayerOnline : NetworkBehaviour
             MultiplayerController.Instance.localPlayer = this;
             CmdUpdateMultiplayerController(GetComponent<NetworkIdentity>(), PlayerType.Player2);
         }
-    }
-
-    public void UpdateResourcesGUI()
-    {
-        ResourcesGUI.Instance.goldText.text = goldAmount.ToString();
-        ResourcesGUI.Instance.lumberText.text = lumberAmount.ToString();
-        ResourcesGUI.Instance.foodText.text = foodAmount.ToString();
-        ResourcesGUI.Instance.foodMaxText.text = foodMaxAmount.ToString();
     }
 }

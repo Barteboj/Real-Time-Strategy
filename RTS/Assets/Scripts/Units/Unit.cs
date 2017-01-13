@@ -22,12 +22,10 @@ public class Unit : NetworkBehaviour
     protected Coroutine disableHitAnimationCoroutine;
 
     public string unitName;
-    public int level = 1;
     public int armor;
     public int minDamage;
     public int maxDamage;
     public int range;
-    public int sight;
     public int speed;
     public int maxHealth;
 
@@ -37,7 +35,6 @@ public class Unit : NetworkBehaviour
     [SyncVar(hook = "OnChangePositionInGridSyncVar")]
     public Vector2 positionInGridSyncVar;
 
-    public int ownerPlayerID;
     public List<MapGridElement> followedPath;
     public SpriteRenderer spriteRenderer;
     public Sprite portrait;
@@ -97,35 +94,6 @@ public class Unit : NetworkBehaviour
                 FollowPath();
             }
         }
-        /*if (MultiplayerController.Instance.localPlayer.commander.selectedUnit == this)
-        {
-            ShowActualInfo();
-        }*/
-    }
-
-    public void ShowActualInfo()
-    {
-        SelectionInfoKeeper.Instance.Assign(this);
-        SelectionInfoKeeper.Instance.actualHealth.text = actualHealth.ToString();
-        SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
-        if ((float)actualHealth / maxHealth < criticalDamageFactor)
-        {
-            SelectionInfoKeeper.Instance.healthBar.color = Color.red;
-        }
-        else if ((float)actualHealth / maxHealth < averageDamageFactor)
-        {
-            SelectionInfoKeeper.Instance.healthBar.color = Color.yellow;
-        }
-        else
-        {
-            SelectionInfoKeeper.Instance.healthBar.color = Color.green;
-        }
-    }
-
-    public void ShowExtraInfo()
-    {
-        SelectionInfoKeeper.Instance.unitName.text = unitName;
-        SelectionInfoKeeper.Instance.unitLevelValueText.text = level.ToString();
     }
 
     public void OnChangePositionInGridSyncVar(Vector2 newPosition)
@@ -272,12 +240,6 @@ public class Unit : NetworkBehaviour
         isMoving = true;
     }
 
-    [ClientRpc]
-    public void RpcStopMoving()
-    {
-        isMoving = false;
-    }
-
     public virtual void FollowPath()
     {
         if (((Vector2)gameObject.transform.position - goalPosition).magnitude < 0.03f)
@@ -330,16 +292,6 @@ public class Unit : NetworkBehaviour
         gameObject.transform.position = MapGridded.MapToWorldPosition(newPosition);
     }
 
-    [ClientRpc]
-    public void RpcSetNewPositionOnMapSettingWorldPosition(Vector2 newPosition)
-    {
-        if (isServer)
-        {
-            positionInGridSyncVar = newPosition;
-        }
-        gameObject.transform.position = newPosition;
-    }
-
     public void SetNewPositionOnMap(IntVector2 newPosition)
     {
         positionInGridSyncVar = new Vector2(newPosition.x, newPosition.y);
@@ -364,27 +316,6 @@ public class Unit : NetworkBehaviour
     public void InitializePositionInGrid()
     {
         positionInGridSyncVar = gameObject.transform.position;
-    }
-
-    public void Select()
-    {
-        selectionIndicator.SetActive(true);
-        SelectionInfoKeeper.Instance.Assign(this);
-        SelectionInfoKeeper.Instance.SetHealthBar((float)actualHealth / maxHealth);
-        SelectionInfoKeeper.Instance.Show();
-        ActionButtons.Instance.HideAllButtons();
-        if (MultiplayerController.Instance.localPlayer.playerType == owner)
-        {
-            foreach (ActionButtonType buttonType in buttonTypes)
-            {
-                ActionButtons.Instance.buttons.Find(button => button.buttonType == buttonType).Show();
-            }
-            selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.green;
-        }
-        else
-        {
-            selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
-        }
     }
 
     [ClientRpc]
