@@ -12,45 +12,27 @@ public class Minimap : MonoBehaviour
         {
             if (instance == null)
             {
-                Minimap newInstance = FindObjectOfType<Minimap>();
-                if (newInstance != null)
-                {
-                    instance = newInstance;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("There is not Minimap attached to scene and is tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<Minimap>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
-
-    public int size;
-    public int mapSize;
-    public CanvasScaler canvasScaler;
+    [SerializeField]
+    private int size;
+    public int MapSize { get; set; }
+    [SerializeField]
+    private CanvasScaler canvasScaler;
 
     void Awake()
     {
         if (instance != null && instance != this)
         {
-            Debug.LogError("More than one instances of Minimap on scene");
             Destroy(this);
         }
         else
         {
             instance = this;
         }
-    }
-
-    public void SetMapSize(int size)
-    {
-        mapSize = size;
     }
 
     void Update()
@@ -62,7 +44,7 @@ public class Minimap : MonoBehaviour
             Vector2 positionRelativeToMinimap = mouseWorldPosition - (Vector2)gameObject.transform.position;
 
             float unitMinimapSize = size / canvasScaler.referencePixelsPerUnit * canvasScaler.matchWidthOrHeight;
-            FindObjectOfType<GameCameraController>().SetCameraPosition(new Vector3((positionRelativeToMinimap * (mapSize / 5)).x - 0.5f, (positionRelativeToMinimap * (mapSize / 5)).y - 0.5f, Camera.main.transform.position.z));
+            FindObjectOfType<GameCameraController>().SetCameraPosition(new Vector3((positionRelativeToMinimap * (MapSize / 5)).x - 0.5f, (positionRelativeToMinimap * (MapSize / 5)).y - 0.5f, Camera.main.transform.position.z));
         }
     }
 

@@ -6,9 +6,19 @@ using System.Collections;
 
 public class NetworkController : NetworkManager
 {
-    public Text ipAddressText;
-    public GameObject multiplayerControllerGameObject;
-    public GameObject lobbyMenuControllerGameObject;
+    [SerializeField]
+    private Text ipAddressText;
+    [SerializeField]
+    private GameObject multiplayerControllerGameObject;
+    public GameObject MultiplayerControllerGameObject
+    {
+        get
+        {
+            return multiplayerControllerGameObject;
+        }
+    }
+    [SerializeField]
+    private GameObject lobbyMenuControllerGameObject;
 
     private int readyClientsOnGameScene = 0;
 
@@ -68,7 +78,7 @@ public class NetworkController : NetworkManager
             ++readyClientsOnGameScene;
             if (readyClientsOnGameScene == 2)
             {
-                if (MapLoadController.CheckMap(MultiplayerController.Instance.mapName))
+                if (MapLoadController.CheckMap(MultiplayerController.Instance.MapName))
                 {
                     MapLoadController.Instance.LoadChosenMap();
                     MultiplayerController.Instance.RpcInitializeGame();

@@ -3,14 +3,15 @@ using System.Collections;
 
 public class Farm : Building
 {
-    public int foodGrowth;
+    [SerializeField]
+    private int foodGrowth;
 
     public override void FinishBuild()
     {
         base.FinishBuild();
         if (isServer)
         {
-            MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodMaxAmount += foodGrowth;
+            MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).FoodMaxAmount += foodGrowth;
         }
     }
 
@@ -18,7 +19,7 @@ public class Farm : Building
     {
         if (isServer)
         {
-            MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodMaxAmount -= foodGrowth;
+            MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).FoodMaxAmount -= foodGrowth;
         }
         base.DestroyYourself();
     }

@@ -13,82 +13,61 @@ public class MapEditor : MonoBehaviour
         {
             if (instance == null)
             {
-                MapEditor newInstance = FindObjectOfType<MapEditor>();
-                if (newInstance != null)
-                {
-                    instance = newInstance;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("There is not MapEditor attached to scene and is tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<MapEditor>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
     
-    public int mapWidth = 10;
-    public int mapHeight = 10;
+    private int mapWidth;
+    private int mapHeight;
 
-    public MapEditorGridElement[,] map;
+    public MapEditorGridElement[,] Map { get; set; }
 
-    public string mapName;
+    public string MapName { get; set; }
 
-    public Tile selectedTilePrefab;
-
-    public GameObject prefabShowingWhereYouArePuttingTile;
-
-    public MineInMapEditor mineSelectionPrefab;
-
-    public LumberInMapEditor lumberSelectionPrefab;
-
-    public GameObject player1MarkerSelectionPrefab;
-    public GameObject player2MarkerSelectionPrefab;
+    private Tile selectedTilePrefab;
+    private GameObject prefabShowingWhereYouArePuttingTile;
+    private MineInMapEditor mineSelectionPrefab;
+    private LumberInMapEditor lumberSelectionPrefab;
+    private GameObject player1MarkerSelectionPrefab;
+    private GameObject player2MarkerSelectionPrefab;
 
     public const string mapsFolderName = "Maps";
-
     public const string mapSizeFileKey = "MapSize";
     public const string tileKey = "Tile";
-
     public const string goldMineKey = "GoldMine";
-
     public const string lumberKey = "Lumber";
-
     public const string player1PositionKey = "Player1Position";
     public const string player2PositionKey = "Player2Position";
 
-    public IntVector2 player1Position;
-    public IntVector2 player2Position;
+    private IntVector2 player1Position;
+    private IntVector2 player2Position;
 
-    public GameObject minePrefab;
+    [SerializeField]
+    private GameObject minePrefab;
+    [SerializeField]
+    private GameObject lumberPrefab;
+    [SerializeField]
+    private GameObject player1MarkerPrefab;
+    [SerializeField]
+    private GameObject player2MarkerPrefab;
 
-    public GameObject lumberPrefab;
+    private GameObject player1MarkerOnMapInstance;
+    private GameObject player2MarkerOnMapInstance;
 
-    public GameObject player1MarkerPrefab;
-    public GameObject player2MarkerPrefab;
-
-    public GameObject player1MarkerOnMapInstance;
-    public GameObject player2MarkerOnMapInstance;
-
-    public List<MineInMapEditor> mines = new List<MineInMapEditor>();
-
-    public List<LumberInMapEditor> lumberList = new List<LumberInMapEditor>();
+    private List<MineInMapEditor> mines = new List<MineInMapEditor>();
+    private List<LumberInMapEditor> lumberList = new List<LumberInMapEditor>();
 
     public bool IsInMap(IntVector2 mapPosition)
     {
-        return mapPosition.x >= 0 && mapPosition.x < mapWidth && mapPosition.y >= 0 && mapPosition.y < mapHeight;
+        return mapPosition.X >= 0 && mapPosition.X < mapWidth && mapPosition.Y >= 0 && mapPosition.Y < mapHeight;
     }
 
     void Awake()
     {
         if (instance != null && instance != this)
         {
-            Debug.LogError("More than one instances of Map Editor on scene");
             Destroy(this);
         }
         else
@@ -130,7 +109,7 @@ public class MapEditor : MonoBehaviour
             else if (player1MarkerSelectionPrefab != null)
             {
                 player1MarkerSelectionPrefab.transform.position = MapGridded.MapToWorldPosition(positionInMap);
-                if (Input.GetMouseButton(0) && IsInMap(positionInMap) && map[positionInMap.y, positionInMap.x].tile.isWalkable && map[positionInMap.y, positionInMap.x].mine == null && map[positionInMap.y, positionInMap.x].lumber == null)
+                if (Input.GetMouseButton(0) && IsInMap(positionInMap) && Map[positionInMap.Y, positionInMap.X].Tile.IsWalkable && Map[positionInMap.Y, positionInMap.X].Mine == null && Map[positionInMap.Y, positionInMap.X].Lumber == null)
                 {
                     player1Position = positionInMap;
                     if (player1MarkerOnMapInstance != null)
@@ -143,7 +122,7 @@ public class MapEditor : MonoBehaviour
             else if (player2MarkerSelectionPrefab != null)
             {
                 player2MarkerSelectionPrefab.transform.position = MapGridded.MapToWorldPosition(positionInMap);
-                if (Input.GetMouseButton(0) && IsInMap(positionInMap) && map[positionInMap.y, positionInMap.x].tile.isWalkable && map[positionInMap.y, positionInMap.x].mine == null && map[positionInMap.y, positionInMap.x].lumber == null)
+                if (Input.GetMouseButton(0) && IsInMap(positionInMap) && Map[positionInMap.Y, positionInMap.X].Tile.IsWalkable && Map[positionInMap.Y, positionInMap.X].Mine == null && Map[positionInMap.Y, positionInMap.X].Lumber == null)
                 {
                     player2Position = positionInMap;
                     if (player2MarkerOnMapInstance != null)
@@ -189,7 +168,7 @@ public class MapEditor : MonoBehaviour
 
     public void CreateMap(string mapName, int mapWidth, int mapHeight)
     {
-        this.mapName = mapName;
+        this.MapName = mapName;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         InitializeMap();
@@ -197,7 +176,7 @@ public class MapEditor : MonoBehaviour
 
     public void InitializeMap()
     {
-        map = new MapEditorGridElement[mapHeight, mapWidth];
+        Map = new MapEditorGridElement[mapHeight, mapWidth];
         for (int row = 0; row < mapHeight; ++row)
         {
             for (int column = 0; column < mapWidth; ++column)
@@ -258,45 +237,45 @@ public class MapEditor : MonoBehaviour
     public void SelectTile(TileType tileType)
     {
         UnselectElementsToPut();
-        selectedTilePrefab = Tiles.Instance.tilesPrefabs.Find(tilePrefab => tilePrefab.tileType == tileType);
+        selectedTilePrefab = Tiles.Instance.TilesPrefabs.Find(tilePrefab => tilePrefab.TileType == tileType);
         prefabShowingWhereYouArePuttingTile = Instantiate(selectedTilePrefab.gameObject);
     }
 
     public void SaveTileToMap(IntVector2 positionInMap)
     {
-        if (map[positionInMap.y, positionInMap.x] == null || map[positionInMap.y, positionInMap.x].tile.tileType != selectedTilePrefab.tileType)
+        if (Map[positionInMap.Y, positionInMap.X] == null || Map[positionInMap.Y, positionInMap.X].Tile.TileType != selectedTilePrefab.TileType)
         {
             Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
             Tile tile = (Instantiate(selectedTilePrefab.gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
-            if (map[positionInMap.y, positionInMap.x] != null && map[positionInMap.y, positionInMap.x].tile != null)
+            if (Map[positionInMap.Y, positionInMap.X] != null && Map[positionInMap.Y, positionInMap.X].Tile != null)
             {
-                Destroy(map[positionInMap.y, positionInMap.x].tile.gameObject);
+                Destroy(Map[positionInMap.Y, positionInMap.X].Tile.gameObject);
             }
-            if (map[positionInMap.y, positionInMap.x] != null)
+            if (Map[positionInMap.Y, positionInMap.X] != null)
             {
-                map[positionInMap.y, positionInMap.x].tile = tile;
+                Map[positionInMap.Y, positionInMap.X].Tile = tile;
             }
             else
             {
-                map[positionInMap.y, positionInMap.x] = new MapEditorGridElement(positionInMap, tile, null);
+                Map[positionInMap.Y, positionInMap.X] = new MapEditorGridElement(positionInMap, tile, null);
             }
-            if (!map[positionInMap.y, positionInMap.x].tile.isWalkable)
+            if (!Map[positionInMap.Y, positionInMap.X].Tile.IsWalkable)
             {
-                if (map[positionInMap.y, positionInMap.x].mine != null)
+                if (Map[positionInMap.Y, positionInMap.X].Mine != null)
                 {
-                    mines.Remove(map[positionInMap.y, positionInMap.x].mine);
-                    Destroy(map[positionInMap.y, positionInMap.x].mine.gameObject);
+                    mines.Remove(Map[positionInMap.Y, positionInMap.X].Mine);
+                    Destroy(Map[positionInMap.Y, positionInMap.X].Mine.gameObject);
                 }
-                if (map[positionInMap.y, positionInMap.x].lumber != null)
+                if (Map[positionInMap.Y, positionInMap.X].Lumber != null)
                 {
-                    lumberList.Remove(map[positionInMap.y, positionInMap.x].lumber);
-                    Destroy(map[positionInMap.y, positionInMap.x].lumber.gameObject);
+                    lumberList.Remove(Map[positionInMap.Y, positionInMap.X].Lumber);
+                    Destroy(Map[positionInMap.Y, positionInMap.X].Lumber.gameObject);
                 }
-                if (player1Position != null && positionInMap.x == player1Position.x && positionInMap.y == player1Position.y)
+                if (player1Position != null && positionInMap.X == player1Position.X && positionInMap.Y == player1Position.Y)
                 {
                     RemovePlayer1Marker();
                 }
-                if (player2Position != null && positionInMap.x == player2Position.x && positionInMap.y == player2Position.y)
+                if (player2Position != null && positionInMap.X == player2Position.X && positionInMap.Y == player2Position.Y)
                 {
                     RemovePlayer2Marker();
                 }
@@ -315,11 +294,11 @@ public class MapEditor : MonoBehaviour
             List<IntVector2> mapPositions = mine.GetPositionsOnMap();
             foreach (IntVector2 mapPosition in mapPositions)
             {
-                if (player1Position != null && mapPosition.x == player1Position.x && mapPosition.y == player1Position.y)
+                if (player1Position != null && mapPosition.X == player1Position.X && mapPosition.Y == player1Position.Y)
                 {
                     RemovePlayer1Marker();
                 }
-                if (player2Position != null && mapPosition.x == player2Position.x && mapPosition.y == player2Position.y)
+                if (player2Position != null && mapPosition.X == player2Position.X && mapPosition.Y == player2Position.Y)
                 {
                     RemovePlayer2Marker();
                 }
@@ -335,11 +314,11 @@ public class MapEditor : MonoBehaviour
             LumberInMapEditor lumber = (Instantiate(lumberPrefab, postionToCreate, Quaternion.identity)).GetComponent<LumberInMapEditor>();
             lumber.SetPositionInMapGrid();
             lumberList.Add(lumber);
-            if (player1Position != null && positionInMap.x == player1Position.x && positionInMap.y == player1Position.y)
+            if (player1Position != null && positionInMap.X == player1Position.X && positionInMap.Y == player1Position.Y)
             {
                 RemovePlayer1Marker();
             }
-            if (player2Position != null && positionInMap.x == player2Position.x && positionInMap.y == player2Position.y)
+            if (player2Position != null && positionInMap.X == player2Position.X && positionInMap.Y == player2Position.Y)
             {
                 RemovePlayer2Marker();
             }
@@ -349,36 +328,36 @@ public class MapEditor : MonoBehaviour
     public void SaveTileToMap(IntVector2 positionInMap, TileType tileType)
     {
         Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-        Tile tile = (Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
-        if (map[positionInMap.y, positionInMap.x] != null && map[positionInMap.y, positionInMap.x].tile != null)
+        Tile tile = (Instantiate(Tiles.Instance.TilesPrefabs.Find(wantedTile => wantedTile.TileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
+        if (Map[positionInMap.Y, positionInMap.X] != null && Map[positionInMap.Y, positionInMap.X].Tile != null)
         {
-            Destroy(map[positionInMap.y, positionInMap.x].tile.gameObject);
+            Destroy(Map[positionInMap.Y, positionInMap.X].Tile.gameObject);
         }
-        if (map[positionInMap.y, positionInMap.x] != null)
+        if (Map[positionInMap.Y, positionInMap.X] != null)
         {
-            map[positionInMap.y, positionInMap.x].tile = tile;
+            Map[positionInMap.Y, positionInMap.X].Tile = tile;
         }
         else
         {
-            map[positionInMap.y, positionInMap.x] = new MapEditorGridElement(positionInMap, tile, null);
+            Map[positionInMap.Y, positionInMap.X] = new MapEditorGridElement(positionInMap, tile, null);
         }
-        if (!map[positionInMap.y, positionInMap.x].tile.isWalkable)
+        if (!Map[positionInMap.Y, positionInMap.X].Tile.IsWalkable)
         {
-            if (map[positionInMap.y, positionInMap.x].mine != null)
+            if (Map[positionInMap.Y, positionInMap.X].Mine != null)
             {
-                mines.Remove(map[positionInMap.y, positionInMap.x].mine);
-                Destroy(map[positionInMap.y, positionInMap.x].mine.gameObject);
+                mines.Remove(Map[positionInMap.Y, positionInMap.X].Mine);
+                Destroy(Map[positionInMap.Y, positionInMap.X].Mine.gameObject);
             }
-            if (map[positionInMap.y, positionInMap.x].lumber != null)
+            if (Map[positionInMap.Y, positionInMap.X].Lumber != null)
             {
-                lumberList.Remove(map[positionInMap.y, positionInMap.x].lumber);
-                Destroy(map[positionInMap.y, positionInMap.x].lumber.gameObject);
+                lumberList.Remove(Map[positionInMap.Y, positionInMap.X].Lumber);
+                Destroy(Map[positionInMap.Y, positionInMap.X].Lumber.gameObject);
             }
-            if (player1Position != null && positionInMap.x == player1Position.x && positionInMap.y == player1Position.y)
+            if (player1Position != null && positionInMap.X == player1Position.X && positionInMap.Y == player1Position.Y)
             {
                 RemovePlayer1Marker();
             }
-            if (player2Position != null && positionInMap.x == player2Position.x && positionInMap.y == player2Position.y)
+            if (player2Position != null && positionInMap.X == player2Position.X && positionInMap.Y == player2Position.Y)
             {
                 RemovePlayer2Marker();
             }
@@ -387,29 +366,35 @@ public class MapEditor : MonoBehaviour
 
     public void SaveLoadedMap()
     {
-        SaveMap(Application.dataPath + "/" + mapsFolderName + "/" + mapName + ".map");
+        SaveMap(Application.dataPath + "/" + mapsFolderName + "/" + MapName + ".map");
     }
 
     public void SaveMap(string filePath)
     {
         List<string> lines = new List<string>();
         lines.Add(mapSizeFileKey + " " + mapWidth + " " + mapHeight);
-        lines.Add(player1PositionKey + " " + player1Position.x + " " + player1Position.y);
-        lines.Add(player2PositionKey + " " + player2Position.x + " " + player2Position.y);
+        if (player1Position != null)
+        {
+            lines.Add(player1PositionKey + " " + player1Position.X + " " + player1Position.Y);
+        }
+        if (player2Position != null)
+        {
+            lines.Add(player2PositionKey + " " + player2Position.X + " " + player2Position.Y);
+        }
         for (int rowIndex = 0; rowIndex < mapHeight; ++rowIndex)
         {
             for (int columnIndex = 0; columnIndex < mapWidth; ++columnIndex)
             {
-                lines.Add(tileKey + " " + columnIndex + " " + rowIndex + " " + map[rowIndex, columnIndex].tile.tileType.ToString());
+                lines.Add(tileKey + " " + columnIndex + " " + rowIndex + " " + Map[rowIndex, columnIndex].Tile.TileType.ToString());
             }
         }
         foreach (MineInMapEditor mine in mines)
         {
-            lines.Add(goldMineKey + " " + mine.placeOnMapGrid.x + " " + mine.placeOnMapGrid.y);
+            lines.Add(goldMineKey + " " + mine.PlaceOnMapGrid.X + " " + mine.PlaceOnMapGrid.Y);
         }
         foreach (LumberInMapEditor lumber in lumberList)
         {
-            lines.Add(lumberKey + " " + lumber.placeOnMapGrid.x + " " + lumber.placeOnMapGrid.y);
+            lines.Add(lumberKey + " " + lumber.PlaceOnMapGrid.X + " " + lumber.PlaceOnMapGrid.Y);
         }
         File.WriteAllText(filePath, "");
         StreamWriter writer = new StreamWriter(filePath);
@@ -431,7 +416,7 @@ public class MapEditor : MonoBehaviour
                 case mapSizeFileKey:
                     mapWidth = int.Parse(words[1]);
                     mapHeight = int.Parse(words[2]);
-                    map = new MapEditorGridElement[mapHeight, mapWidth];
+                    Map = new MapEditorGridElement[mapHeight, mapWidth];
                     break;
                 case player1PositionKey:
                     player1MarkerOnMapInstance = Instantiate(player1MarkerPrefab, MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2]))), Quaternion.identity);
@@ -456,9 +441,9 @@ public class MapEditor : MonoBehaviour
 
     public void CleanMapEditor()
     {
-        foreach (MapEditorGridElement mapGridElement in map)
+        foreach (MapEditorGridElement mapGridElement in Map)
         {
-            Destroy(mapGridElement.tile);
+            Destroy(mapGridElement.Tile);
         }
         foreach (MineInMapEditor mine in mines)
         {

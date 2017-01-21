@@ -4,14 +4,20 @@ using System.Collections.Generic;
 
 public class Warrior : Unit
 {
-    public bool isAttacking = false;
-    public Unit attackedUnit;
-    public Building attackedBuilding;
-
-    public float delayBetweenAttacks;
-
-    public int damage;
-
+    private bool isAttacking = false;
+    public bool IsAttacking
+    {
+        get
+        {
+            return isAttacking;
+        }
+    }
+    private Unit attackedUnit;
+    private Building attackedBuilding;
+    [SerializeField]
+    private float delayBetweenAttacks;
+    [SerializeField]
+    private int damage;
     private float timeFromLastTryToHit = 0f;
     private bool justContactedWithEnemy = true;
 
@@ -92,17 +98,17 @@ public class Warrior : Unit
         {
             for (int column = 0; column <= 2 * range; ++column)
             {
-                IntVector2 checkedPosition = new IntVector2(positionInGrid.x - range + column, positionInGrid.y - range + row);
+                IntVector2 checkedPosition = new IntVector2(positionInGrid.X - range + column, positionInGrid.Y - range + row);
                 if (attackedUnit != null)
                 {
-                    if (MapGridded.Instance.IsInMap(checkedPosition) && (MapGridded.Instance.mapGrid[checkedPosition.y, checkedPosition.x].unit == attackedUnit))
+                    if (MapGridded.Instance.IsInMap(checkedPosition) && (MapGridded.Instance.MapGrid[checkedPosition.Y, checkedPosition.X].Unit == attackedUnit))
                     {
                         return true;
                     }
                 }
                 else if (attackedBuilding != null)
                 {
-                    if (MapGridded.Instance.IsInMap(checkedPosition) && (MapGridded.Instance.mapGrid[checkedPosition.y, checkedPosition.x].building == attackedBuilding))
+                    if (MapGridded.Instance.IsInMap(checkedPosition) && (MapGridded.Instance.MapGrid[checkedPosition.Y, checkedPosition.X].Building == attackedBuilding))
                     {
                         return true;
                     }
@@ -112,12 +118,12 @@ public class Warrior : Unit
         return false;
     }
 
-    public override void Update()
+    protected override void Update()
     {
         base.Update();
         if (isServer)
         {
-            if (isAttacking && (attackedBuilding == null && attackedUnit == null) || ((attackedBuilding != null && attackedBuilding.actualHealth <= 0f) || (attackedUnit != null && attackedUnit.actualHealth <= 0f)))
+            if (isAttacking && (attackedBuilding == null && attackedUnit == null) || ((attackedBuilding != null && attackedBuilding.ActualHealth <= 0f) || (attackedUnit != null && attackedUnit.ActualHealth <= 0f)))
             {
                 StopAttack();
             }

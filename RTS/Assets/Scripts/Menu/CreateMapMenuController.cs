@@ -4,8 +4,10 @@ using System.Collections;
 
 public class CreateMapMenuController : MonoBehaviour
 {
-    public Text mapNameText;
-    public Slider mapWidthSlider;
+    [SerializeField]
+    private Text mapNameText;
+    [SerializeField]
+    private Slider mapWidthSlider;
 
     public void CreateMap()
     {

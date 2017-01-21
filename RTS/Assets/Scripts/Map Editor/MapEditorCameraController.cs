@@ -3,9 +3,10 @@ using System.Collections;
 
 public class MapEditorCameraController : MonoBehaviour
 {
-    public float cameraMoveSpeed = 3;
-    public MapEditor mapEditor;
-    public int outsideMapBorderLength = 5;
+    [SerializeField]
+    private float cameraMoveSpeed = 3;
+    [SerializeField]
+    private int outsideMapBorderLength = 5;
 
     void Awake()
     {
@@ -14,10 +15,10 @@ public class MapEditorCameraController : MonoBehaviour
 
     void Update()
     {
-        if (mapEditor.map != null)
+        if (MapEditor.Instance.Map != null)
         {
             Vector2 clampedMousePosition = new Vector2(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width), Mathf.Clamp(Input.mousePosition.y, 0, Screen.height));
-            if (clampedMousePosition.x >= Screen.width - 1 && Camera.main.transform.position.x <= mapEditor.map.GetLength(0) + outsideMapBorderLength)
+            if (clampedMousePosition.x >= Screen.width - 1 && Camera.main.transform.position.x <= MapEditor.Instance.Map.GetLength(0) + outsideMapBorderLength)
             {
                 Camera.main.transform.Translate(Vector2.right * cameraMoveSpeed * Time.deltaTime);
             }
@@ -25,7 +26,7 @@ public class MapEditorCameraController : MonoBehaviour
             {
                 Camera.main.transform.Translate(Vector2.left * cameraMoveSpeed * Time.deltaTime);
             }
-            else if (clampedMousePosition.y >= Screen.height - 1 && Camera.main.transform.position.y <= mapEditor.map.GetLength(1) + outsideMapBorderLength)
+            else if (clampedMousePosition.y >= Screen.height - 1 && Camera.main.transform.position.y <= MapEditor.Instance.Map.GetLength(1) + outsideMapBorderLength)
             {
                 Camera.main.transform.Translate(Vector2.up * cameraMoveSpeed * Time.deltaTime);
             }

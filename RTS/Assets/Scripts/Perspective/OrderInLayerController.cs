@@ -5,7 +5,8 @@ public class OrderInLayerController : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
 
-    public bool isStatic = false;
+    [SerializeField]
+    private bool isStatic = false;
 
     void Awake()
     {

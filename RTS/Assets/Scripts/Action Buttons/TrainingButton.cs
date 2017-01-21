@@ -5,39 +5,47 @@ using System;
 
 public class TrainingButton : ActionButton
 {
-    public UnitType unitType;
+    [SerializeField]
+    private UnitType unitType;
+    public UnitType UnitType
+    {
+        get
+        {
+            return unitType;
+        }
+    }
 
     private void Awake()
     {
-        buttonImage.sprite = Units.Instance.GetUnitPrefab(unitType, MultiplayerController.Instance.localPlayer.playerType).GetComponent<Unit>().portrait;
+        buttonImage.sprite = Units.Instance.GetUnitPrefab(unitType, MultiplayerController.Instance.LocalPlayer.PlayerType).GetComponent<Unit>().Portrait;
     }
 
     public override void GiveActionButtonsControllerToExecuteOnServer()
     {
-        MultiplayerController.Instance.localPlayer.actionButtonsController.CmdExecuteButtonAction(buttonType, MultiplayerController.Instance.localPlayer.selector.selectedBuilding.GetComponent<NetworkIdentity>());
+        MultiplayerController.Instance.LocalPlayer.ActionButtonsController.CmdExecuteButtonAction(buttonType, MultiplayerController.Instance.LocalPlayer.Selector.SelectedBuilding.GetComponent<NetworkIdentity>());
     }
 
     public override void Act(GameObject executioner)
     {
         Building selectedBuilding = executioner.GetComponent<Building>();
-        PlayerOnline buildingPlayer = MultiplayerController.Instance.players.Find(item => item.playerType == selectedBuilding.owner);
-        Unit unitToTrain = Units.Instance.GetUnitPrefab(unitType, selectedBuilding.owner).GetComponent<Unit>();
+        PlayerOnline buildingPlayer = MultiplayerController.Instance.Players.Find(item => item.PlayerType == selectedBuilding.Owner);
+        Unit unitToTrain = Units.Instance.GetUnitPrefab(unitType, selectedBuilding.Owner).GetComponent<Unit>();
         string messageToShow = "";
-        if (unitToTrain.goldCost > buildingPlayer.goldAmount || unitToTrain.foodCost > buildingPlayer.foodMaxAmount - buildingPlayer.foodAmount)
+        if (unitToTrain.GoldCost > buildingPlayer.GoldAmount || unitToTrain.FoodCost > buildingPlayer.FoodMaxAmount - buildingPlayer.FoodAmount)
         {
-            if (unitToTrain.goldCost > buildingPlayer.goldAmount)
+            if (unitToTrain.GoldCost > buildingPlayer.GoldAmount)
             {
                 messageToShow += "Not enough gold\n";
             }
-            if (unitToTrain.foodCost > buildingPlayer.foodMaxAmount - buildingPlayer.foodAmount)
+            if (unitToTrain.FoodCost > buildingPlayer.FoodMaxAmount - buildingPlayer.FoodAmount)
             {
                 messageToShow += "Not enough food\n";
             }
-            MessagesController.Instance.RpcShowMessage(messageToShow.Remove(messageToShow.Length - 1), buildingPlayer.playerType);
+            MessagesController.Instance.RpcShowMessage(messageToShow.Remove(messageToShow.Length - 1), buildingPlayer.PlayerType);
         }
         else
         {
-            buildingPlayer.goldAmount -= unitToTrain.goldCost;
+            buildingPlayer.GoldAmount -= unitToTrain.GoldCost;
             selectedBuilding.Train(unitToTrain);
         }
     }

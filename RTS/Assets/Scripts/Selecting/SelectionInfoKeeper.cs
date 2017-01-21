@@ -5,20 +5,71 @@ using System.Collections.Generic;
 
 public class SelectionInfoKeeper : MonoBehaviour
 {
-    public Text unitName;
+    [SerializeField]
+    private Text unitName;
+    public Text UnitName
+    {
+        get
+        {
+            return unitName;
+        }
+    }
 
-    public GameObject buildCompletitionBar;
-    public Image buildCompletitionBarFill;
+    [SerializeField]
+    private GameObject buildCompletitionBar;
+    [SerializeField]
+    private Image buildCompletitionBarFill;
 
-    public GameObject trainingUnitGameObject;
-    public Image trainingCompletitionBarFill;
-    public Image trainedUnitPortrait;
+    [SerializeField]
+    private GameObject trainingUnitGameObject;
+    public GameObject TrainingUnitGameObject
+    {
+        get
+        {
+            return trainingUnitGameObject;
+        }
+    }
+    [SerializeField]
+    private Image trainingCompletitionBarFill;
+    [SerializeField]
+    private Image trainedUnitPortrait;
+    public Image TrainedUnitPortrait
+    {
+        get
+        {
+            return trainedUnitPortrait;
+        }
+    }
 
-    public GameObject goldLeftInfoGameObject;
+    [SerializeField]
+    private GameObject goldLeftInfoGameObject;
+    public GameObject GoldLeftInfoGameObject
+    {
+        get
+        {
+            return goldLeftInfoGameObject;
+        }
+    }
 
-    public Text goldLeftAmountText;
+    [SerializeField]
+    private Text goldLeftAmountText;
+    public Text GoldLeftAmountText
+    {
+        get
+        {
+            return goldLeftAmountText;
+        }
+    }
 
-    public List<Selection> selections;
+    [SerializeField]
+    private List<Selection> selections;
+    public List<Selection> Selections
+    {
+        get
+        {
+            return selections;
+        }
+    }
 
     private static SelectionInfoKeeper instance;
 

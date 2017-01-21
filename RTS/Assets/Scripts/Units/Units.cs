@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class Units : MonoBehaviour
 {
-    public List<Unit> unitsList;
+    [SerializeField]
+    private List<Unit> unitsList;
+    public List<Unit> UnitsList
+    {
+        get
+        {
+            return unitsList;
+        }
+    }
 
     private static Units instance;
 
@@ -14,22 +22,9 @@ public class Units : MonoBehaviour
         {
             if (instance == null)
             {
-                Units newInstance = FindObjectOfType<Units>();
-                if (newInstance != null)
-                {
-                    instance = newInstance;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("There is not Units attached to scene and is tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<Units>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
 
@@ -47,6 +42,6 @@ public class Units : MonoBehaviour
 
     public GameObject GetUnitPrefab(UnitType unitType, PlayerType owner)
     {
-        return unitsList.Find(item => item.unitType == unitType && item.owner == owner).gameObject;
+        return unitsList.Find(item => item.UnitType == unitType && item.Owner == owner).gameObject;
     }
 }

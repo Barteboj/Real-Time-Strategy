@@ -5,22 +5,30 @@ using UnityEngine.Networking;
 
 public class Selector : NetworkBehaviour
 {
-    public SpriteRenderer selectionHighlight;
-    public Vector2 startSelectionPosition;
+    [SerializeField]
+    private SpriteRenderer selectionHighlight;
+    private Vector2 startSelectionPosition;
 
-    public List<Unit> selectedUnits = new List<Unit>();
-    public Building selectedBuilding;
-    public Mine selectedMine;
+    private List<Unit> selectedUnits = new List<Unit>();
+    public List<Unit> SelectedUnits
+    {
+        get
+        {
+            return selectedUnits;
+        }
+    }
+    public Building SelectedBuilding { get; set; }
+    public Mine SelectedMine { get; set; }
 
-    public List<Unit> actualTestSelectedUnits = new List<Unit>();
-    public Building actualTestSelectedBuilding;
-    public Mine actualTestSelectedMine;
-    public bool wasShiftPressedOnActualTest = false;
+    private List<Unit> actualTestSelectedUnits = new List<Unit>();
+    private Building actualTestSelectedBuilding;
+    private Mine actualTestSelectedMine;
+    private bool wasShiftPressedOnActualTest = false;
 
     private PlayerOnline player;
     private bool isSelecting = false;
 
-    Coroutine turnOffSelectorCoroutine;
+    private Coroutine turnOffSelectorCoroutine;
 
     private void Awake()
     {
@@ -62,13 +70,13 @@ public class Selector : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            if (Input.GetMouseButtonUp(0) && selectionHighlight.enabled && MultiplayerController.Instance.isGameInitialized)
+            if (Input.GetMouseButtonUp(0) && selectionHighlight.enabled && MultiplayerController.Instance.IsGameInitialized)
             {
                 wasShiftPressedOnActualTest = Input.GetKey(KeyCode.LeftShift);
                 CmdTestSelection(startSelectionPosition, selectionHighlight.transform.localScale, wasShiftPressedOnActualTest);
                 selectionHighlight.enabled = false;
             }
-            if (CheckIfIsInSelectionArea() && !player.commander.isSelectingBuildingPlace && MultiplayerController.Instance.isGameInitialized)
+            if (CheckIfIsInSelectionArea() && !player.Commander.IsSelectingBuildingPlace && MultiplayerController.Instance.IsGameInitialized)
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -81,20 +89,20 @@ public class Selector : NetworkBehaviour
                     selectionHighlight.transform.localScale = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - startSelectionPosition.x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y - startSelectionPosition.y, 1f);
                 }
             }
-            if (MultiplayerController.Instance.isGameInitialized)
+            if (MultiplayerController.Instance.IsGameInitialized)
             {
                 RaycastHit2D underMouseCursorInfo = GetWhatIsUnderMouseCursor();
                 if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<TrainingButton>())
                 {
                     TrainingButton buttonUnderMouse = underMouseCursorInfo.collider.GetComponent<TrainingButton>();
-                    Unit unitToViewCost = Units.Instance.unitsList.Find(item => item.unitType == buttonUnderMouse.unitType);
-                    CostGUI.Instance.ShowCostGUI(unitToViewCost.goldCost, unitToViewCost.lumberCost, unitToViewCost.foodCost);
+                    Unit unitToViewCost = Units.Instance.UnitsList.Find(item => item.UnitType == buttonUnderMouse.UnitType);
+                    CostGUI.Instance.ShowCostGUI(unitToViewCost.GoldCost, unitToViewCost.LumberCost, unitToViewCost.FoodCost);
                 }
                 else if (underMouseCursorInfo.collider != null && underMouseCursorInfo.collider.GetComponent<BuildButton>())
                 {
                     BuildButton buttonUnderMouse = underMouseCursorInfo.collider.GetComponent<BuildButton>();
-                    Building buildingToViewCost = Buildings.Instance.buildingsList.Find(item => item.buildingType == buttonUnderMouse.buildingType);
-                    CostGUI.Instance.ShowCostGUI(buildingToViewCost.goldCost, buildingToViewCost.lumberCost, 0);
+                    Building buildingToViewCost = Buildings.Instance.BuildingsList.Find(item => item.BuildingType == buttonUnderMouse.BuildingType);
+                    CostGUI.Instance.ShowCostGUI(buildingToViewCost.GoldCost, buildingToViewCost.LumberCost, 0);
                 }
                 else if (CostGUI.Instance.IsVisible)
                 {
@@ -149,7 +157,7 @@ public class Selector : NetworkBehaviour
             {
                 UnSelectAll();
             }
-            if (actualTestSelectedUnits.Count > 0 && !(wasShiftPressedOnActualTest && selectedUnits.Find(item => item.owner != player.playerType)))
+            if (actualTestSelectedUnits.Count > 0 && !(wasShiftPressedOnActualTest && selectedUnits.Find(item => item.Owner != player.PlayerType)))
             {
                 if (wasShiftPressedOnActualTest && actualTestSelectedUnits.Count == 1 && selectedUnits.Contains(actualTestSelectedUnits[0]) && selectionHighlight.transform.localScale.x < 0.3f && selectionHighlight.transform.localScale.y < 0.3f)
                 {
@@ -159,7 +167,7 @@ public class Selector : NetworkBehaviour
                 {
                     foreach (Unit actualSelectedUnit in actualTestSelectedUnits)
                     {
-                        if (!selectedUnits.Contains(actualSelectedUnit) && actualSelectedUnit.owner == player.playerType)
+                        if (!selectedUnits.Contains(actualSelectedUnit) && actualSelectedUnit.Owner == player.PlayerType)
                         {
                             Select(actualSelectedUnit);
                         }
@@ -212,50 +220,50 @@ public class Selector : NetworkBehaviour
         {
             Unselect(selectedUnits[0]);
         }
-        if (selectedBuilding != null)
+        if (SelectedBuilding != null)
         {
-            Unselect(selectedBuilding);
+            Unselect(SelectedBuilding);
         }
-        if (selectedMine != null)
+        if (SelectedMine != null)
         {
-            Unselect(selectedMine);
+            Unselect(SelectedMine);
         }
     }
 
     public void Select(Unit unitToSelect)
     {
-        if (selectedUnits.Count < SelectionInfoKeeper.Instance.selections.Count)
+        if (selectedUnits.Count < SelectionInfoKeeper.Instance.Selections.Count)
         {
             selectedUnits.Add(unitToSelect);
-            if (MultiplayerController.Instance.localPlayer.playerType == player.playerType)
+            if (MultiplayerController.Instance.LocalPlayer.PlayerType == player.PlayerType)
             {
                 ActionButtons.Instance.HideAllButtons();
-                Selection selectionToSelect = SelectionInfoKeeper.Instance.selections.Find(item => !item.IsSomethingSelected);
+                Selection selectionToSelect = SelectionInfoKeeper.Instance.Selections.Find(item => !item.IsSomethingSelected);
                 selectionToSelect.Select(unitToSelect);
-                unitToSelect.selectionIndicator.SetActive(true);
+                unitToSelect.SelectionIndicator.SetActive(true);
                 if (selectedUnits.Count == 1)
                 {
-                    SelectionInfoKeeper.Instance.selections.Find(item => item.IsSomethingSelected).Unselect();
-                    SelectionInfoKeeper.Instance.selections[0].Select(unitToSelect);
-                    SelectionInfoKeeper.Instance.unitName.text = unitToSelect.name;
-                    SelectionInfoKeeper.Instance.unitName.enabled = true;
-                    if (MultiplayerController.Instance.localPlayer.playerType == unitToSelect.owner)
+                    SelectionInfoKeeper.Instance.Selections.Find(item => item.IsSomethingSelected).Unselect();
+                    SelectionInfoKeeper.Instance.Selections[0].Select(unitToSelect);
+                    SelectionInfoKeeper.Instance.UnitName.text = unitToSelect.name;
+                    SelectionInfoKeeper.Instance.UnitName.enabled = true;
+                    if (MultiplayerController.Instance.LocalPlayer.PlayerType == unitToSelect.Owner)
                     {
-                        player.actionButtonsController.ShowButtons(unitToSelect);
+                        player.ActionButtonsController.ShowButtons(unitToSelect);
                     }
                 }
                 else
                 {
-                    player.actionButtonsController.HideAllButtons();
-                    SelectionInfoKeeper.Instance.unitName.enabled = false;
+                    player.ActionButtonsController.HideAllButtons();
+                    SelectionInfoKeeper.Instance.UnitName.enabled = false;
                 }
-                if (MultiplayerController.Instance.localPlayer.playerType == unitToSelect.owner)
+                if (MultiplayerController.Instance.LocalPlayer.PlayerType == unitToSelect.Owner)
                 {
-                    unitToSelect.selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+                    unitToSelect.SelectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.green;
                 }
                 else
                 {
-                    unitToSelect.selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                    unitToSelect.SelectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                 }
             }
         }
@@ -263,33 +271,33 @@ public class Selector : NetworkBehaviour
 
     public void Select(Building buildingToSelect)
     {
-        selectedBuilding = buildingToSelect;
-        if (MultiplayerController.Instance.localPlayer.playerType == player.playerType)
+        SelectedBuilding = buildingToSelect;
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == player.PlayerType)
         {
-            if (MultiplayerController.Instance.localPlayer.playerType == buildingToSelect.owner)
+            if (MultiplayerController.Instance.LocalPlayer.PlayerType == buildingToSelect.Owner)
             {
-                buildingToSelect.selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+                buildingToSelect.SelectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.green;
             }
             else
             {
-                buildingToSelect.selectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                buildingToSelect.SelectionIndicator.GetComponentInChildren<SpriteRenderer>().color = Color.red;
             }
-            buildingToSelect.selectionIndicator.SetActive(true);
-            Selection selectionToSelect = SelectionInfoKeeper.Instance.selections[0];
+            buildingToSelect.SelectionIndicator.SetActive(true);
+            Selection selectionToSelect = SelectionInfoKeeper.Instance.Selections[0];
             selectionToSelect.Select(buildingToSelect);
-            SelectionInfoKeeper.Instance.unitName.text = buildingToSelect.buildingName;
-            SelectionInfoKeeper.Instance.unitName.enabled = true;
-            if (MultiplayerController.Instance.localPlayer.playerType == buildingToSelect.owner)
+            SelectionInfoKeeper.Instance.UnitName.text = buildingToSelect.BuildingName;
+            SelectionInfoKeeper.Instance.UnitName.enabled = true;
+            if (MultiplayerController.Instance.LocalPlayer.PlayerType == buildingToSelect.Owner)
             {
-                if (buildingToSelect.isBuilded && !buildingToSelect.isTraining)
+                if (buildingToSelect.IsBuilded && !buildingToSelect.IsTraining)
                 {
-                    player.actionButtonsController.ShowButtons(buildingToSelect);
+                    player.ActionButtonsController.ShowButtons(buildingToSelect);
                 }
-                if (buildingToSelect.isTraining)
+                if (buildingToSelect.IsTraining)
                 {
-                    SelectionInfoKeeper.Instance.trainingUnitGameObject.SetActive(true);
+                    SelectionInfoKeeper.Instance.TrainingUnitGameObject.SetActive(true);
                 }
-                if (buildingToSelect.actualBuildTime < buildingToSelect.buildTime)
+                if (buildingToSelect.ActualBuildTime < buildingToSelect.BuildTime)
                 {
                     SelectionInfoKeeper.Instance.ShowBuildCompletitionBar();
                 }
@@ -299,69 +307,69 @@ public class Selector : NetworkBehaviour
 
     public void Select(Mine mineToSelect)
     {
-        selectedMine = mineToSelect;
-        if (MultiplayerController.Instance.localPlayer.playerType == player.playerType)
+        SelectedMine = mineToSelect;
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == player.PlayerType)
         {
-            mineToSelect.selectionIndicator.SetActive(true);
-            Selection selectionToSelect = SelectionInfoKeeper.Instance.selections[0];
+            mineToSelect.SelectionIndicator.SetActive(true);
+            Selection selectionToSelect = SelectionInfoKeeper.Instance.Selections[0];
             selectionToSelect.Select(mineToSelect);
-            SelectionInfoKeeper.Instance.unitName.text = Mine.mineName;
-            SelectionInfoKeeper.Instance.unitName.enabled = true;
-            SelectionInfoKeeper.Instance.goldLeftAmountText.text = mineToSelect.GoldLeft.ToString();
-            SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(true);
+            SelectionInfoKeeper.Instance.UnitName.text = Mine.mineName;
+            SelectionInfoKeeper.Instance.UnitName.enabled = true;
+            SelectionInfoKeeper.Instance.GoldLeftAmountText.text = mineToSelect.GoldLeft.ToString();
+            SelectionInfoKeeper.Instance.GoldLeftInfoGameObject.SetActive(true);
         }
     }
 
     public void Unselect(Unit unitToUnselect)
     {
         selectedUnits.Remove(unitToUnselect);
-        if (MultiplayerController.Instance.localPlayer.playerType == player.playerType)
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == player.PlayerType)
         {
-            unitToUnselect.selectionIndicator.SetActive(false);
-            SelectionInfoKeeper.Instance.selections.Find(item => item.selectedUnit == unitToUnselect).Unselect();
+            unitToUnselect.SelectionIndicator.SetActive(false);
+            SelectionInfoKeeper.Instance.Selections.Find(item => item.SelectedUnit == unitToUnselect).Unselect();
             if (selectedUnits.Count == 1)
             {
-                Unit unitToChangeSelectionPosition = SelectionInfoKeeper.Instance.selections.Find(item => item.IsSomethingSelected).selectedUnit;
-                SelectionInfoKeeper.Instance.selections.Find(item => item.IsSomethingSelected).Unselect();
-                SelectionInfoKeeper.Instance.selections[0].Select(unitToChangeSelectionPosition);
-                SelectionInfoKeeper.Instance.unitName.text = unitToChangeSelectionPosition.unitName;
-                SelectionInfoKeeper.Instance.unitName.enabled = true;
-                if (MultiplayerController.Instance.localPlayer.playerType == unitToChangeSelectionPosition.owner)
+                Unit unitToChangeSelectionPosition = SelectionInfoKeeper.Instance.Selections.Find(item => item.IsSomethingSelected).SelectedUnit;
+                SelectionInfoKeeper.Instance.Selections.Find(item => item.IsSomethingSelected).Unselect();
+                SelectionInfoKeeper.Instance.Selections[0].Select(unitToChangeSelectionPosition);
+                SelectionInfoKeeper.Instance.UnitName.text = unitToChangeSelectionPosition.UnitName;
+                SelectionInfoKeeper.Instance.UnitName.enabled = true;
+                if (MultiplayerController.Instance.LocalPlayer.PlayerType == unitToChangeSelectionPosition.Owner)
                 {
-                    player.actionButtonsController.ShowButtons(unitToChangeSelectionPosition);
+                    player.ActionButtonsController.ShowButtons(unitToChangeSelectionPosition);
                 }
             }
             else
             {
-                SelectionInfoKeeper.Instance.unitName.enabled = false;
-                player.actionButtonsController.HideButtons(unitToUnselect);
+                SelectionInfoKeeper.Instance.UnitName.enabled = false;
+                player.ActionButtonsController.HideButtons(unitToUnselect);
             }
         }
     }
 
     public void Unselect(Building buildingToUnselect)
     {
-        selectedBuilding = null;
-        if (MultiplayerController.Instance.localPlayer.playerType == player.playerType)
+        SelectedBuilding = null;
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == player.PlayerType)
         {
-            buildingToUnselect.selectionIndicator.SetActive(false);
-            SelectionInfoKeeper.Instance.selections.Find(item => item.selectedBuilding == buildingToUnselect).Unselect();
-            SelectionInfoKeeper.Instance.unitName.enabled = false;
-            player.actionButtonsController.HideButtons(buildingToUnselect);
-            SelectionInfoKeeper.Instance.trainingUnitGameObject.SetActive(false);
+            buildingToUnselect.SelectionIndicator.SetActive(false);
+            SelectionInfoKeeper.Instance.Selections.Find(item => item.SelectedBuilding == buildingToUnselect).Unselect();
+            SelectionInfoKeeper.Instance.UnitName.enabled = false;
+            player.ActionButtonsController.HideButtons(buildingToUnselect);
+            SelectionInfoKeeper.Instance.TrainingUnitGameObject.SetActive(false);
             SelectionInfoKeeper.Instance.HideBuildCompletitionBar();
         }
     }
 
     public void Unselect(Mine mineToUnselect)
     {
-        selectedMine = null;
-        if (MultiplayerController.Instance.localPlayer.playerType == player.playerType)
+        SelectedMine = null;
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == player.PlayerType)
         {
-            mineToUnselect.selectionIndicator.SetActive(false);
-            SelectionInfoKeeper.Instance.selections.Find(item => item.selectedMine == mineToUnselect).Unselect();
-            SelectionInfoKeeper.Instance.unitName.enabled = false;
-            SelectionInfoKeeper.Instance.goldLeftInfoGameObject.SetActive(false);
+            mineToUnselect.SelectionIndicator.SetActive(false);
+            SelectionInfoKeeper.Instance.Selections.Find(item => item.SelectedMine == mineToUnselect).Unselect();
+            SelectionInfoKeeper.Instance.UnitName.enabled = false;
+            SelectionInfoKeeper.Instance.GoldLeftInfoGameObject.SetActive(false);
         }
     }
 

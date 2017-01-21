@@ -5,20 +5,28 @@ using System;
 
 public class BuildButton : ActionButton
 {
-    public BuildingType buildingType;
+    [SerializeField]
+    private BuildingType buildingType;
+    public BuildingType BuildingType
+    {
+        get
+        {
+            return buildingType;
+        }
+    }
 
     private void Awake()
     {
-        buttonImage.sprite = Buildings.Instance.GetBuildingPrefab(buildingType, MultiplayerController.Instance.localPlayer.playerType).GetComponent<Building>().portrait;
+        buttonImage.sprite = Buildings.Instance.GetBuildingPrefab(buildingType, MultiplayerController.Instance.LocalPlayer.PlayerType).GetComponent<Building>().Portrait;
     }
 
     public override void Act(GameObject executioner)
     {
         Unit actingUnit = executioner.GetComponent<Unit>();
-        Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, actingUnit.owner).GetComponent<Building>();
-        if (buildingToBuild.goldCost > MultiplayerController.Instance.players.Find(item => item.playerType == actingUnit.owner).goldAmount)
+        Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, actingUnit.Owner).GetComponent<Building>();
+        if (buildingToBuild.GoldCost > MultiplayerController.Instance.Players.Find(item => item.PlayerType == actingUnit.Owner).GoldAmount)
         {
-            MessagesController.Instance.RpcShowMessage("Not enough gold", actingUnit.owner);
+            MessagesController.Instance.RpcShowMessage("Not enough gold", actingUnit.Owner);
         }
         else
         {
@@ -29,15 +37,15 @@ public class BuildButton : ActionButton
     public override void GiveActionButtonsControllerToExecuteOnServer()
     {
         
-        Unit actingUnit = MultiplayerController.Instance.localPlayer.selector.selectedUnits[0];
-        Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, actingUnit.owner).GetComponent<Building>();
-        if (buildingToBuild.goldCost > MultiplayerController.Instance.players.Find(item => item.playerType == actingUnit.owner).goldAmount)
+        Unit actingUnit = MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits[0];
+        Building buildingToBuild = Buildings.Instance.GetBuildingPrefab(buildingType, actingUnit.Owner).GetComponent<Building>();
+        if (buildingToBuild.GoldCost > MultiplayerController.Instance.Players.Find(item => item.PlayerType == actingUnit.Owner).GoldAmount)
         {
-            MessagesController.Instance.RpcShowMessage("Not enough gold", actingUnit.owner);
+            MessagesController.Instance.RpcShowMessage("Not enough gold", actingUnit.Owner);
         }
         else
         {
-            MultiplayerController.Instance.localPlayer.commander.PlaceBuilding(buildingType);
+            MultiplayerController.Instance.LocalPlayer.Commander.PlaceBuilding(buildingType);
         }
     }
 }

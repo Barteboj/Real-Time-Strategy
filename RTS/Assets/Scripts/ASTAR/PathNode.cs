@@ -3,11 +3,8 @@ using System.Collections;
 
 public class PathNode
 {
-    public int CostFunctionValue;
-    public int CostFromStart;
-    public int HeuristicCostToGoal;
-
-    public MapGridElement parentPathNode;
-
-    public bool isWalkable;
+    public int CostFunctionValue { get; set; }
+    public int CostFromStart { get; set; }
+    public int HeuristicCostToGoal { get; set; }
+    public MapGridElement parentPathNode { get; set; }
 }

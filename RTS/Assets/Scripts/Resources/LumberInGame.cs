@@ -5,7 +5,7 @@ using System.Collections;
 public class LumberInGame : NetworkBehaviour
 {
     private bool isDepleted = false;
-    public bool isBeingCut = false;
+    public bool IsBeingCut { get; set; }
 
     public bool IsDepleted
     {
@@ -14,9 +14,13 @@ public class LumberInGame : NetworkBehaviour
             return isDepleted;
         }
     }
-    public Sprite depletedSprite;
-    public SpriteRenderer spriteRenderer;
-    public MinimapElement minimapElement;
+
+    [SerializeField]
+    private Sprite depletedSprite;
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private MinimapElement minimapElement;
 
     void Awake()
     {
@@ -39,6 +43,6 @@ public class LumberInGame : NetworkBehaviour
     private void PlaceYourselfOnMapGrid()
     {
         IntVector2 positionOnMapGrid = MapGridded.WorldToMapPosition(gameObject.transform.position);
-        MapGridded.Instance.mapGrid[positionOnMapGrid.y, positionOnMapGrid.x].lumber = this;
+        MapGridded.Instance.MapGrid[positionOnMapGrid.Y, positionOnMapGrid.X].Lumber = this;
     }
 }

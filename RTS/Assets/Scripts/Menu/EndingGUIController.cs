@@ -7,20 +7,32 @@ using UnityEngine.SceneManagement;
 
 public class EndingGUIController : MonoBehaviour
 {
-    public Text outcomeText;
-
-    public PlayerStatisticGUI player1GoldStatistic;
-    public PlayerStatisticGUI player1LumberStatistic;
-    public PlayerStatisticGUI player1UnitsStatistic;
-    public PlayerStatisticGUI player1BuildingsStatistic;
-    public PlayerStatisticGUI player1KillsStatistic;
-    public PlayerStatisticGUI player1RazingsStatistic;
-    public PlayerStatisticGUI player2GoldStatistic;
-    public PlayerStatisticGUI player2LumberStatistic;
-    public PlayerStatisticGUI player2UnitsStatistic;
-    public PlayerStatisticGUI player2BuildingsStatistic;
-    public PlayerStatisticGUI player2KillsStatistic;
-    public PlayerStatisticGUI player2RazingsStatistic;
+    [SerializeField]
+    private Text outcomeText;
+    [SerializeField]
+    private PlayerStatisticGUI player1GoldStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player1LumberStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player1UnitsStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player1BuildingsStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player1KillsStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player1RazingsStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player2GoldStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player2LumberStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player2UnitsStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player2BuildingsStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player2KillsStatistic;
+    [SerializeField]
+    private PlayerStatisticGUI player2RazingsStatistic;
 
     private PlayerOnline player1;
     private PlayerOnline player2;
@@ -30,7 +42,7 @@ public class EndingGUIController : MonoBehaviour
 
     private void Start()
     {
-        if (MultiplayerController.Instance.localPlayer.playerType == MultiplayerController.Instance.winner)
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == MultiplayerController.Instance.winner)
         {
             outcomeText.text = playerVictoryText;
         }
@@ -38,20 +50,20 @@ public class EndingGUIController : MonoBehaviour
         {
             outcomeText.text = playerDefeatText;
         }
-        PlayerOnline player1 = MultiplayerController.Instance.players.Find(item => item.playerType == PlayerType.Player1);
-        PlayerOnline player2 = MultiplayerController.Instance.players.Find(item => item.playerType == PlayerType.Player2);
-        player1GoldStatistic.Set(player1.allGatheredGold, Mathf.Max(player1.allGatheredGold, player2.allGatheredGold));
-        player1LumberStatistic.Set(player1.allGatheredLumber, Mathf.Max(player1.allGatheredLumber, player2.allGatheredLumber));
-        player1UnitsStatistic.Set(player1.allUnitsAmount, Mathf.Max(player1.allUnitsAmount, player2.allUnitsAmount));
-        player1BuildingsStatistic.Set(player1.allBuildingsAmount, Mathf.Max(player1.allBuildingsAmount, player2.allBuildingsAmount));
-        player1KillsStatistic.Set(player1.kills, Mathf.Max(player1.kills, player2.kills));
-        player1RazingsStatistic.Set(player1.razings, Mathf.Max(player1.razings, player2.razings));
-        player2GoldStatistic.Set(player2.allGatheredGold, Mathf.Max(player1.allGatheredGold, player2.allGatheredGold));
-        player2LumberStatistic.Set(player2.allGatheredLumber, Mathf.Max(player1.allGatheredLumber, player2.allGatheredLumber));
-        player2UnitsStatistic.Set(player2.allUnitsAmount, Mathf.Max(player1.allUnitsAmount, player2.allUnitsAmount));
-        player2BuildingsStatistic.Set(player2.allBuildingsAmount, Mathf.Max(player1.allBuildingsAmount, player2.allBuildingsAmount));
-        player2KillsStatistic.Set(player2.kills, Mathf.Max(player1.kills, player2.kills));
-        player2RazingsStatistic.Set(player2.razings, Mathf.Max(player1.razings, player2.razings));
+        PlayerOnline player1 = MultiplayerController.Instance.Players.Find(item => item.PlayerType == PlayerType.Player1);
+        PlayerOnline player2 = MultiplayerController.Instance.Players.Find(item => item.PlayerType == PlayerType.Player2);
+        player1GoldStatistic.Set(player1.AllGatheredGold, Mathf.Max(player1.AllGatheredGold, player2.AllGatheredGold));
+        player1LumberStatistic.Set(player1.AllGatheredLumber, Mathf.Max(player1.AllGatheredLumber, player2.AllGatheredLumber));
+        player1UnitsStatistic.Set(player1.AllUnitsAmount, Mathf.Max(player1.AllUnitsAmount, player2.AllUnitsAmount));
+        player1BuildingsStatistic.Set(player1.AllBuildingsAmount, Mathf.Max(player1.AllBuildingsAmount, player2.AllBuildingsAmount));
+        player1KillsStatistic.Set(player1.Kills, Mathf.Max(player1.Kills, player2.Kills));
+        player1RazingsStatistic.Set(player1.Razings, Mathf.Max(player1.Razings, player2.Razings));
+        player2GoldStatistic.Set(player2.AllGatheredGold, Mathf.Max(player1.AllGatheredGold, player2.AllGatheredGold));
+        player2LumberStatistic.Set(player2.AllGatheredLumber, Mathf.Max(player1.AllGatheredLumber, player2.AllGatheredLumber));
+        player2UnitsStatistic.Set(player2.AllUnitsAmount, Mathf.Max(player1.AllUnitsAmount, player2.AllUnitsAmount));
+        player2BuildingsStatistic.Set(player2.AllBuildingsAmount, Mathf.Max(player1.AllBuildingsAmount, player2.AllBuildingsAmount));
+        player2KillsStatistic.Set(player2.Kills, Mathf.Max(player1.Kills, player2.Kills));
+        player2RazingsStatistic.Set(player2.Razings, Mathf.Max(player1.Razings, player2.Razings));
     }
 
     public void OnMainMenuButtonClick()

@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class Buildings : MonoBehaviour
 {
-    public List<Building> buildingsList;
+    [SerializeField]
+    private List<Building> buildingsList;
+    public List<Building> BuildingsList
+    {
+        get
+        {
+            return buildingsList;
+        }
+    }
 
     private static Buildings instance;
 
@@ -47,6 +55,6 @@ public class Buildings : MonoBehaviour
 
     public GameObject GetBuildingPrefab(BuildingType buildingType, PlayerType owner)
     {
-        return buildingsList.Find(item => item.buildingType == buildingType && item.owner == owner).gameObject;
+        return buildingsList.Find(item => item.BuildingType == buildingType && item.Owner == owner).gameObject;
     }
 }

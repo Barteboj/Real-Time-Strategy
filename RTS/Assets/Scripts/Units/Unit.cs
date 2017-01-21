@@ -15,52 +15,176 @@ public class Unit : NetworkBehaviour
 {
     protected bool isFollowingPath = false;
     protected MapGridElement nextNodeToFollow;
-    public IntVector2 positionInGrid;
+    protected IntVector2 positionInGrid;
+    public IntVector2 PositionInGrid
+    {
+        get
+        {
+            return positionInGrid;
+        }
+    }
     protected int indexOfFollowedPathNode;
     protected IntVector2 requestedTargetPositionInGrid;
     protected bool hasFinishedGoingToLastStep = false;
     protected Coroutine disableHitAnimationCoroutine;
-
-    public string unitName;
-    public int armor;
-    public int minDamage;
-    public int maxDamage;
-    public int range;
-    public int speed;
-    public int maxHealth;
-
+    [SerializeField]
+    private string unitName;
+    public string UnitName
+    {
+        get
+        {
+            return unitName;
+        }
+    }
+    [SerializeField]
+    private int armor;
+    [SerializeField]
+    private int minDamage;
+    [SerializeField]
+    private int maxDamage;
+    [SerializeField]
+    protected int range;
+    [SerializeField]
+    private int speed;
+    [SerializeField]
+    private int maxHealth;
+    public int MaxHealth
+    {
+        get
+        {
+            return maxHealth;
+        }
+    }
     [SyncVar(hook = "OnActualHealthChange")]
-    public int actualHealth;
-
+    protected int actualHealth;
+    public int ActualHealth
+    {
+        get
+        {
+            return actualHealth;
+        }
+    }
     [SyncVar(hook = "OnChangePositionInGridSyncVar")]
-    public Vector2 positionInGridSyncVar;
-
-    public List<MapGridElement> followedPath;
-    public SpriteRenderer spriteRenderer;
-    public Sprite portrait;
-    public GameObject selectionIndicator;
-    public GameObject selectionCollider;
-    public ActionButtonType[] buttonTypes;
-    public float trainingTime;
-
-    public int goldCost;
-    public int lumberCost;
-    public int foodCost;
-
-    public UnitType unitType;
-    public PlayerType owner;
-
-    public Vector2 goalPosition;
-    public bool isMoving = false;
-
-    public float averageDamageFactor = 0.6f;
-    public float criticalDamageFactor = 0.3f;
+    protected Vector2 positionInGridSyncVar;
+    private List<MapGridElement> followedPath;
+    [SerializeField]
+    protected SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private Sprite portrait;
+    public Sprite Portrait
+    {
+        get
+        {
+            return portrait;
+        }
+    }
+    [SerializeField]
+    private GameObject selectionIndicator;
+    public GameObject SelectionIndicator
+    {
+        get
+        {
+            return selectionIndicator;
+        }
+    }
+    [SerializeField]
+    protected GameObject selectionCollider;
+    [SerializeField]
+    protected ActionButtonType[] buttonTypes;
+    public ActionButtonType[] ButtonTypes
+    {
+        get
+        {
+            return buttonTypes;
+        }
+    }
+    [SerializeField]
+    private float trainingTime;
+    public float TrainingTime
+    {
+        get
+        {
+            return trainingTime;
+        }
+    }
+    [SerializeField]
+    private int goldCost;
+    public int GoldCost
+    {
+        get
+        {
+            return goldCost;
+        }
+    }
+    [SerializeField]
+    private int lumberCost;
+    public int LumberCost
+    {
+        get
+        {
+            return lumberCost;
+        }
+    }
+    [SerializeField]
+    private int foodCost;
+    public int FoodCost
+    {
+        get
+        {
+            return foodCost;
+        }
+    }
+    [SerializeField]
+    private UnitType unitType;
+    public UnitType UnitType
+    {
+        get
+        {
+            return unitType;
+        }
+    }
+    [SerializeField]
+    protected PlayerType owner;
+    public PlayerType Owner
+    {
+        get
+        {
+            return owner;
+        }
+    }
+    private Vector2 goalPosition;
+    protected bool isMoving = false;
+    public bool IsMoving
+    {
+        get
+        {
+            return isMoving;
+        }
+    }
+    [SerializeField]
+    private float averageDamageFactor = 0.6f;
+    public float AverageDamageFactor
+    {
+        get
+        {
+            return averageDamageFactor;
+        }
+    }
+    [SerializeField]
+    private float criticalDamageFactor = 0.3f;
+    public float CriticalDamageFactor
+    {
+        get
+        {
+            return criticalDamageFactor;
+        }
+    }
 
     private void Awake()
     {
-        gameObject.GetComponentInChildren<MinimapElement>().image.color = MultiplayerController.Instance.playerColors[(int)owner];
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeUnits.Add(this);
-        ++MultiplayerController.Instance.players.Find(item => item.playerType == owner).allUnitsAmount;
+        gameObject.GetComponentInChildren<MinimapElement>().Image.color = MultiplayerController.Instance.PlayerColors[(int)owner];
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).ActiveUnits.Add(this);
+        ++MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).AllUnitsAmount;
     }
 
     public override void OnStartServer()
@@ -70,11 +194,11 @@ public class Unit : NetworkBehaviour
         {
             actualHealth = maxHealth;
             InitializePositionInGrid();
-            MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodAmount += foodCost;
+            MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).FoodAmount += foodCost;
         }
     }
 
-    public virtual void Update()
+    protected virtual void Update()
     {
         if (isMoving)
         {
@@ -96,7 +220,7 @@ public class Unit : NetworkBehaviour
         }
     }
 
-    public void OnChangePositionInGridSyncVar(Vector2 newPosition)
+    void OnChangePositionInGridSyncVar(Vector2 newPosition)
     {
         if (positionInGrid != null)
         {
@@ -116,7 +240,7 @@ public class Unit : NetworkBehaviour
         actualHealth -= damage;
         if (actualHealth <= 0)
         {
-            ++MultiplayerController.Instance.players.Find(item => item.playerType == attacker.owner).kills;
+            ++MultiplayerController.Instance.Players.Find(item => item.PlayerType == attacker.owner).Kills;
             attacker.StopAttack();
             Die();
         }
@@ -144,11 +268,11 @@ public class Unit : NetworkBehaviour
 
     public virtual void Die()
     {
-        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+            MultiplayerController.Instance.LocalPlayer.Selector.Unselect(this);
         }
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).foodAmount -= foodCost;
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).FoodAmount -= foodCost;
         NetworkServer.Destroy(gameObject);
     }
 
@@ -156,11 +280,11 @@ public class Unit : NetworkBehaviour
     {
         if (MultiplayerController.Instance != null && SelectionInfoKeeper.Instance != null)
         {
-            if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+            if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(this))
             {
-                MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+                MultiplayerController.Instance.LocalPlayer.Selector.Unselect(this);
             }
-            MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeUnits.Remove(this);
+            MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).ActiveUnits.Remove(this);
         }
     }
 
@@ -182,7 +306,7 @@ public class Unit : NetworkBehaviour
         {
             if (targetPath.Count > 0)
             {
-                requestedTargetPositionInGrid = new IntVector2(targetPath[targetPath.Count - 1].x, targetPath[targetPath.Count - 1].y);
+                requestedTargetPositionInGrid = new IntVector2(targetPath[targetPath.Count - 1].X, targetPath[targetPath.Count - 1].Y);
             }
             else
             {
@@ -207,27 +331,27 @@ public class Unit : NetworkBehaviour
             }
             else
             {
-                nextNodeToFollow = MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x];
+                nextNodeToFollow = MapGridded.Instance.MapGrid[positionInGrid.Y, positionInGrid.X];
             }
             indexOfFollowedPathNode = 0;
-            if (MapGridded.Instance.mapGrid[nextNodeToFollow.y, nextNodeToFollow.x].ChecklIfIsWalkableForUnit(this))
+            if (MapGridded.Instance.MapGrid[nextNodeToFollow.Y, nextNodeToFollow.X].ChecklIfIsWalkableForUnit(this))
             {
-                SetNewPositionOnMap(new IntVector2(nextNodeToFollow.x, nextNodeToFollow.y));
+                SetNewPositionOnMap(new IntVector2(nextNodeToFollow.X, nextNodeToFollow.Y));
                 if (pathToFollow.Count > 0)
                 {
-                    requestedTargetPositionInGrid = new IntVector2(pathToFollow[pathToFollow.Count - 1].x, pathToFollow[pathToFollow.Count - 1].y);
+                    requestedTargetPositionInGrid = new IntVector2(pathToFollow[pathToFollow.Count - 1].X, pathToFollow[pathToFollow.Count - 1].Y);
                 }
                 else
                 {
                     requestedTargetPositionInGrid = positionInGrid;
                 }
                 isFollowingPath = true;
-                RpcMoveFromTo(gameObject.transform.position, new Vector2(nextNodeToFollow.x, nextNodeToFollow.y));
+                RpcMoveFromTo(gameObject.transform.position, new Vector2(nextNodeToFollow.X, nextNodeToFollow.Y));
             }
             else
             {
                 isFollowingPath = false;
-                RequestGoTo(new IntVector2(pathToFollow[pathToFollow.Count - 1].x, pathToFollow[pathToFollow.Count - 1].y));
+                RequestGoTo(new IntVector2(pathToFollow[pathToFollow.Count - 1].X, pathToFollow[pathToFollow.Count - 1].Y));
             }
         }
     }
@@ -261,15 +385,15 @@ public class Unit : NetworkBehaviour
             {
                 ++indexOfFollowedPathNode;
                 nextNodeToFollow = followedPath[indexOfFollowedPathNode];
-                if (CheckIfCanGoTo(new IntVector2(nextNodeToFollow.x, nextNodeToFollow.y)))
+                if (CheckIfCanGoTo(new IntVector2(nextNodeToFollow.X, nextNodeToFollow.Y)))
                 {
-                    positionInGridSyncVar = new Vector2(nextNodeToFollow.x, nextNodeToFollow.y);
-                    RpcMoveFromTo(gameObject.transform.position, new Vector2(nextNodeToFollow.x, nextNodeToFollow.y));
+                    positionInGridSyncVar = new Vector2(nextNodeToFollow.X, nextNodeToFollow.Y);
+                    RpcMoveFromTo(gameObject.transform.position, new Vector2(nextNodeToFollow.X, nextNodeToFollow.Y));
                 }
                 else
                 {
                     isFollowingPath = false;
-                    RequestGoTo(new IntVector2(followedPath[followedPath.Count - 1].x, followedPath[followedPath.Count - 1].y));
+                    RequestGoTo(new IntVector2(followedPath[followedPath.Count - 1].X, followedPath[followedPath.Count - 1].Y));
                 }
             }
         }
@@ -282,24 +406,24 @@ public class Unit : NetworkBehaviour
 
     public void SetNewPositionOnMapSettingWorldPosition(IntVector2 newPosition)
     {
-        positionInGridSyncVar = new Vector2(newPosition.x, newPosition.y);
+        positionInGridSyncVar = new Vector2(newPosition.X, newPosition.Y);
         if (positionInGrid != null)
         {
             ClearPositionInGrid();
         }
-        positionInGrid = new IntVector2((int)newPosition.x, (int)newPosition.y);
+        positionInGrid = new IntVector2((int)newPosition.X, (int)newPosition.Y);
         FillPositionInGrid();
         gameObject.transform.position = MapGridded.MapToWorldPosition(newPosition);
     }
 
     public void SetNewPositionOnMap(IntVector2 newPosition)
     {
-        positionInGridSyncVar = new Vector2(newPosition.x, newPosition.y);
+        positionInGridSyncVar = new Vector2(newPosition.X, newPosition.Y);
     }
 
     public void ClearPositionInGrid()
     {
-        MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x].unit = null;
+        MapGridded.Instance.MapGrid[positionInGrid.Y, positionInGrid.X].Unit = null;
     }
 
     [ClientRpc]
@@ -310,7 +434,7 @@ public class Unit : NetworkBehaviour
 
     public void FillPositionInGrid()
     {
-        MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x].unit = this;
+        MapGridded.Instance.MapGrid[positionInGrid.Y, positionInGrid.X].Unit = this;
     }
 
     public void InitializePositionInGrid()
@@ -355,34 +479,34 @@ public class Unit : NetworkBehaviour
 
     public bool CheckIfCanGoTo(IntVector2 targetPosition)
     {
-        if (Mathf.Abs(positionInGrid.x - targetPosition.x) > 1 || Mathf.Abs(positionInGrid.y - targetPosition.y) > 1)
+        if (Mathf.Abs(positionInGrid.X - targetPosition.X) > 1 || Mathf.Abs(positionInGrid.Y - targetPosition.Y) > 1)
         {
             return false;
         }
         else
         {
-            if (targetPosition.x != positionInGrid.x && targetPosition.y != positionInGrid.y)
+            if (targetPosition.X != positionInGrid.X && targetPosition.Y != positionInGrid.Y)
             {
-                if (targetPosition.x > positionInGrid.x && targetPosition.y > positionInGrid.y)
+                if (targetPosition.X > positionInGrid.X && targetPosition.Y > positionInGrid.Y)
                 {
-                    return MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x + 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y + 1, positionInGrid.x + 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y + 1, positionInGrid.x].isWalkable;
+                    return MapGridded.Instance.MapGrid[positionInGrid.Y, positionInGrid.X + 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y + 1, positionInGrid.X + 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y + 1, positionInGrid.X].IsWalkable;
                 }
-                else if (targetPosition.x > positionInGrid.x && targetPosition.y < positionInGrid.y)
+                else if (targetPosition.X > positionInGrid.X && targetPosition.Y < positionInGrid.Y)
                 {
-                    return MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x + 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y - 1, positionInGrid.x + 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y - 1, positionInGrid.x].isWalkable;
+                    return MapGridded.Instance.MapGrid[positionInGrid.Y, positionInGrid.X + 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y - 1, positionInGrid.X + 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y - 1, positionInGrid.X].IsWalkable;
                 }
-                else if (targetPosition.x < positionInGrid.x && targetPosition.y < positionInGrid.y)
+                else if (targetPosition.X < positionInGrid.X && targetPosition.Y < positionInGrid.Y)
                 {
-                    return MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x - 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y - 1, positionInGrid.x - 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y - 1, positionInGrid.x].isWalkable;
+                    return MapGridded.Instance.MapGrid[positionInGrid.Y, positionInGrid.X - 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y - 1, positionInGrid.X - 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y - 1, positionInGrid.X].IsWalkable;
                 }
                 else
                 {
-                    return MapGridded.Instance.mapGrid[positionInGrid.y, positionInGrid.x - 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y + 1, positionInGrid.x - 1].isWalkable && MapGridded.Instance.mapGrid[positionInGrid.y + 1, positionInGrid.x].isWalkable;
+                    return MapGridded.Instance.MapGrid[positionInGrid.Y, positionInGrid.X - 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y + 1, positionInGrid.X - 1].IsWalkable && MapGridded.Instance.MapGrid[positionInGrid.Y + 1, positionInGrid.X].IsWalkable;
                 }
             }
             else
             {
-                return MapGridded.Instance.mapGrid[targetPosition.y, targetPosition.x].isWalkable;
+                return MapGridded.Instance.MapGrid[targetPosition.Y, targetPosition.X].IsWalkable;
             }
         }
     }

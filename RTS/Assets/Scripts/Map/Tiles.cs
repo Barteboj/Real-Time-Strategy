@@ -5,10 +5,33 @@ using System.Collections.Generic;
 public class Tiles : MonoBehaviour
 {
     private static Tiles instance;
-
-    public List<Tile> tilesPrefabs;
-    public GameObject canBuildIndicator;
-    public GameObject cannotBuildIndicator;
+    [SerializeField]
+    private List<Tile> tilesPrefabs;
+    public List<Tile> TilesPrefabs
+    {
+        get
+        {
+            return tilesPrefabs;
+        }
+    }
+    [SerializeField]
+    private GameObject canBuildIndicator;
+    public GameObject CanBuildIndicator
+    {
+        get
+        {
+            return canBuildIndicator;
+        }
+    }
+    [SerializeField]
+    private GameObject cannotBuildIndicator;
+    public GameObject CannotBuildIndicator
+    {
+        get
+        {
+            return cannotBuildIndicator;
+        }
+    }
 
     public static Tiles Instance
     {

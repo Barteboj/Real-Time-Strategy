@@ -45,14 +45,14 @@ public class ASTARPathfinder : MonoBehaviour
 
     public List<MapGridElement> FindPath(IntVector2 startNodePosition, IntVector2 goalNodePosition)
     {
-        MapGridElement startNode = MapGridded.Instance.mapGrid[startNodePosition.y, startNodePosition.x];
-        MapGridElement goalNode = MapGridded.Instance.mapGrid[goalNodePosition.y, goalNodePosition.x];
+        MapGridElement startNode = MapGridded.Instance.MapGrid[startNodePosition.Y, startNodePosition.X];
+        MapGridElement goalNode = MapGridded.Instance.MapGrid[goalNodePosition.Y, goalNodePosition.X];
         List<MapGridElement> closedNodes = new List<MapGridElement>();
         List<MapGridElement> openNodes = new List<MapGridElement>();
         openNodes.Add(startNode);
-        startNode.pathNode.CostFromStart = 0;
-        startNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.x - goalNode.x) + Mathf.Abs(startNode.y - goalNode.y)) * 10;
-        startNode.pathNode.CostFunctionValue = startNode.pathNode.CostFromStart + startNode.pathNode.HeuristicCostToGoal;
+        startNode.PathNode.CostFromStart = 0;
+        startNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.X - goalNode.X) + Mathf.Abs(startNode.Y - goalNode.Y)) * 10;
+        startNode.PathNode.CostFunctionValue = startNode.PathNode.CostFromStart + startNode.PathNode.HeuristicCostToGoal;
         while (openNodes.Count > 0)
         {
             MapGridElement actualOpenNode = GetPathNodeWithMinimumFunctionValue(openNodes);
@@ -68,23 +68,23 @@ public class ASTARPathfinder : MonoBehaviour
                 {
                     continue;
                 }
-                int testedCostFromStart = actualOpenNode.pathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
+                int testedCostFromStart = actualOpenNode.PathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
                 bool isTestedCostFromStartIsBetter = false;
                 if (!openNodes.Contains(nextNode))
                 {
                     openNodes.Add(nextNode);
-                    nextNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.x - goalNode.x) + Mathf.Abs(nextNode.y - goalNode.y)) * 10;
+                    nextNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.X - goalNode.X) + Mathf.Abs(nextNode.Y - goalNode.Y)) * 10;
                     isTestedCostFromStartIsBetter = true;
                 }
-                else if (testedCostFromStart < nextNode.pathNode.CostFromStart)
+                else if (testedCostFromStart < nextNode.PathNode.CostFromStart)
                 {
                     isTestedCostFromStartIsBetter = true;
                 }
                 if (isTestedCostFromStartIsBetter)
                 {
-                    nextNode.pathNode.parentPathNode = actualOpenNode;
-                    nextNode.pathNode.CostFromStart = testedCostFromStart;
-                    nextNode.pathNode.CostFunctionValue = nextNode.pathNode.CostFromStart + nextNode.pathNode.HeuristicCostToGoal;
+                    nextNode.PathNode.parentPathNode = actualOpenNode;
+                    nextNode.PathNode.CostFromStart = testedCostFromStart;
+                    nextNode.PathNode.CostFunctionValue = nextNode.PathNode.CostFromStart + nextNode.PathNode.HeuristicCostToGoal;
                 }
             }
         }
@@ -93,19 +93,19 @@ public class ASTARPathfinder : MonoBehaviour
 
     public List<MapGridElement> FindPathForLumber(IntVector2 startNodePosition, out LumberInGame lumberToCut)
     {
-        MapGridElement startNode = MapGridded.Instance.mapGrid[startNodePosition.y, startNodePosition.x];
+        MapGridElement startNode = MapGridded.Instance.MapGrid[startNodePosition.Y, startNodePosition.X];
         List<MapGridElement> closedNodes = new List<MapGridElement>();
         List<MapGridElement> openNodes = new List<MapGridElement>();
         openNodes.Add(startNode);
-        startNode.pathNode.CostFromStart = 0;
-        startNode.pathNode.HeuristicCostToGoal = 0;
-        startNode.pathNode.CostFunctionValue = startNode.pathNode.CostFromStart + startNode.pathNode.HeuristicCostToGoal;
+        startNode.PathNode.CostFromStart = 0;
+        startNode.PathNode.HeuristicCostToGoal = 0;
+        startNode.PathNode.CostFunctionValue = startNode.PathNode.CostFromStart + startNode.PathNode.HeuristicCostToGoal;
         while (openNodes.Count > 0)
         {
             MapGridElement actualOpenNode = GetPathNodeWithMinimumFunctionValue(openNodes);
-            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.x, actualOpenNode.y)).Find(item => item.lumber != null && !item.lumber.IsDepleted && !item.lumber.isBeingCut) != null)
+            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.X, actualOpenNode.Y)).Find(item => item.Lumber != null && !item.Lumber.IsDepleted && !item.Lumber.IsBeingCut) != null)
             {
-                lumberToCut = MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.x, actualOpenNode.y)).Find(item => item.lumber != null && !item.lumber.IsDepleted && !item.lumber.isBeingCut).lumber;
+                lumberToCut = MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.X, actualOpenNode.Y)).Find(item => item.Lumber != null && !item.Lumber.IsDepleted && !item.Lumber.IsBeingCut).Lumber;
                 return ReconstructPath(startNode, actualOpenNode);
             }
             openNodes.Remove(actualOpenNode);
@@ -116,23 +116,23 @@ public class ASTARPathfinder : MonoBehaviour
                 {
                     continue;
                 }
-                int testedCostFromStart = actualOpenNode.pathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
+                int testedCostFromStart = actualOpenNode.PathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
                 bool isTestedCostFromStartIsBetter = false;
                 if (!openNodes.Contains(nextNode))
                 {
                     openNodes.Add(nextNode);
-                    nextNode.pathNode.HeuristicCostToGoal = 0;
+                    nextNode.PathNode.HeuristicCostToGoal = 0;
                     isTestedCostFromStartIsBetter = true;
                 }
-                else if (testedCostFromStart < nextNode.pathNode.CostFromStart)
+                else if (testedCostFromStart < nextNode.PathNode.CostFromStart)
                 {
                     isTestedCostFromStartIsBetter = true;
                 }
                 if (isTestedCostFromStartIsBetter)
                 {
-                    nextNode.pathNode.parentPathNode = actualOpenNode;
-                    nextNode.pathNode.CostFromStart = testedCostFromStart;
-                    nextNode.pathNode.CostFunctionValue = nextNode.pathNode.CostFromStart + nextNode.pathNode.HeuristicCostToGoal;
+                    nextNode.PathNode.parentPathNode = actualOpenNode;
+                    nextNode.PathNode.CostFromStart = testedCostFromStart;
+                    nextNode.PathNode.CostFunctionValue = nextNode.PathNode.CostFromStart + nextNode.PathNode.HeuristicCostToGoal;
                 }
             }
         }
@@ -142,17 +142,17 @@ public class ASTARPathfinder : MonoBehaviour
 
     public List<MapGridElement> FindPathForMine(IntVector2 startNodePosition, Mine mine)
     {
-        MapGridElement startNode = MapGridded.Instance.mapGrid[startNodePosition.y, startNodePosition.x];
+        MapGridElement startNode = MapGridded.Instance.MapGrid[startNodePosition.Y, startNodePosition.X];
         List<MapGridElement> closedNodes = new List<MapGridElement>();
         List<MapGridElement> openNodes = new List<MapGridElement>();
         openNodes.Add(startNode);
-        startNode.pathNode.CostFromStart = 0;
-        startNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.x - MapGridded.WorldToMapPosition(mine.transform.position).x) + Mathf.Abs(startNode.y - MapGridded.WorldToMapPosition(mine.transform.position).y)) * 10;
-        startNode.pathNode.CostFunctionValue = startNode.pathNode.CostFromStart + startNode.pathNode.HeuristicCostToGoal;
+        startNode.PathNode.CostFromStart = 0;
+        startNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.X - MapGridded.WorldToMapPosition(mine.transform.position).X) + Mathf.Abs(startNode.Y - MapGridded.WorldToMapPosition(mine.transform.position).Y)) * 10;
+        startNode.PathNode.CostFunctionValue = startNode.PathNode.CostFromStart + startNode.PathNode.HeuristicCostToGoal;
         while (openNodes.Count > 0)
         {
             MapGridElement actualOpenNode = GetPathNodeWithMinimumFunctionValue(openNodes);
-            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.x, actualOpenNode.y)).Find(item => item.mine == mine) != null)
+            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.X, actualOpenNode.Y)).Find(item => item.Mine == mine) != null)
             {
                 return ReconstructPath(startNode, actualOpenNode);
             }
@@ -164,23 +164,23 @@ public class ASTARPathfinder : MonoBehaviour
                 {
                     continue;
                 }
-                int testedCostFromStart = actualOpenNode.pathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
+                int testedCostFromStart = actualOpenNode.PathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
                 bool isTestedCostFromStartIsBetter = false;
                 if (!openNodes.Contains(nextNode))
                 {
                     openNodes.Add(nextNode);
-                    nextNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.x - MapGridded.WorldToMapPosition(mine.transform.position).x) + Mathf.Abs(nextNode.y - MapGridded.WorldToMapPosition(mine.transform.position).y)) * 10;
+                    nextNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.X - MapGridded.WorldToMapPosition(mine.transform.position).X) + Mathf.Abs(nextNode.Y - MapGridded.WorldToMapPosition(mine.transform.position).Y)) * 10;
                     isTestedCostFromStartIsBetter = true;
                 }
-                else if (testedCostFromStart < nextNode.pathNode.CostFromStart)
+                else if (testedCostFromStart < nextNode.PathNode.CostFromStart)
                 {
                     isTestedCostFromStartIsBetter = true;
                 }
                 if (isTestedCostFromStartIsBetter)
                 {
-                    nextNode.pathNode.parentPathNode = actualOpenNode;
-                    nextNode.pathNode.CostFromStart = testedCostFromStart;
-                    nextNode.pathNode.CostFunctionValue = nextNode.pathNode.CostFromStart + nextNode.pathNode.HeuristicCostToGoal;
+                    nextNode.PathNode.parentPathNode = actualOpenNode;
+                    nextNode.PathNode.CostFromStart = testedCostFromStart;
+                    nextNode.PathNode.CostFunctionValue = nextNode.PathNode.CostFromStart + nextNode.PathNode.HeuristicCostToGoal;
                 }
             }
         }
@@ -189,17 +189,17 @@ public class ASTARPathfinder : MonoBehaviour
 
     public List<MapGridElement> FindPathForUnit(IntVector2 startNodePosition, Unit unit)
     {
-        MapGridElement startNode = MapGridded.Instance.mapGrid[startNodePosition.y, startNodePosition.x];
+        MapGridElement startNode = MapGridded.Instance.MapGrid[startNodePosition.Y, startNodePosition.X];
         List<MapGridElement> closedNodes = new List<MapGridElement>();
         List<MapGridElement> openNodes = new List<MapGridElement>();
         openNodes.Add(startNode);
-        startNode.pathNode.CostFromStart = 0;
-        startNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.x - unit.positionInGrid.x) + Mathf.Abs(startNode.y - unit.positionInGrid.y)) * 10;
-        startNode.pathNode.CostFunctionValue = startNode.pathNode.CostFromStart + startNode.pathNode.HeuristicCostToGoal;
+        startNode.PathNode.CostFromStart = 0;
+        startNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.X - unit.PositionInGrid.X) + Mathf.Abs(startNode.Y - unit.PositionInGrid.Y)) * 10;
+        startNode.PathNode.CostFunctionValue = startNode.PathNode.CostFromStart + startNode.PathNode.HeuristicCostToGoal;
         while (openNodes.Count > 0)
         {
             MapGridElement actualOpenNode = GetPathNodeWithMinimumFunctionValue(openNodes);
-            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.x, actualOpenNode.y)).Find(item => item.unit == unit) != null)
+            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.X, actualOpenNode.Y)).Find(item => item.Unit == unit) != null)
             {
                 return ReconstructPath(startNode, actualOpenNode);
             }
@@ -211,23 +211,23 @@ public class ASTARPathfinder : MonoBehaviour
                 {
                     continue;
                 }
-                int testedCostFromStart = actualOpenNode.pathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
+                int testedCostFromStart = actualOpenNode.PathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
                 bool isTestedCostFromStartIsBetter = false;
                 if (!openNodes.Contains(nextNode))
                 {
                     openNodes.Add(nextNode);
-                    nextNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.x - unit.positionInGrid.x) + Mathf.Abs(nextNode.y - unit.positionInGrid.y)) * 10;
+                    nextNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.X - unit.PositionInGrid.X) + Mathf.Abs(nextNode.Y - unit.PositionInGrid.Y)) * 10;
                     isTestedCostFromStartIsBetter = true;
                 }
-                else if (testedCostFromStart < nextNode.pathNode.CostFromStart)
+                else if (testedCostFromStart < nextNode.PathNode.CostFromStart)
                 {
                     isTestedCostFromStartIsBetter = true;
                 }
                 if (isTestedCostFromStartIsBetter)
                 {
-                    nextNode.pathNode.parentPathNode = actualOpenNode;
-                    nextNode.pathNode.CostFromStart = testedCostFromStart;
-                    nextNode.pathNode.CostFunctionValue = nextNode.pathNode.CostFromStart + nextNode.pathNode.HeuristicCostToGoal;
+                    nextNode.PathNode.parentPathNode = actualOpenNode;
+                    nextNode.PathNode.CostFromStart = testedCostFromStart;
+                    nextNode.PathNode.CostFunctionValue = nextNode.PathNode.CostFromStart + nextNode.PathNode.HeuristicCostToGoal;
                 }
             }
         }
@@ -236,17 +236,17 @@ public class ASTARPathfinder : MonoBehaviour
 
     public List<MapGridElement> FindPathForBuilding(IntVector2 startNodePosition, Building building)
     {
-        MapGridElement startNode = MapGridded.Instance.mapGrid[startNodePosition.y, startNodePosition.x];
+        MapGridElement startNode = MapGridded.Instance.MapGrid[startNodePosition.Y, startNodePosition.X];
         List<MapGridElement> closedNodes = new List<MapGridElement>();
         List<MapGridElement> openNodes = new List<MapGridElement>();
         openNodes.Add(startNode);
-        startNode.pathNode.CostFromStart = 0;
-        startNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.x - MapGridded.WorldToMapPosition(building.transform.position).x) + Mathf.Abs(startNode.y - MapGridded.WorldToMapPosition(building.transform.position).y)) * 10;
-        startNode.pathNode.CostFunctionValue = startNode.pathNode.CostFromStart + startNode.pathNode.HeuristicCostToGoal;
+        startNode.PathNode.CostFromStart = 0;
+        startNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(startNode.X - MapGridded.WorldToMapPosition(building.transform.position).X) + Mathf.Abs(startNode.Y - MapGridded.WorldToMapPosition(building.transform.position).Y)) * 10;
+        startNode.PathNode.CostFunctionValue = startNode.PathNode.CostFromStart + startNode.PathNode.HeuristicCostToGoal;
         while (openNodes.Count > 0)
         {
             MapGridElement actualOpenNode = GetPathNodeWithMinimumFunctionValue(openNodes);
-            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.x, actualOpenNode.y)).Find(item => item.building == building) != null)
+            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.X, actualOpenNode.Y)).Find(item => item.Building == building) != null)
             {
                 return ReconstructPath(startNode, actualOpenNode);
             }
@@ -258,23 +258,23 @@ public class ASTARPathfinder : MonoBehaviour
                 {
                     continue;
                 }
-                int testedCostFromStart = actualOpenNode.pathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
+                int testedCostFromStart = actualOpenNode.PathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
                 bool isTestedCostFromStartIsBetter = false;
                 if (!openNodes.Contains(nextNode))
                 {
                     openNodes.Add(nextNode);
-                    nextNode.pathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.x - MapGridded.WorldToMapPosition(building.transform.position).x) + Mathf.Abs(nextNode.y - MapGridded.WorldToMapPosition(building.transform.position).y)) * 10;
+                    nextNode.PathNode.HeuristicCostToGoal = (Mathf.Abs(nextNode.X - MapGridded.WorldToMapPosition(building.transform.position).X) + Mathf.Abs(nextNode.Y - MapGridded.WorldToMapPosition(building.transform.position).Y)) * 10;
                     isTestedCostFromStartIsBetter = true;
                 }
-                else if (testedCostFromStart < nextNode.pathNode.CostFromStart)
+                else if (testedCostFromStart < nextNode.PathNode.CostFromStart)
                 {
                     isTestedCostFromStartIsBetter = true;
                 }
                 if (isTestedCostFromStartIsBetter)
                 {
-                    nextNode.pathNode.parentPathNode = actualOpenNode;
-                    nextNode.pathNode.CostFromStart = testedCostFromStart;
-                    nextNode.pathNode.CostFunctionValue = nextNode.pathNode.CostFromStart + nextNode.pathNode.HeuristicCostToGoal;
+                    nextNode.PathNode.parentPathNode = actualOpenNode;
+                    nextNode.PathNode.CostFromStart = testedCostFromStart;
+                    nextNode.PathNode.CostFunctionValue = nextNode.PathNode.CostFromStart + nextNode.PathNode.HeuristicCostToGoal;
                 }
             }
         }
@@ -283,19 +283,19 @@ public class ASTARPathfinder : MonoBehaviour
 
     public List<MapGridElement> FindPathForNearestCastle(IntVector2 startNodePosition, PlayerType castleOwner, out Building castle)
     {
-        MapGridElement startNode = MapGridded.Instance.mapGrid[startNodePosition.y, startNodePosition.x];
+        MapGridElement startNode = MapGridded.Instance.MapGrid[startNodePosition.Y, startNodePosition.X];
         List<MapGridElement> closedNodes = new List<MapGridElement>();
         List<MapGridElement> openNodes = new List<MapGridElement>();
         openNodes.Add(startNode);
-        startNode.pathNode.CostFromStart = 0;
-        startNode.pathNode.HeuristicCostToGoal = 0;
-        startNode.pathNode.CostFunctionValue = startNode.pathNode.CostFromStart + startNode.pathNode.HeuristicCostToGoal;
+        startNode.PathNode.CostFromStart = 0;
+        startNode.PathNode.HeuristicCostToGoal = 0;
+        startNode.PathNode.CostFunctionValue = startNode.PathNode.CostFromStart + startNode.PathNode.HeuristicCostToGoal;
         while (openNodes.Count > 0)
         {
             MapGridElement actualOpenNode = GetPathNodeWithMinimumFunctionValue(openNodes);
-            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.x, actualOpenNode.y)).Find(item => item.building != null && item.building.buildingType == BuildingType.Castle && item.building.owner == castleOwner) != null)
+            if (MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.X, actualOpenNode.Y)).Find(item => item.Building != null && item.Building.BuildingType == BuildingType.Castle && item.Building.Owner == castleOwner) != null)
             {
-                castle = MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.x, actualOpenNode.y)).Find(item => item.building != null && item.building.buildingType == BuildingType.Castle && item.building.owner == castleOwner).building;
+                castle = MapGridded.Instance.GetAdjacentGridElements(new IntVector2(actualOpenNode.X, actualOpenNode.Y)).Find(item => item.Building != null && item.Building.BuildingType == BuildingType.Castle && item.Building.Owner == castleOwner).Building;
                 return ReconstructPath(startNode, actualOpenNode);
             }
             openNodes.Remove(actualOpenNode);
@@ -306,23 +306,23 @@ public class ASTARPathfinder : MonoBehaviour
                 {
                     continue;
                 }
-                int testedCostFromStart = actualOpenNode.pathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
+                int testedCostFromStart = actualOpenNode.PathNode.CostFromStart + nextNode.GetCostToGetHereFrom(actualOpenNode);
                 bool isTestedCostFromStartIsBetter = false;
                 if (!openNodes.Contains(nextNode))
                 {
                     openNodes.Add(nextNode);
-                    nextNode.pathNode.HeuristicCostToGoal = 0;
+                    nextNode.PathNode.HeuristicCostToGoal = 0;
                     isTestedCostFromStartIsBetter = true;
                 }
-                else if (testedCostFromStart < nextNode.pathNode.CostFromStart)
+                else if (testedCostFromStart < nextNode.PathNode.CostFromStart)
                 {
                     isTestedCostFromStartIsBetter = true;
                 }
                 if (isTestedCostFromStartIsBetter)
                 {
-                    nextNode.pathNode.parentPathNode = actualOpenNode;
-                    nextNode.pathNode.CostFromStart = testedCostFromStart;
-                    nextNode.pathNode.CostFunctionValue = nextNode.pathNode.CostFromStart + nextNode.pathNode.HeuristicCostToGoal;
+                    nextNode.PathNode.parentPathNode = actualOpenNode;
+                    nextNode.PathNode.CostFromStart = testedCostFromStart;
+                    nextNode.PathNode.CostFunctionValue = nextNode.PathNode.CostFromStart + nextNode.PathNode.HeuristicCostToGoal;
                 }
             }
         }
@@ -334,10 +334,10 @@ public class ASTARPathfinder : MonoBehaviour
     {
         List<MapGridElement> path = new List<MapGridElement>();
         MapGridElement actualNode = goal;
-        while (actualNode.pathNode != start.pathNode)
+        while (actualNode.PathNode != start.PathNode)
         {
             path.Add(actualNode);
-            actualNode = actualNode.pathNode.parentPathNode;
+            actualNode = actualNode.PathNode.parentPathNode;
         }
         path.Reverse();
         return path;
@@ -348,7 +348,7 @@ public class ASTARPathfinder : MonoBehaviour
         MapGridElement pathNodeWithMinimumF = pathNodes[0];
         foreach (MapGridElement actualPathNode in pathNodes)
         {
-            if (actualPathNode.pathNode.CostFunctionValue < pathNodeWithMinimumF.pathNode.CostFunctionValue)
+            if (actualPathNode.PathNode.CostFunctionValue < pathNodeWithMinimumF.PathNode.CostFunctionValue)
             {
                 pathNodeWithMinimumF = actualPathNode;
             }
@@ -359,114 +359,38 @@ public class ASTARPathfinder : MonoBehaviour
     public MapGridElement[] GetAdjacentNodesForPath(MapGridElement pathNode, IntVector2 startPathPosition)
     {
         List<MapGridElement> adjacentNodes = new List<MapGridElement>();
-        if (pathNode.y - 1 >= 0 && MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.Y - 1 >= 0 && MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X]);
         }
-        if (pathNode.y + 1 < MapGridded.Instance.mapGrid.GetLength(0) && MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.Y + 1 < MapGridded.Instance.MapGrid.GetLength(0) && MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X]);
         }
-        if (pathNode.x + 1 < MapGridded.Instance.mapGrid.GetLength(1) && MapGridded.Instance.mapGrid[pathNode.y, pathNode.x + 1].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.X + 1 < MapGridded.Instance.MapGrid.GetLength(1) && MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X + 1].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y, pathNode.x + 1]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X + 1]);
         }
-        if (pathNode.x - 1 >= 0 && MapGridded.Instance.mapGrid[pathNode.y, pathNode.x - 1].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.X - 1 >= 0 && MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X - 1].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y, pathNode.x - 1]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X - 1]);
         }
-        if (pathNode.x - 1 >= 0 && pathNode.y - 1 >= 0 && MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x - 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y, pathNode.x - 1].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.X - 1 >= 0 && pathNode.Y - 1 >= 0 && MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X - 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X - 1].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x - 1]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X - 1]);
         }
-        if (pathNode.x + 1 < MapGridded.Instance.mapGrid.GetLength(1) && pathNode.y - 1 >= 0 && MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x + 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y, pathNode.x + 1].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.X + 1 < MapGridded.Instance.MapGrid.GetLength(1) && pathNode.Y - 1 >= 0 && MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X + 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X + 1].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y - 1, pathNode.x + 1]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y - 1, pathNode.X + 1]);
         }
-        if (pathNode.x + 1 < MapGridded.Instance.mapGrid.GetLength(1) && pathNode.y + 1 < MapGridded.Instance.mapGrid.GetLength(0) && MapGridded.Instance.mapGrid[pathNode.y, pathNode.x + 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x + 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.X + 1 < MapGridded.Instance.MapGrid.GetLength(1) && pathNode.Y + 1 < MapGridded.Instance.MapGrid.GetLength(0) && MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X + 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X + 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x + 1]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X + 1]);
         }
-        if (pathNode.x - 1 >= 0 && pathNode.y + 1 < MapGridded.Instance.mapGrid.GetLength(0) && MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x - 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.mapGrid[pathNode.y, pathNode.x - 1].CheckIfIsGoodForPath(startPathPosition))
+        if (pathNode.X - 1 >= 0 && pathNode.Y + 1 < MapGridded.Instance.MapGrid.GetLength(0) && MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X - 1].CheckIfIsGoodForPath(startPathPosition) && MapGridded.Instance.MapGrid[pathNode.Y, pathNode.X - 1].CheckIfIsGoodForPath(startPathPosition))
         {
-            adjacentNodes.Add(MapGridded.Instance.mapGrid[pathNode.y + 1, pathNode.x - 1]);
+            adjacentNodes.Add(MapGridded.Instance.MapGrid[pathNode.Y + 1, pathNode.X - 1]);
         }
         return adjacentNodes.ToArray();
-    }
-
-    public List<MapGridElement> FindNearestEntrancePath(IntVector2 positionOfEnterer, IntVector2 positionOfBuilding, int width, int height)
-    {
-        List<List<MapGridElement>> paths = new List<List<MapGridElement>>();
-        for (int row = 0; row <= height; ++row)
-        {
-            IntVector2 position = new IntVector2(positionOfBuilding.x - 1, positionOfBuilding.y + row);
-            if (MapGridded.Instance.IsInMap(position))
-            {
-                List<MapGridElement> foundPath = FindPath(positionOfEnterer, position);
-                if (foundPath != null)
-                {
-                    paths.Add(foundPath);
-                }
-            }
-        }
-        for (int column = 0; column <= width; ++column)
-        {
-            IntVector2 position = new IntVector2(positionOfBuilding.x + column, positionOfBuilding.y + height);
-            if (MapGridded.Instance.IsInMap(position))
-            {
-                List<MapGridElement> foundPath = FindPath(positionOfEnterer, position);
-                if (foundPath != null)
-                {
-                    paths.Add(foundPath);
-                }
-            }
-        }
-        for (int row = height - 1; row >= -1; --row)
-        {
-            IntVector2 position = new IntVector2(positionOfBuilding.x + width, positionOfBuilding.y + row);
-            if (MapGridded.Instance.IsInMap(position))
-            {
-                List<MapGridElement> foundPath = FindPath(positionOfEnterer, position);
-                if (foundPath != null)
-                {
-                    paths.Add(foundPath);
-                }
-            }
-        }
-        for (int column = width - 1; column >= -1; --column)
-        {
-            IntVector2 position = new IntVector2(positionOfBuilding.x + column, positionOfBuilding.y - 1);
-            if (MapGridded.Instance.IsInMap(position))
-            {
-                List<MapGridElement> foundPath = FindPath(positionOfEnterer, position);
-                if (foundPath != null)
-                {
-                    paths.Add(foundPath);
-                }
-            }
-        }
-        if (paths.Count > 0)
-        {
-            List<MapGridElement> shortestPath = new List<MapGridElement>();
-            int minDistance = int.MaxValue;
-            foreach (List<MapGridElement> actualPath in paths)
-            {
-                int distance = 0;
-                for (int i = 1; i < actualPath.Count; ++i)
-                {
-                    distance += actualPath[i].GetCostToGetHereFrom(actualPath[i - 1]);
-                }
-                if (distance < minDistance)
-                {
-                    shortestPath = actualPath;
-                    minDistance = distance;
-                }
-            }
-            return shortestPath;
-        }
-        else
-        {
-            return null;
-        }
     }
 }

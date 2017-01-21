@@ -7,9 +7,10 @@ public class MapEditorMainMenuController : MonoBehaviour
 {
     private static MapEditorMainMenuController instance;
 
-    public GameObject mapCreationWindow;
-    public GameObject mapLoadingWindow;
-    public GameObject gridWithMapsGameObject;
+    [SerializeField]
+    private GameObject mapCreationWindow;
+    [SerializeField]
+    private GameObject mapLoadingWindow;
 
     public static MapEditorMainMenuController Instance
     {
@@ -17,32 +18,19 @@ public class MapEditorMainMenuController : MonoBehaviour
         {
             if (instance == null)
             {
-                MapEditorMainMenuController newInstance = FindObjectOfType<MapEditorMainMenuController>();
-                if (newInstance != null)
-                {
-                    instance = newInstance;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("There is not MainMenuController attached to scene and is tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<MapEditorMainMenuController>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
 
-    public GameObject mainMenuObject;
+    [SerializeField]
+    private GameObject mainMenuObject;
 
     void Awake()
     {
         if (instance != null && instance != this)
         {
-            Debug.LogError("More than one instances of MainMenuController on scene");
             Destroy(this);
         }
         else

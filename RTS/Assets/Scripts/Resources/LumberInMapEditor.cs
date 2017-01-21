@@ -3,17 +3,24 @@ using System.Collections;
 
 public class LumberInMapEditor : MonoBehaviour
 {
-    public IntVector2 placeOnMapGrid;
+    private IntVector2 placeOnMapGrid;
+    public IntVector2 PlaceOnMapGrid
+    {
+        get
+        {
+            return placeOnMapGrid;
+        }
+    }
 
     public void SetPositionInMapGrid()
     {
         placeOnMapGrid = MapGridded.WorldToMapPosition(gameObject.transform.position);
-        MapEditor.Instance.map[placeOnMapGrid.y, placeOnMapGrid.x].lumber = this;
+        MapEditor.Instance.Map[placeOnMapGrid.Y, placeOnMapGrid.X].Lumber = this;
     }
 
     public bool CouldBeBuildInPlace(IntVector2 placeInGrid)
     {
-        if (!MapEditor.Instance.IsInMap(new IntVector2(placeInGrid.x, placeInGrid.y)) || (!MapEditor.Instance.map[placeInGrid.y, placeInGrid.x].tile.isWalkable || MapEditor.Instance.map[placeInGrid.y, placeInGrid.x].mine != null) || MapEditor.Instance.map[placeInGrid.y, placeInGrid.x].lumber != null)
+        if (!MapEditor.Instance.IsInMap(new IntVector2(placeInGrid.X, placeInGrid.Y)) || (!MapEditor.Instance.Map[placeInGrid.Y, placeInGrid.X].Tile.IsWalkable || MapEditor.Instance.Map[placeInGrid.Y, placeInGrid.X].Mine != null) || MapEditor.Instance.Map[placeInGrid.Y, placeInGrid.X].Lumber != null)
         {
             return false;
         }

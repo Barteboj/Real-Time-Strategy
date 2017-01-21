@@ -5,14 +5,43 @@ using UnityEngine.UI;
 
 public class Selection : MonoBehaviour
 {
-    public Image portrait;
-    public Image healthBar;
-    public Text actualHealthText;
-    public Text maxHealthText;
-    public Unit selectedUnit;
-    public Building selectedBuilding;
-    public Mine selectedMine;
-    public GameObject healthInfoGameObject;
+    [SerializeField]
+    private Image portrait;
+    [SerializeField]
+    private Image healthBar;
+    [SerializeField]
+    private Text actualHealthText;
+    [SerializeField]
+    private Text maxHealthText;
+    [SerializeField]
+    private Unit selectedUnit;
+    public Unit SelectedUnit
+    {
+        get
+        {
+            return selectedUnit;
+        }
+    }
+    [SerializeField]
+    private Building selectedBuilding;
+    public Building SelectedBuilding
+    {
+        get
+        {
+            return selectedBuilding;
+        }
+    }
+    [SerializeField]
+    private Mine selectedMine;
+    public Mine SelectedMine
+    {
+        get
+        {
+            return selectedMine;
+        }
+    }
+    [SerializeField]
+    private GameObject healthInfoGameObject;
 
     private void Update()
     {
@@ -40,15 +69,15 @@ public class Selection : MonoBehaviour
 
     public void UpdateUnitSelectionView()
     {
-        portrait.sprite = selectedUnit.portrait;
-        actualHealthText.text = selectedUnit.actualHealth.ToString();
-        maxHealthText.text = selectedUnit.maxHealth.ToString();
-        healthBar.fillAmount = (float)selectedUnit.actualHealth / selectedUnit.maxHealth;
-        if (healthBar.fillAmount <= selectedUnit.criticalDamageFactor)
+        portrait.sprite = selectedUnit.Portrait;
+        actualHealthText.text = selectedUnit.ActualHealth.ToString();
+        maxHealthText.text = selectedUnit.MaxHealth.ToString();
+        healthBar.fillAmount = (float)selectedUnit.ActualHealth / selectedUnit.MaxHealth;
+        if (healthBar.fillAmount <= selectedUnit.CriticalDamageFactor)
         {
             healthBar.color = Color.red;
         }
-        else if (healthBar.fillAmount <= selectedUnit.averageDamageFactor)
+        else if (healthBar.fillAmount <= selectedUnit.AverageDamageFactor)
         {
             healthBar.color = Color.yellow;
         }
@@ -60,15 +89,15 @@ public class Selection : MonoBehaviour
 
     public void UpdateBuildingSelectionView()
     {
-        portrait.sprite = selectedBuilding.portrait;
-        maxHealthText.text = selectedBuilding.maxHealth.ToString();
-        actualHealthText.text = selectedBuilding.actualHealth.ToString();
-        healthBar.fillAmount = (float)selectedBuilding.actualHealth / selectedBuilding.maxHealth;
-        if ((float)selectedBuilding.actualHealth / selectedBuilding.maxHealth < selectedBuilding.criticalDamageFactor)
+        portrait.sprite = selectedBuilding.Portrait;
+        maxHealthText.text = selectedBuilding.MaxHealth.ToString();
+        actualHealthText.text = selectedBuilding.ActualHealth.ToString();
+        healthBar.fillAmount = (float)selectedBuilding.ActualHealth / selectedBuilding.MaxHealth;
+        if ((float)selectedBuilding.ActualHealth / selectedBuilding.MaxHealth < selectedBuilding.CriticalDamageFactor)
         {
             healthBar.color = Color.red;
         }
-        else if ((float)selectedBuilding.actualHealth / selectedBuilding.maxHealth < selectedBuilding.averageDamageFactor)
+        else if ((float)selectedBuilding.ActualHealth / selectedBuilding.MaxHealth < selectedBuilding.AverageDamageFactor)
         {
             healthBar.color = Color.yellow;
         }
@@ -76,22 +105,22 @@ public class Selection : MonoBehaviour
         {
             healthBar.color = Color.green;
         }
-        if (MultiplayerController.Instance.localPlayer.playerType == selectedBuilding.owner)
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == selectedBuilding.Owner)
         {
-            if (selectedBuilding.actualBuildTime < selectedBuilding.buildTime)
+            if (selectedBuilding.ActualBuildTime < selectedBuilding.BuildTime)
             {
-                SelectionInfoKeeper.Instance.SetCompletitionBar(selectedBuilding.actualBuildTime / selectedBuilding.buildTime);
+                SelectionInfoKeeper.Instance.SetCompletitionBar(selectedBuilding.ActualBuildTime / selectedBuilding.BuildTime);
             }
-            if (selectedBuilding.isTraining)
+            if (selectedBuilding.IsTraining)
             {
-                SelectionInfoKeeper.Instance.SetTrainingBar(selectedBuilding.actualTrainingTime / selectedBuilding.trainedUnit.trainingTime);
+                SelectionInfoKeeper.Instance.SetTrainingBar(selectedBuilding.ActualTrainingTime / selectedBuilding.TrainedUnit.TrainingTime);
             }
         }
     }
 
     public void UpdateMineSelectionView()
     {
-        portrait.sprite = selectedMine.portrait;
+        portrait.sprite = selectedMine.Portrait;
     }
 
     public void ShowSelection()

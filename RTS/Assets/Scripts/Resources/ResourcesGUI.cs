@@ -12,29 +12,48 @@ public class ResourcesGUI : MonoBehaviour
         {
             if (instance == null)
             {
-                ResourcesGUI foundResourcesGUI = FindObjectOfType<ResourcesGUI>();
-                if (foundResourcesGUI != null)
-                {
-                    instance = foundResourcesGUI;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("No ResourcesGUI attached to scene and is being tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<ResourcesGUI>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
 
-    public Text goldText;
-    public Text lumberText;
-    public Text foodText;
-    public Text foodMaxText;
+    [SerializeField]
+    private Text goldText;
+    public Text GoldText
+    {
+        get
+        {
+            return goldText;
+        }
+    }
+    [SerializeField]
+    private Text lumberText;
+    public Text LumberText
+    {
+        get
+        {
+            return lumberText;
+        }
+    }
+    [SerializeField]
+    private Text foodText;
+    public Text FoodText
+    {
+        get
+        {
+            return foodText;
+        }
+    }
+    [SerializeField]
+    private Text foodMaxText;
+    public Text FoodMaxText
+    {
+        get
+        {
+            return foodMaxText;
+        }
+    }
 
     void Awake()
     {

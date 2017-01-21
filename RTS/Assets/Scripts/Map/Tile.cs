@@ -3,7 +3,32 @@ using System.Collections;
 
 public class Tile : MonoBehaviour
 {
-    public TileType tileType;
-    public Sprite sprite;
-    public bool isWalkable = true;
+    [SerializeField]
+    private TileType tileType;
+    public TileType TileType
+    {
+        get
+        {
+            return tileType;
+        }
+    }
+
+    [SerializeField]
+    private Sprite sprite;
+    public Sprite Sprite
+    {
+        get
+        {
+            return sprite;
+        }
+    }
+    [SerializeField]
+    private bool isWalkable = true;
+    public bool IsWalkable
+    {
+        get
+        {
+            return isWalkable;
+        }
+    }
 }

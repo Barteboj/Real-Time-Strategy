@@ -21,17 +21,105 @@ public class LobbyMenu : MonoBehaviour
         }
     }
 
-    public Text player1StatusText;
-    public Text player2StatusText;
-    public Button playButton;
-    public Text waitingForHostText;
-    public Slider startingGoldSlider;
-    public Slider startingLumberSlider;
-    public Button chooseMapButton;
-    public GameObject chooseMapMenu;
-    public Text chosenMapNameText;
-    public GameObject lobbyMainMenu;
-    public Text MapLoadErrorMessageText;
+    [SerializeField]
+    private Text player1StatusText;
+    public Text Player1StatusText
+    {
+        get
+        {
+            return player1StatusText;
+        }
+    }
+    [SerializeField]
+    private Text player2StatusText;
+    public Text Player2StatusText
+    {
+        get
+        {
+            return player2StatusText;
+        }
+    }
+    [SerializeField]
+    private Button playButton;
+    public Button PlayButton
+    {
+        get
+        {
+            return playButton;
+        }
+    }
+    [SerializeField]
+    private Text waitingForHostText;
+    public Text WaitingForHostText
+    {
+        get
+        {
+            return waitingForHostText;
+        }
+    }
+    [SerializeField]
+    private Slider startingGoldSlider;
+    public Slider StartingGoldSlider
+    {
+        get
+        {
+            return startingGoldSlider;
+        }
+    }
+    [SerializeField]
+    private Slider startingLumberSlider;
+    public Slider StartingLumberSlider
+    {
+        get
+        {
+            return startingLumberSlider;
+        }
+    }
+    [SerializeField]
+    private Button chooseMapButton;
+    public Button ChooseMapButton
+    {
+        get
+        {
+            return chooseMapButton;
+        }
+    }
+    [SerializeField]
+    private GameObject chooseMapMenu;
+    public GameObject ChooseMapMenu
+    {
+        get
+        {
+            return chooseMapMenu;
+        }
+    }
+    [SerializeField]
+    private Text chosenMapNameText;
+    public Text ChosenMapNameText
+    {
+        get
+        {
+            return chosenMapNameText;
+        }
+    }
+    [SerializeField]
+    private GameObject lobbyMainMenu;
+    public GameObject LobbyMainMenu
+    {
+        get
+        {
+            return lobbyMainMenu;
+        }
+    }
+    [SerializeField]
+    private Text mapLoadErrorMessageText;
+    public Text MapLoadErrorMessageText
+    {
+        get
+        {
+            return mapLoadErrorMessageText;
+        }
+    }
 
     private void Start()
     {
@@ -41,10 +129,10 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        if (MapLoadController.CheckMap(MultiplayerController.Instance.mapName))
+        if (MapLoadController.CheckMap(MultiplayerController.Instance.MapName))
         {
-            MultiplayerController.Instance.startingGold = LobbyMenuController.startingGold;
-            MultiplayerController.Instance.startingLumber = LobbyMenuController.startingLumber;
+            MultiplayerController.Instance.StartingGold = LobbyMenuController.StartingGold;
+            MultiplayerController.Instance.StartingLumber = LobbyMenuController.StartingLumber;
             NetworkServer.Destroy(LobbyMenuController.gameObject);
             MultiplayerController.Instance.StartGame();
         }
@@ -65,7 +153,7 @@ public class LobbyMenu : MonoBehaviour
     {
         if (LobbyMenuController.isServer)
         {
-            LobbyMenuController.startingGold = (int)startingGoldSlider.value;
+            LobbyMenuController.StartingGold = (int)startingGoldSlider.value;
         }
     }
 
@@ -73,7 +161,7 @@ public class LobbyMenu : MonoBehaviour
     {
         if (LobbyMenuController.isServer)
         {
-            LobbyMenuController.startingLumber = (int)startingLumberSlider.value;
+            LobbyMenuController.StartingLumber = (int)startingLumberSlider.value;
         }
     }
 }

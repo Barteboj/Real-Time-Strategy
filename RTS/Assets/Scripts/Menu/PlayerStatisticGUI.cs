@@ -5,8 +5,10 @@ using UnityEngine.UI;
 
 public class PlayerStatisticGUI : MonoBehaviour
 {
-    public Image bar;
-    public Text amountText;
+    [SerializeField]
+    private Image bar;
+    [SerializeField]
+    private Text amountText;
     
     public void Set(int amount, int maxAmount)
     {

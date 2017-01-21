@@ -5,18 +5,33 @@ using System.Collections.Generic;
 
 public class MultiplayerController : NetworkBehaviour
 {
-    public List<PlayerOnline> players = new List<PlayerOnline>();
-    public PlayerOnline localPlayer;
-    public string gameSceneName;
+    public List<PlayerOnline> Players { get; set; }
+    public PlayerOnline LocalPlayer { get; set; }
+    private string gameSceneName = "Game";
     private static MultiplayerController instance;
-    public int startingGold;
-    public int startingLumber;
-    public Color[] playerColors;
+    public int StartingGold { get; set; }
+    public int StartingLumber { get; set; }
+    [SerializeField]
+    private Color[] playerColors;
+    public Color[] PlayerColors
+    {
+        get
+        {
+            return playerColors;
+        }
+    }
     [SyncVar]
-    public bool isGameInitialized = false;
+    private bool isGameInitialized = false;
+    public bool IsGameInitialized
+    {
+        get
+        {
+            return isGameInitialized;
+        }
+    }
     [SyncVar]
-    public bool hasGameEnded = false;
-    public string mapName;
+    private bool hasGameEnded = false;
+    public string MapName { get; set; }
 
     [SyncVar]
     public PlayerType winner;
@@ -43,6 +58,7 @@ public class MultiplayerController : NetworkBehaviour
         }
         else
         {
+            Players = new List<PlayerOnline>();
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -52,9 +68,9 @@ public class MultiplayerController : NetworkBehaviour
     {
         if (isServer && isGameInitialized && !hasGameEnded)
         {
-            if (players.Find(item => item.activeUnits.Count == 0 && item.activeBuildings.Count == 0) != null)
+            if (Players.Find(item => item.ActiveUnits.Count == 0 && item.ActiveBuildings.Count == 0) != null)
             {
-                winner = players.Find(item => item.activeUnits.Count > 0 || item.activeBuildings.Count > 0).playerType;
+                winner = Players.Find(item => item.ActiveUnits.Count > 0 || item.ActiveBuildings.Count > 0).PlayerType;
                 RpcSetWinner(winner);
                 NetworkManager.singleton.ServerChangeScene(endingSceneName);
                 hasGameEnded = true;
@@ -66,7 +82,7 @@ public class MultiplayerController : NetworkBehaviour
     void RpcSetWinner(PlayerType winner)
     {
         this.winner = winner;
-        localPlayer.selector.enabled = false;
+        LocalPlayer.Selector.enabled = false;
     }
 
     public void StartGame()
@@ -76,7 +92,7 @@ public class MultiplayerController : NetworkBehaviour
 
     public PlayerOnline GetPlayerByPlayerType(PlayerType playerType)
     {
-        return players.Find(item => item.playerType == playerType);
+        return Players.Find(item => item.PlayerType == playerType);
     }
 
     [ClientRpc]
@@ -84,25 +100,25 @@ public class MultiplayerController : NetworkBehaviour
     {
         if (isServer)
         {
-            Camera.main.transform.position = new Vector3(MapLoadController.Instance.player1StartingPosition.x, MapLoadController.Instance.player1StartingPosition.y, Camera.main.transform.position.z);
-            GameObject instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefab(UnitType.Peasant, PlayerType.Player1), MapLoadController.Instance.player1StartingPosition, Quaternion.identity);
+            Camera.main.transform.position = new Vector3(MapLoadController.Instance.Player1StartingPosition.x, MapLoadController.Instance.Player1StartingPosition.y, Camera.main.transform.position.z);
+            GameObject instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefab(UnitType.Peasant, PlayerType.Player1), MapLoadController.Instance.Player1StartingPosition, Quaternion.identity);
             NetworkServer.Spawn(instantiatedPeasant);
-            instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefab(UnitType.Peasant, PlayerType.Player2), MapLoadController.Instance.player2StartingPosition, Quaternion.identity);
+            instantiatedPeasant = Instantiate(Units.Instance.GetUnitPrefab(UnitType.Peasant, PlayerType.Player2), MapLoadController.Instance.Player2StartingPosition, Quaternion.identity);
             NetworkServer.Spawn(instantiatedPeasant);
-            foreach (PlayerOnline player in players)
+            foreach (PlayerOnline player in Players)
             {
-                player.goldAmount = startingGold;
-                player.allGatheredGold = startingGold;
-                player.lumberAmount = startingLumber;
-                player.allGatheredLumber = startingLumber;
-                player.foodMaxAmount = 1;
+                player.GoldAmount = StartingGold;
+                player.AllGatheredGold = StartingGold;
+                player.LumberAmount = StartingLumber;
+                player.AllGatheredLumber = StartingLumber;
+                player.FoodMaxAmount = 1;
             }
             isGameInitialized = true;
         }
         else
         {
-            Camera.main.transform.position = new Vector3(MapLoadController.Instance.player2StartingPosition.x, MapLoadController.Instance.player2StartingPosition.y, Camera.main.transform.position.z);
+            Camera.main.transform.position = new Vector3(MapLoadController.Instance.Player2StartingPosition.x, MapLoadController.Instance.Player2StartingPosition.y, Camera.main.transform.position.z);
         }
-        FindObjectOfType<GameCameraController>().selectionArea.GetComponent<MinimapElement>().enabled = true;
+        FindObjectOfType<GameCameraController>().SelectionArea.GetComponent<MinimapElement>().enabled = true;
     }
 }

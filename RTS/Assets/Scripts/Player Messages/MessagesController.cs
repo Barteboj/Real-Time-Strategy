@@ -5,8 +5,10 @@ using System.Collections;
 
 public class MessagesController : NetworkBehaviour
 {
-    public Text messageGUI;
-    public float messageTime;
+    [SerializeField]
+    private Text messageGUI;
+    [SerializeField]
+    private float messageTime;
 
     private Coroutine showMessageCoroutine;
 
@@ -18,22 +20,9 @@ public class MessagesController : NetworkBehaviour
         {
             if (instance == null)
             {
-                MessagesController foundInstance = FindObjectOfType<MessagesController>();
-                if (foundInstance != null)
-                {
-                    instance = foundInstance;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("No MessagesController on scene and is trying to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<MessagesController>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
 
@@ -41,7 +30,6 @@ public class MessagesController : NetworkBehaviour
     {
         if (instance != null && instance != this)
         {
-            Debug.LogError("More than one instances of MessagesController destroying excessive one");
             Destroy(this);
         }
         else
@@ -53,7 +41,7 @@ public class MessagesController : NetworkBehaviour
     [ClientRpc]
     public void RpcShowMessage(string messageText, PlayerType targetPlayer)
     {
-        if (MultiplayerController.Instance.localPlayer.playerType == targetPlayer)
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == targetPlayer)
         {
             messageGUI.text = messageText;
             messageGUI.enabled = true;

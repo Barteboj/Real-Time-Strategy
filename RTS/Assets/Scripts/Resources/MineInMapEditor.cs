@@ -4,10 +4,19 @@ using System.Collections.Generic;
 
 public class MineInMapEditor : MonoBehaviour
 {
-    public int width;
-    public int height;
+    [SerializeField]
+    private int width;
+    [SerializeField]
+    private int height;
 
-    public IntVector2 placeOnMapGrid;
+    private IntVector2 placeOnMapGrid;
+    public IntVector2 PlaceOnMapGrid
+    {
+        get
+        {
+            return placeOnMapGrid;
+        }
+    }
 
     public void SetPositionInMapGrid()
     {
@@ -16,7 +25,7 @@ public class MineInMapEditor : MonoBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                MapEditor.Instance.map[placeOnMapGrid.y + row, placeOnMapGrid.x + column].mine = this;
+                MapEditor.Instance.Map[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].Mine = this;
             }
         }
     }
@@ -27,7 +36,7 @@ public class MineInMapEditor : MonoBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                if (!MapEditor.Instance.IsInMap(new IntVector2(placeInGrid.x + column, placeInGrid.y + row)) || (!MapEditor.Instance.map[placeInGrid.y + row, placeInGrid.x + column].tile.isWalkable || MapEditor.Instance.map[placeInGrid.y + row, placeInGrid.x + column].mine != null || MapEditor.Instance.map[placeInGrid.y + row, placeInGrid.x + column].lumber != null))
+                if (!MapEditor.Instance.IsInMap(new IntVector2(placeInGrid.X + column, placeInGrid.Y + row)) || (!MapEditor.Instance.Map[placeInGrid.Y + row, placeInGrid.X + column].Tile.IsWalkable || MapEditor.Instance.Map[placeInGrid.Y + row, placeInGrid.X + column].Mine != null || MapEditor.Instance.Map[placeInGrid.Y + row, placeInGrid.X + column].Lumber != null))
                 {
                     return false;
                 }
@@ -43,7 +52,7 @@ public class MineInMapEditor : MonoBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                positions.Add(new IntVector2(placeOnMapGrid.x + column, placeOnMapGrid.y + row));
+                positions.Add(new IntVector2(placeOnMapGrid.X + column, placeOnMapGrid.Y + row));
             }
         }
         return positions;

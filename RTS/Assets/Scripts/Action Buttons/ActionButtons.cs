@@ -31,7 +31,15 @@ public class ActionButtons : MonoBehaviour
         }
     }
 
+    [SerializeField]
     public List<ActionButton> buttons;
+    private List<ActionButton> Buttons
+    {
+        get
+        {
+            return buttons;
+        }
+    }
 
     void Awake()
     {

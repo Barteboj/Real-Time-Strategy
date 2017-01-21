@@ -10,17 +10,18 @@ public enum TileType
 
 public class TileTypeEditorHolder : MonoBehaviour
 {
-    public TileType tileType;
-    public MapEditor mapEditor;
-    public Image tileRepresantation; 
+    [SerializeField]
+    private TileType tileType;
+    [SerializeField]
+    private Image tileRepresantation; 
 
     void Awake()
     {
-        tileRepresantation.sprite = Tiles.Instance.tilesPrefabs.Find(tilePrefab => tilePrefab.tileType == tileType).sprite;
+        tileRepresantation.sprite = Tiles.Instance.TilesPrefabs.Find(tilePrefab => tilePrefab.TileType == tileType).Sprite;
     }
 
     public void SelectOnEditor()
     {
-        mapEditor.SelectTile(tileType);
+        MapEditor.Instance.SelectTile(tileType);
     }
 }

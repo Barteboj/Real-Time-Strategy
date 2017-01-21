@@ -31,7 +31,7 @@ public class MapGridded : MonoBehaviour
         }
     }
 
-    public MapGridElement[,] mapGrid;
+    public MapGridElement[,] MapGrid { get; set; }
 
     void Awake()
     {
@@ -48,7 +48,7 @@ public class MapGridded : MonoBehaviour
 
     public static Vector2 MapToWorldPosition(IntVector2 mapPosition)
     {
-        return new Vector2(mapPosition.x, mapPosition.y);
+        return new Vector2(mapPosition.X, mapPosition.Y);
     }
 
     public static IntVector2 WorldToMapPosition(Vector2 worldPosition)
@@ -58,56 +58,56 @@ public class MapGridded : MonoBehaviour
 
     public bool IsInMap(IntVector2 position)
     {
-        return position.x >= 0 && position.y >= 0 && position.x < mapGrid.GetLength(1) && position.y < mapGrid.GetLength(0);
+        return position.X >= 0 && position.Y >= 0 && position.X < MapGrid.GetLength(1) && position.Y < MapGrid.GetLength(0);
     }
 
     public IntVector2 GetFirstFreePlaceAround(IntVector2 position, int width, int height)
     {
         for (int i = 0; i <= height; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x - 1, position.y + i);
-            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.X - 1, position.Y + i);
+            if (IsInMap(checkedPosition) && MapGrid[checkedPosition.Y, checkedPosition.X].IsWalkable)
             {
                 return checkedPosition;
             }
         }
         for (int i = 0; i <= width; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x + i, position.y + height);
-            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.X + i, position.Y + height);
+            if (IsInMap(checkedPosition) && MapGrid[checkedPosition.Y, checkedPosition.X].IsWalkable)
             {
                 return checkedPosition;
             }
         }
         for (int i = 0; i <= height; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x + width, position.y + height - 1 - i);
-            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.X + width, position.Y + height - 1 - i);
+            if (IsInMap(checkedPosition) && MapGrid[checkedPosition.Y, checkedPosition.X].IsWalkable)
             {
                 return checkedPosition;
             }
         }
         for (int i = 0; i <= width; ++i)
         {
-            IntVector2 checkedPosition = new IntVector2(position.x + width - 1 - i, position.y - 1);
-            if (IsInMap(checkedPosition) && mapGrid[checkedPosition.y, checkedPosition.x].isWalkable)
+            IntVector2 checkedPosition = new IntVector2(position.X + width - 1 - i, position.Y - 1);
+            if (IsInMap(checkedPosition) && MapGrid[checkedPosition.Y, checkedPosition.X].IsWalkable)
             {
                 return checkedPosition;
             }
         }
-        return GetFirstFreePlaceAround(new IntVector2(position.x - 1, position.y - 1), width + 2, height + 2);
+        return GetFirstFreePlaceAround(new IntVector2(position.X - 1, position.Y - 1), width + 2, height + 2);
     }
 
     public List<MapGridElement> GetAdjacentGridElements(IntVector2 centerPosition)
     {
         List<MapGridElement> mapGridElements = new List<MapGridElement>();
-        for (int row = centerPosition.y - 1; row <= centerPosition.y + 1; ++row)
+        for (int row = centerPosition.Y - 1; row <= centerPosition.Y + 1; ++row)
         {
-            for (int column = centerPosition.x - 1; column <= centerPosition.x + 1; ++column)
+            for (int column = centerPosition.X - 1; column <= centerPosition.X + 1; ++column)
             {
                 if (IsInMap(new IntVector2(column, row)))
                 {
-                    mapGridElements.Add(mapGrid[row, column]);
+                    mapGridElements.Add(MapGrid[row, column]);
                 }
             }
         }

@@ -4,8 +4,10 @@ using System.Collections;
 
 public class SliderValueViewController : MonoBehaviour
 {
-    public Slider slider;
-    public Text text;
+    [SerializeField]
+    private Slider slider;
+    [SerializeField]
+    private Text text;
 
     void OnEnable()
     {

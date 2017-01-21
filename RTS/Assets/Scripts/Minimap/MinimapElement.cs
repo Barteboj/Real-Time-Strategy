@@ -5,10 +5,21 @@ using System.Collections;
 
 public class MinimapElement : MonoBehaviour
 {
-    public float width;
-    public float height;
-    public Image image;
-    public bool isStatic = false;
+    [SerializeField]
+    private float width;
+    [SerializeField]
+    private float height;
+    [SerializeField]
+    private Image image;
+    public Image Image
+    {
+        get
+        {
+            return image;
+        }
+    }
+    [SerializeField]
+    private bool isStatic = false;
 
     void Start()
     {
@@ -19,7 +30,7 @@ public class MinimapElement : MonoBehaviour
         else
         {
             image.rectTransform.sizeDelta = new Vector2(image.rectTransform.sizeDelta.x * width, image.rectTransform.sizeDelta.y * height);
-            Minimap.Instance.SetMinimapElement(image, gameObject.transform.position, width, height, MapGridded.Instance.mapGrid.GetLength(0));
+            Minimap.Instance.SetMinimapElement(image, gameObject.transform.position, width, height, MapGridded.Instance.MapGrid.GetLength(0));
             if (isStatic)
             {
                 enabled = false;
@@ -29,7 +40,7 @@ public class MinimapElement : MonoBehaviour
 
     void Update()
     {
-        Minimap.Instance.SetMinimapElementPosition(image, gameObject.transform.position, MapGridded.Instance.mapGrid.GetLength(0));
+        Minimap.Instance.SetMinimapElementPosition(image, gameObject.transform.position, MapGridded.Instance.MapGrid.GetLength(0));
     }
 
     void OnDestroy()

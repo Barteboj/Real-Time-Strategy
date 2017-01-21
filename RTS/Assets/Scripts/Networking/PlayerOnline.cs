@@ -13,30 +13,163 @@ public enum PlayerType
 public class PlayerOnline : NetworkBehaviour
 {
     [SyncVar]
-    public PlayerType playerType;
-    public List<Building> activeBuildings;
-    public List<Unit> activeUnits;
-    public int allUnitsAmount = 0;
-    public int allBuildingsAmount = 0;
+    private PlayerType playerType;
+    public PlayerType PlayerType
+    {
+        get
+        {
+            return playerType;
+        }
+    }
+    private List<Building> activeBuildings = new List<Building>();
+    public List<Building> ActiveBuildings
+    {
+        get
+        {
+            return activeBuildings;
+        }
+    }
+    private List<Unit> activeUnits = new List<Unit>();
+    public List<Unit> ActiveUnits
+    {
+        get
+        {
+            return activeUnits;
+        }
+    }
+    public int AllUnitsAmount { get; set; }
+    public int AllBuildingsAmount { get; set; }
     [SyncVar]
-    public int kills;
+    private int kills;
+    public int Kills
+    {
+        get
+        {
+            return kills;
+        }
+        set
+        {
+            kills = value;
+        }
+    }
     [SyncVar]
-    public int razings;
+    private int razings;
+    public int Razings
+    {
+        get
+        {
+            return razings;
+        }
+        set
+        {
+            razings = value;
+        }
+    }
     [SyncVar]
-    public int allGatheredGold;
+    private int allGatheredGold;
+    public int AllGatheredGold
+    {
+        get
+        {
+            return allGatheredGold;
+        }
+        set
+        {
+            allGatheredGold = value;
+        }
+    }
     [SyncVar]
-    public int allGatheredLumber;
+    private int allGatheredLumber;
+    public int AllGatheredLumber
+    {
+        get
+        {
+            return allGatheredLumber;
+        }
+        set
+        {
+            allGatheredLumber = value;
+        }
+    }
     [SyncVar(hook = "OnGoldAmountChange")]
-    public int goldAmount;
+    private int goldAmount;
+    public int GoldAmount
+    {
+        get
+        {
+            return goldAmount;
+        }
+        set
+        {
+            goldAmount = value;
+        }
+    }
     [SyncVar(hook = "OnLumberAmountChange")]
-    public int lumberAmount;
+    private int lumberAmount;
+    public int LumberAmount
+    {
+        get
+        {
+            return lumberAmount;
+        }
+        set
+        {
+            lumberAmount = value;
+        }
+    }
     [SyncVar(hook = "OnFoodAmountChange")]
-    public int foodAmount;
+    private int foodAmount;
+    public int FoodAmount
+    {
+        get
+        {
+            return foodAmount;
+        }
+        set
+        {
+            foodAmount = value;
+        }
+    }
     [SyncVar(hook = "OnFoodMaxAmountChange")]
-    public int foodMaxAmount;
-    public Commander commander;
-    public Selector selector;
+    private int foodMaxAmount;
+    public int FoodMaxAmount
+    {
+        get
+        {
+            return foodMaxAmount;
+        }
+        set
+        {
+            foodMaxAmount = value;
+        }
+    }
+    [SerializeField]
+    private Commander commander;
+    public Commander Commander
+    {
+        get
+        {
+            return commander;
+        }
+    }
+    [SerializeField]
+    private Selector selector;
+    public Selector Selector
+    {
+        get
+        {
+            return selector;
+        }
+    }
+    [SerializeField]
     public ActionButtonsController actionButtonsController;
+    public ActionButtonsController ActionButtonsController
+    {
+        get
+        {
+            return actionButtonsController;
+        }
+    }
 
     void Awake()
     {
@@ -46,36 +179,36 @@ public class PlayerOnline : NetworkBehaviour
     public void OnGoldAmountChange(int newValue)
     {
         goldAmount = newValue;
-        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
+        if (playerType == MultiplayerController.Instance.LocalPlayer.playerType)
         {
-            ResourcesGUI.Instance.goldText.text = goldAmount.ToString();
+            ResourcesGUI.Instance.GoldText.text = goldAmount.ToString();
         }
     }
 
     public void OnLumberAmountChange(int newValue)
     {
         lumberAmount = newValue;
-        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
+        if (playerType == MultiplayerController.Instance.LocalPlayer.playerType)
         {
-            ResourcesGUI.Instance.lumberText.text = lumberAmount.ToString();
+            ResourcesGUI.Instance.LumberText.text = lumberAmount.ToString();
         }
     }
 
     public void OnFoodAmountChange(int newValue)
     {
         foodAmount = newValue;
-        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
+        if (playerType == MultiplayerController.Instance.LocalPlayer.playerType)
         {
-            ResourcesGUI.Instance.foodText.text = foodAmount.ToString();
+            ResourcesGUI.Instance.FoodText.text = foodAmount.ToString();
         }
     }
 
     public void OnFoodMaxAmountChange(int newValue)
     {
         foodMaxAmount = newValue;
-        if (playerType == MultiplayerController.Instance.localPlayer.playerType)
+        if (playerType == MultiplayerController.Instance.LocalPlayer.playerType)
         {
-            ResourcesGUI.Instance.foodMaxText.text = foodMaxAmount.ToString();
+            ResourcesGUI.Instance.FoodMaxText.text = foodMaxAmount.ToString();
         }
     }
 
@@ -83,8 +216,8 @@ public class PlayerOnline : NetworkBehaviour
     public void CmdUpdateMultiplayerController(NetworkIdentity networkIdentity, PlayerType playerType)
     {
         networkIdentity.GetComponent<PlayerOnline>().playerType = playerType;
-        MultiplayerController.Instance.players.Add(networkIdentity.GetComponent<PlayerOnline>());
-        foreach (PlayerOnline player in MultiplayerController.Instance.players)
+        MultiplayerController.Instance.Players.Add(networkIdentity.GetComponent<PlayerOnline>());
+        foreach (PlayerOnline player in MultiplayerController.Instance.Players)
         {
             RpcUpdateMultiplayerController(player.GetComponent<NetworkIdentity>());
         }
@@ -93,9 +226,9 @@ public class PlayerOnline : NetworkBehaviour
     [ClientRpc]
     void RpcUpdateMultiplayerController(NetworkIdentity playerNetworkIdentity)
     {
-        if (!MultiplayerController.Instance.players.Contains(playerNetworkIdentity.GetComponent<PlayerOnline>()))
+        if (!MultiplayerController.Instance.Players.Contains(playerNetworkIdentity.GetComponent<PlayerOnline>()))
         {
-            MultiplayerController.Instance.players.Add(playerNetworkIdentity.GetComponent<PlayerOnline>());
+            MultiplayerController.Instance.Players.Add(playerNetworkIdentity.GetComponent<PlayerOnline>());
         }
     }
 
@@ -104,14 +237,14 @@ public class PlayerOnline : NetworkBehaviour
         base.OnStartAuthority();
         if (isServer)
         {
-            NetworkServer.Spawn(Instantiate(((NetworkController)NetworkManager.singleton).multiplayerControllerGameObject, Vector3.zero, Quaternion.identity));
-            MultiplayerController.Instance.localPlayer = this;
+            NetworkServer.Spawn(Instantiate(((NetworkController)NetworkManager.singleton).MultiplayerControllerGameObject, Vector3.zero, Quaternion.identity));
+            MultiplayerController.Instance.LocalPlayer = this;
             CmdUpdateMultiplayerController(GetComponent<NetworkIdentity>(), PlayerType.Player1);
         }
         else
         {
             playerType = PlayerType.Player2;
-            MultiplayerController.Instance.localPlayer = this;
+            MultiplayerController.Instance.LocalPlayer = this;
             CmdUpdateMultiplayerController(GetComponent<NetworkIdentity>(), PlayerType.Player2);
         }
     }

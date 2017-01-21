@@ -4,14 +4,20 @@ using System.Collections;
 
 public class CostGUI : MonoBehaviour
 {
-    public GameObject goldcostGUI;
-    public GameObject lumberCostGUI;
-    public GameObject foodCostGUI;
-    public Text goldCostText;
-    public Text lumberCostText;
-    public Text foodCostText;
-
-    public GameObject GUI;
+    [SerializeField]
+    private GameObject goldcostGUI;
+    [SerializeField]
+    private GameObject lumberCostGUI;
+    [SerializeField]
+    private GameObject foodCostGUI;
+    [SerializeField]
+    private Text goldCostText;
+    [SerializeField]
+    private Text lumberCostText;
+    [SerializeField]
+    private Text foodCostText;
+    [SerializeField]
+    private GameObject GUI;
 
     private static CostGUI instance;
 
@@ -21,21 +27,9 @@ public class CostGUI : MonoBehaviour
         {
             if (instance == null)
             {
-                if (FindObjectOfType<CostGUI>())
-                {
-                    instance = FindObjectOfType<CostGUI>();
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("CostGUI instance not added to scene and is tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<CostGUI>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
 
@@ -51,7 +45,6 @@ public class CostGUI : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Debug.LogError("More than one instance of CostGUI destroying excessive");
             Destroy(this);
         }
         else

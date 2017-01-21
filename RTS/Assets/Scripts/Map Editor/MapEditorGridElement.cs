@@ -3,15 +3,15 @@ using System.Collections;
 
 public class MapEditorGridElement
 {
-    public IntVector2 positionInMapGrid;
-    public Tile tile;
-    public MineInMapEditor mine;
-    public LumberInMapEditor lumber;
+    public IntVector2 PositionInMapGrid { get; set; }
+    public Tile Tile { get; set; }
+    public MineInMapEditor Mine { get; set; }
+    public LumberInMapEditor Lumber { get; set; }
 
     public MapEditorGridElement(IntVector2 positionInMapGrid, Tile tile, MineInMapEditor mine)
     {
-        this.positionInMapGrid = positionInMapGrid;
-        this.tile = tile;
-        this.mine = mine;
+        this.PositionInMapGrid = positionInMapGrid;
+        this.Tile = tile;
+        this.Mine = mine;
     }
 }

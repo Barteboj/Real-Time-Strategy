@@ -7,13 +7,17 @@ public class Mine : NetworkBehaviour
 {
     private bool toDestroy = false;
 
-    public Sprite nonVisitedSprite;
-    public Sprite visitedSprite;
-    public SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private Sprite nonVisitedSprite;
+    [SerializeField]
+    private Sprite visitedSprite;
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
 
-    public float timeOfMining;
+    [SerializeField]
+    private float timeOfMining;
 
-    public List<Worker> miners;
+    private List<Worker> miners = new List<Worker>();
     [SerializeField]
     [SyncVar(hook = "OnGoldLeftChange")]
     private int goldLeft;
@@ -27,20 +31,38 @@ public class Mine : NetworkBehaviour
         set
         {
             goldLeft = value;
-            SelectionInfoKeeper.Instance.goldLeftAmountText.text = goldLeft.ToString();
+            SelectionInfoKeeper.Instance.GoldLeftAmountText.text = goldLeft.ToString();
         }
     }
 
-    public int width;
-    public int height;
+    [SerializeField]
+    private int width;
+    [SerializeField]
+    private int height;
 
-    public IntVector2 placeOnMapGrid;
+    private IntVector2 placeOnMapGrid;
 
-    public GameObject selectionIndicator;
+    [SerializeField]
+    private GameObject selectionIndicator;
+    public GameObject SelectionIndicator
+    {
+        get
+        {
+            return selectionIndicator;
+        }
+    }
 
     public const string mineName = "Mine";
 
-    public Sprite portrait;
+    [SerializeField]
+    private Sprite portrait;
+    public Sprite Portrait
+    {
+        get
+        {
+            return portrait;
+        }
+    }
 
     void Start()
     {
@@ -58,7 +80,7 @@ public class Mine : NetworkBehaviour
     public void OnGoldLeftChange(int newValue)
     {
         goldLeft = newValue;
-        SelectionInfoKeeper.Instance.goldLeftAmountText.text = goldLeft.ToString();
+        SelectionInfoKeeper.Instance.GoldLeftAmountText.text = goldLeft.ToString();
     }
 
     public void FillPositionInGrid()
@@ -68,7 +90,7 @@ public class Mine : NetworkBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].mine = this;
+                MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].Mine = this;
             }
         }
     }
@@ -80,7 +102,7 @@ public class Mine : NetworkBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                positionsInMap.Add(new IntVector2(minePositionInMap.x + column, minePositionInMap.y + row));
+                positionsInMap.Add(new IntVector2(minePositionInMap.X + column, minePositionInMap.Y + row));
             }
         }
         return positionsInMap.ToArray();
@@ -105,9 +127,9 @@ public class Mine : NetworkBehaviour
     {
         miners.Add(visiter);
         spriteRenderer.sprite = visitedSprite;
-        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(visiter))
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(visiter))
         {
-            MultiplayerController.Instance.localPlayer.selector.Unselect(visiter);
+            MultiplayerController.Instance.LocalPlayer.Selector.Unselect(visiter);
         }
         visiter.RpcClearPositionInGrid();
         visiter.RpcHideYourself();
@@ -120,9 +142,9 @@ public class Mine : NetworkBehaviour
     {
         Worker visiter = visiterNetworkIdentity.GetComponent<Worker>();
         spriteRenderer.sprite = visitedSprite;
-        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(visiter))
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(visiter))
         {
-            MultiplayerController.Instance.localPlayer.selector.Unselect(visiter);
+            MultiplayerController.Instance.LocalPlayer.Selector.Unselect(visiter);
         }
     }
 
@@ -137,7 +159,7 @@ public class Mine : NetworkBehaviour
         visiter.SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundMine);
         visiter.RpcMoveFromTo(visiter.transform.position, visiter.transform.position);
         visiter.RpcShowYourself();
-        if (visiter.takenGoldAmount > 0)
+        if (visiter.TakenGoldAmount > 0)
         {
             visiter.RpcSetGoldVisibility(true);
             visiter.ReturnWithGold();
@@ -159,9 +181,9 @@ public class Mine : NetworkBehaviour
     {
         if (MultiplayerController.Instance != null)
         {
-            if (MultiplayerController.Instance.localPlayer.selector.selectedMine == this)
+            if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedMine == this)
             {
-                MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+                MultiplayerController.Instance.LocalPlayer.Selector.Unselect(this);
             }
         }
     }
@@ -169,7 +191,7 @@ public class Mine : NetworkBehaviour
     public IEnumerator Mining(Worker miner)
     {
         yield return new WaitForSeconds(timeOfMining);
-        miner.takenGoldAmount = TakeGold(100);
+        miner.TakenGoldAmount = TakeGold(100);
         LeaveMine(miner);
     }
 }

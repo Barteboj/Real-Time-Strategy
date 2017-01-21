@@ -3,68 +3,68 @@ using System.Collections;
 
 public class MapGridElement
 {
-    public Unit unit;
-    public Building building;
-    public Tile tile;
-    public Mine mine;
-    public LumberInGame lumber;
-    public PathNode pathNode = new PathNode();
-    public int x;
-    public int y;
-    public GameObject canBuildIndicator;
-    public GameObject cannotBuildIndicator;
+    public Unit Unit { get; set; }
+    public Building Building { get; set; }
+    public Tile Tile { get; set; }
+    public Mine Mine { get; set; }
+    public LumberInGame Lumber { get; set; }
+    public PathNode PathNode { get; set; }
+    public int X { get; set; }
+    public int Y { get; set; }
+    public GameObject CanBuildIndicator { get; set; }
+    public GameObject CannotBuildIndicator { get; set; }
 
-    public bool isWalkable
+    public bool IsWalkable
     {
         get
         {
-            return unit == null && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
+            return Unit == null && Building == null && Mine == null && (Lumber == null || Lumber.IsDepleted) && Tile.IsWalkable;
         }
     }
 
     public bool CheckIfIsGoodForPath(IntVector2 pathStartPosition)
     {
-        return (this.unit == null || ((Mathf.Abs(this.unit.positionInGrid.x - pathStartPosition.x) > 1 || Mathf.Abs(this.unit.positionInGrid.y - pathStartPosition.y) > 1) && this.unit.isMoving)) && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
+        return (this.Unit == null || ((Mathf.Abs(this.Unit.PositionInGrid.X - pathStartPosition.X) > 1 || Mathf.Abs(this.Unit.PositionInGrid.Y - pathStartPosition.Y) > 1) && this.Unit.IsMoving)) && Building == null && Mine == null && (Lumber == null || Lumber.IsDepleted) && Tile.IsWalkable;
     }
 
     public bool ChecklIfIsWalkableForUnit(Unit unit)
     {
-        return (this.unit == null || this.unit == unit) && building == null && mine == null && (lumber == null || lumber.IsDepleted) && tile.isWalkable;
+        return (this.Unit == null || this.Unit == unit) && Building == null && Mine == null && (Lumber == null || Lumber.IsDepleted) && Tile.IsWalkable;
     }
 
     public void ShowCanBuildIndicator()
     {
-        canBuildIndicator.GetComponent<SpriteRenderer>().enabled = true;
+        CanBuildIndicator.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     public void ShowCannotBuildIndicator()
     {
-        cannotBuildIndicator.GetComponent<SpriteRenderer>().enabled = true;
+        CannotBuildIndicator.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     public void HideCanBuildIndicator()
     {
-        canBuildIndicator.GetComponent<SpriteRenderer>().enabled = false;
+        CanBuildIndicator.GetComponent<SpriteRenderer>().enabled = false;
     }
 
     public void HideCannotBuildIndicator()
     {
-        cannotBuildIndicator.GetComponent<SpriteRenderer>().enabled = false;
+        CannotBuildIndicator.GetComponent<SpriteRenderer>().enabled = false;
     }
 
     public MapGridElement(int x, int y, Tile tile, GameObject canBuildIndicator, GameObject cannotBuildIndicator)
     {
-        this.x = x;
-        this.y = y;
-        this.tile = tile;
-        pathNode = new PathNode();
-        this.canBuildIndicator = canBuildIndicator;
-        this.cannotBuildIndicator = cannotBuildIndicator;
+        this.X = x;
+        this.Y = y;
+        this.Tile = tile;
+        PathNode = new PathNode();
+        this.CanBuildIndicator = canBuildIndicator;
+        this.CannotBuildIndicator = cannotBuildIndicator;
     }
 
     public MapGridElement(Tile tile)
     {
-        this.tile = tile;
+        this.Tile = tile;
     }
 
     public int GetCostToGetHereFrom(MapGridElement pathNode)
@@ -75,7 +75,7 @@ public class MapGridElement
         }
         else
         {
-            return this.x != pathNode.x && this.y != pathNode.y ? 14 : 10;
+            return this.X != pathNode.X && this.Y != pathNode.Y ? 14 : 10;
         }
     }
 }

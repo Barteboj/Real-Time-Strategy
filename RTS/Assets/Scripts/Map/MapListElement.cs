@@ -5,8 +5,8 @@ using System.Collections;
 public class MapListElement : MonoBehaviour
 {
     private string mapFilePath;
-
-    public Text mapNameText;
+    [SerializeField]
+    private Text mapNameText;
 
     public string MapFilePath
     {
@@ -26,13 +26,13 @@ public class MapListElement : MonoBehaviour
     public void LoadMap()
     {
         MapEditor.Instance.LoadMap(mapFilePath);
-        MapEditor.Instance.mapName = mapNameText.text;
+        MapEditor.Instance.MapName = mapNameText.text;
         MapEditorMainMenuController.Instance.Hide();
         FindObjectOfType<MapEditorCameraController>().ResetCameraPosition();
     }
 
     public void SelectMapInLobby()
     {
-        FindObjectOfType<LobbyMenu>().LobbyMenuController.mapName = mapNameText.text;
+        FindObjectOfType<LobbyMenu>().LobbyMenuController.MapName = mapNameText.text;
     }
 }

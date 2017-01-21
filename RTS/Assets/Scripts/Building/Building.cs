@@ -13,57 +13,192 @@ public enum BuildingType
 
 public class Building : NetworkBehaviour
 {
-    public string buildingName;
-    public int maxHealth;
+    [SerializeField]
+    private string buildingName;
+    public string BuildingName
+    {
+        get
+        {
+            return buildingName;
+        }
+    }
+    [SerializeField]
+    private int maxHealth;
+    public int MaxHealth
+    {
+        get
+        {
+            return maxHealth;
+        }
+    }
+    [SerializeField]
     [SyncVar(hook = "OnChangeActualHealth")]
-    public int actualHealth;
-
-    public int width;
-    public int height;
-
-    public IntVector2 placeOnMapGrid;
-
-    public List<MapGridElement> lastUsedCanBuildGridElements = new List<MapGridElement>();
-
-    public GameObject buildingViewGameObject;
-    public GameObject buildField;
-
-    public bool isInBuildingProcess = true;
-    public bool isBuilded = false;
-    public float buildTime;
-
-    public GameObject selectionIndicator;
-    public BoxCollider2D selectionIndicatorCollider;
-
-    public Sprite portrait;
-
-    public ActionButtonType[] buttonTypes;
-
-    public Worker builder;
-
-    public Unit trainedUnit;
-
+    private int actualHealth;
+    public int ActualHealth
+    {
+        get
+        {
+            return actualHealth;
+        }
+    }
+    [SerializeField]
+    private int width;
+    public int Width
+    {
+        get
+        {
+            return width;
+        }
+    }
+    [SerializeField]
+    private int height;
+    public int Height
+    {
+        get
+        {
+            return height;
+        }
+    }
+    private IntVector2 placeOnMapGrid;
+    private List<MapGridElement> lastUsedCanBuildGridElements = new List<MapGridElement>();
+    [SerializeField]
+    private GameObject buildingViewGameObject;
+    [SerializeField]
+    private GameObject buildField;
+    private bool isInBuildingProcess = true;
+    private bool isBuilded = false;
+    public bool IsBuilded
+    {
+        get
+        {
+            return isBuilded;
+        }
+    }
+    [SerializeField]
+    private float buildTime;
+    public float BuildTime
+    {
+        get
+        {
+            return buildTime;
+        }
+    }
+    [SerializeField]
+    private GameObject selectionIndicator;
+    public GameObject SelectionIndicator
+    {
+        get
+        {
+            return selectionIndicator;
+        }
+    }
+    [SerializeField]
+    private BoxCollider2D selectionIndicatorCollider;
+    [SerializeField]
+    private Sprite portrait;
+    public Sprite Portrait
+    {
+        get
+        {
+            return portrait;
+        }
+    }
+    [SerializeField]
+    private ActionButtonType[] buttonTypes;
+    public ActionButtonType[] ButtonTypes
+    {
+        get
+        {
+            return buttonTypes;
+        }
+    }
+    public Worker Builder { get; set; }
+    public Unit TrainedUnit { get; set; }
     [SyncVar]
-    public float actualTrainingTime;
-
-    public bool isTraining = false;
-
-    public int goldCost = 0;
-    public int lumberCost = 0;
-    
-    public BuildingType buildingType;
-    public PlayerType owner;
-
-    public GameObject smallFlameObject;
-    public GameObject bigFlameObject;
-
-    public float averageDamageFactor = 0.6f;
-    public float criticalDamageFactor = 0.3f;
-
+    private float actualTrainingTime;
+    public float ActualTrainingTime
+    {
+        get
+        {
+            return actualTrainingTime;
+        }
+    }
+    public bool IsTraining { get; set; }
+    [SerializeField]
+    private int goldCost = 0;
+    public int GoldCost
+    {
+        get
+        {
+            return goldCost;
+        }
+    }
+    [SerializeField]
+    private int lumberCost = 0;
+    public int LumberCost
+    {
+        get
+        {
+            return lumberCost;
+        }
+    }
+    [SerializeField]
+    private BuildingType buildingType;
+    public BuildingType BuildingType
+    {
+        get
+        {
+            return buildingType;
+        }
+    }
+    [SerializeField]
+    protected PlayerType owner;
+    public PlayerType Owner
+    {
+        get
+        {
+            return owner;
+        }
+    }
+    [SerializeField]
+    private GameObject smallFlameObject;
+    [SerializeField]
+    private GameObject bigFlameObject;
+    [SerializeField]
+    private float averageDamageFactor = 0.6f;
+    public float AverageDamageFactor
+    {
+        get
+        {
+            return averageDamageFactor;
+        }
+    }
+    [SerializeField]
+    private float criticalDamageFactor = 0.3f;
+    public float CriticalDamageFactor
+    {
+        get
+        {
+            return criticalDamageFactor;
+        }
+    }
     [SyncVar]
-    public float actualBuildTime = 0f;
-
-    public List<Unit> visiters = new List<Unit>();
+    private float actualBuildTime = 0f;
+    public float ActualBuildTime
+    {
+        get
+        {
+            return actualBuildTime;
+        }
+    }
+    private List<Unit> visiters = new List<Unit>();
+    public List<Unit> Visiters
+    {
+        get
+        {
+            return visiters;
+        }
+    }
 
     public void OnChangeActualHealth(int newValue)
     {
@@ -101,7 +236,7 @@ public class Building : NetworkBehaviour
             {
                 UpdateBuildingProcess();
             }
-            if (isTraining)
+            if (IsTraining)
             {
                 UpdateTrainingProcess();
             }
@@ -125,7 +260,7 @@ public class Building : NetworkBehaviour
     public virtual void FinishBuild()
     {
         RpcFinishBuild();
-        builder.FinishBuild();
+        Builder.FinishBuild();
     }
 
     [ClientRpc]
@@ -135,17 +270,17 @@ public class Building : NetworkBehaviour
         buildField.SetActive(false);
         isInBuildingProcess = false;
         isBuilded = true;
-        if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this && MultiplayerController.Instance.localPlayer.playerType == owner)
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedBuilding == this && MultiplayerController.Instance.LocalPlayer.PlayerType == owner)
         {
             SelectionInfoKeeper.Instance.HideBuildCompletitionBar();
-            MultiplayerController.Instance.localPlayer.actionButtonsController.ShowButtons(this);
+            MultiplayerController.Instance.LocalPlayer.ActionButtonsController.ShowButtons(this);
         }
     }
 
     public void UpdateTrainingProcess()
     {
         actualTrainingTime += Time.deltaTime;
-        if (actualTrainingTime >= trainedUnit.trainingTime)
+        if (actualTrainingTime >= TrainedUnit.TrainingTime)
         {
             FinishTraining();
         }
@@ -153,10 +288,10 @@ public class Building : NetworkBehaviour
 
     public void FinishTraining()
     {
-        GameObject instantiatedUnit = Instantiate(trainedUnit.gameObject, MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(gameObject.transform.position), width, height)), Quaternion.identity);
+        GameObject instantiatedUnit = Instantiate(TrainedUnit.gameObject, MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(gameObject.transform.position), width, height)), Quaternion.identity);
         instantiatedUnit.GetComponent<Unit>().InitializePositionInGrid();
         NetworkServer.Spawn(instantiatedUnit);
-        isTraining = false;
+        IsTraining = false;
         RpcFinishTraining();
         actualTrainingTime = 0;
     }
@@ -164,39 +299,39 @@ public class Building : NetworkBehaviour
     [ClientRpc]
     void RpcFinishTraining()
     {
-        if (MultiplayerController.Instance.localPlayer.playerType == owner)
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == owner)
         {
-            if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this)
+            if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedBuilding == this)
             {
                 SelectionInfoKeeper.Instance.HideTrainingInfo();
-                MultiplayerController.Instance.localPlayer.actionButtonsController.ShowButtons(this);
+                MultiplayerController.Instance.LocalPlayer.ActionButtonsController.ShowButtons(this);
             }
-            isTraining = false;
+            IsTraining = false;
         }
     }
 
     public void Train(Unit unitToTrain)
     {
-        trainedUnit = unitToTrain;
+        TrainedUnit = unitToTrain;
         actualTrainingTime = 0f;
-        isTraining = true;
-        RpcTrain(trainedUnit.unitType);
+        IsTraining = true;
+        RpcTrain(TrainedUnit.UnitType);
     }
 
     [ClientRpc]
     void RpcTrain(UnitType unitType)
     {
-        if (owner == MultiplayerController.Instance.localPlayer.playerType)
+        if (owner == MultiplayerController.Instance.LocalPlayer.PlayerType)
         {
-            isTraining = true;
-            trainedUnit = Units.Instance.unitsList.Find(item => item.unitType == unitType && item.owner == owner);
+            IsTraining = true;
+            TrainedUnit = Units.Instance.UnitsList.Find(item => item.UnitType == unitType && item.Owner == owner);
             List<ActionButton> trainingButtons = ActionButtons.Instance.buttons.FindAll(button => button.GetType() == typeof(TrainingButton));
             foreach (ActionButton button in trainingButtons)
             {
                 button.Hide();
             }
-            SelectionInfoKeeper.Instance.SetTrainingBar(actualTrainingTime / trainedUnit.trainingTime);
-            SelectionInfoKeeper.Instance.trainedUnitPortrait.sprite = trainedUnit.portrait;
+            SelectionInfoKeeper.Instance.SetTrainingBar(actualTrainingTime / TrainedUnit.TrainingTime);
+            SelectionInfoKeeper.Instance.TrainedUnitPortrait.sprite = TrainedUnit.Portrait;
             SelectionInfoKeeper.Instance.ShowTrainingInfo();
         }
     }
@@ -210,14 +345,14 @@ public class Building : NetworkBehaviour
     [ClientRpc]
     void RpcStartBuildProcess()
     {
-        gameObject.GetComponentInChildren<MinimapElement>().image.color = MultiplayerController.Instance.playerColors[(int)owner];
+        gameObject.GetComponentInChildren<MinimapElement>().Image.color = MultiplayerController.Instance.PlayerColors[(int)owner];
         gameObject.GetComponentInChildren<MinimapElement>().Show();
         buildingViewGameObject.SetActive(false);
         buildField.SetActive(true);
         isInBuildingProcess = true;
         selectionIndicatorCollider.enabled = true;
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Add(this);
-        ++MultiplayerController.Instance.players.Find(item => item.playerType == owner).allBuildingsAmount;
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).ActiveBuildings.Add(this);
+        ++MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).AllBuildingsAmount;
     }
 
     public bool CouldBeBuildInPlace(IntVector2 placeInGrid, Unit builder)
@@ -226,7 +361,7 @@ public class Building : NetworkBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                if (!MapGridded.Instance.IsInMap(new IntVector2(placeInGrid.x + column, placeInGrid.y + row)) || (!MapGridded.Instance.mapGrid[placeInGrid.y + row, placeInGrid.x + column].isWalkable && MapGridded.Instance.mapGrid[placeInGrid.y + row, placeInGrid.x + column].unit != builder))
+                if (!MapGridded.Instance.IsInMap(new IntVector2(placeInGrid.X + column, placeInGrid.Y + row)) || (!MapGridded.Instance.MapGrid[placeInGrid.Y + row, placeInGrid.X + column].IsWalkable && MapGridded.Instance.MapGrid[placeInGrid.Y + row, placeInGrid.X + column].Unit != builder))
                 {
                     return false;
                 }
@@ -244,19 +379,19 @@ public class Building : NetworkBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                if (MapGridded.Instance.IsInMap(new IntVector2(placeOnMapGrid.x + column, placeOnMapGrid.y + row)))
+                if (MapGridded.Instance.IsInMap(new IntVector2(placeOnMapGrid.X + column, placeOnMapGrid.Y + row)))
                 {
-                    if (!MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].isWalkable && (MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].unit != builder))
+                    if (!MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].IsWalkable && (MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].Unit != Builder))
                     {
-                        MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].ShowCannotBuildIndicator();
-                        MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].HideCanBuildIndicator();
+                        MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].ShowCannotBuildIndicator();
+                        MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].HideCanBuildIndicator();
                     }
                     else
                     {
-                        MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].ShowCanBuildIndicator();
-                        MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].HideCannotBuildIndicator();
+                        MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].ShowCanBuildIndicator();
+                        MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].HideCannotBuildIndicator();
                     }
-                    lastUsedCanBuildGridElements.Add(MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column]);
+                    lastUsedCanBuildGridElements.Add(MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column]);
                 }
             }
         }
@@ -284,9 +419,9 @@ public class Building : NetworkBehaviour
         {
             for (int column = 0; column < width; ++column)
             {
-                if (MapGridded.Instance.IsInMap(new IntVector2(placeOnMapGrid.x + column, placeOnMapGrid.y + row)) || MapGridded.Instance.mapGrid[row, column].isWalkable)
+                if (MapGridded.Instance.IsInMap(new IntVector2(placeOnMapGrid.X + column, placeOnMapGrid.Y + row)) || MapGridded.Instance.MapGrid[row, column].IsWalkable)
                 {
-                    MapGridded.Instance.mapGrid[placeOnMapGrid.y + row, placeOnMapGrid.x + column].building = this;
+                    MapGridded.Instance.MapGrid[placeOnMapGrid.Y + row, placeOnMapGrid.X + column].Building = this;
                 }
             }
         }
@@ -297,7 +432,7 @@ public class Building : NetworkBehaviour
         actualHealth -= damage;
         if (actualHealth <= 0)
         {
-            ++MultiplayerController.Instance.players.Find(item => item.playerType == attacker.owner).razings;
+            ++MultiplayerController.Instance.Players.Find(item => item.PlayerType == attacker.Owner).Razings;
             attacker.StopAttack();
             DestroyYourself();
         }
@@ -309,11 +444,11 @@ public class Building : NetworkBehaviour
         {
             if (actualBuildTime > 0f)
             {
-                if (MultiplayerController.Instance.localPlayer.selector.selectedBuilding == this)
+                if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedBuilding == this)
                 {
-                    MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+                    MultiplayerController.Instance.LocalPlayer.Selector.Unselect(this);
                 }
-                MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Remove(this);
+                MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).ActiveBuildings.Remove(this);
             }
         }
     }

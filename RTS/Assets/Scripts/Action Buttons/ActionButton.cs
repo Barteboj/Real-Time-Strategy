@@ -16,9 +16,19 @@ public enum ActionButtonType
 
 public abstract class ActionButton : MonoBehaviour
 {
-    public ActionButtonType buttonType;
-    public GameObject objectWithButton;
-    public Image buttonImage;
+    [SerializeField]
+    protected ActionButtonType buttonType;
+    public ActionButtonType ButtonType
+    {
+        get
+        {
+            return buttonType;
+        }
+    }
+    [SerializeField]
+    private GameObject objectWithButton;
+    [SerializeField]
+    protected Image buttonImage;
 
     public void Show()
     {

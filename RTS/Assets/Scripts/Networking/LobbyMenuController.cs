@@ -14,22 +14,9 @@ public class LobbyMenuController : NetworkBehaviour
         {
             if (instance == null)
             {
-                LobbyMenuController newInstance = FindObjectOfType<LobbyMenuController>();
-                if (newInstance != null)
-                {
-                    instance = newInstance;
-                    return instance;
-                }
-                else
-                {
-                    Debug.LogError("There is not LobbyMenuController attached to scene and is tried to be obtained");
-                    return null;
-                }
+                instance = FindObjectOfType<LobbyMenuController>();
             }
-            else
-            {
-                return instance;
-            }
+            return instance;
         }
     }
 
@@ -54,41 +41,74 @@ public class LobbyMenuController : NetworkBehaviour
     }
 
     [SyncVar(hook = "OnStartingGoldValueChange")]
-    public int startingGold;
+    private int startingGold;
+    public int StartingGold
+    {
+        get
+        {
+            return startingGold;
+        }
+        set
+        {
+            startingGold = value;
+        }
+    }
     [SyncVar(hook = "OnStartingLumberValueChange")]
-    public int startingLumber;
+    private int startingLumber;
+    public int StartingLumber
+    {
+        get
+        {
+            return startingLumber;
+        }
+        set
+        {
+            startingLumber = value;
+        }
+    }
     [SyncVar(hook = "OnMapNameChange")]
-    public string mapName;
+    private string mapName;
+    public string MapName
+    {
+        get
+        {
+            return mapName;
+        }
+        set
+        {
+            mapName = value;
+        }
+    }
 
     private const string playerConnectedText = "Connected";
 
     public void OnStartingGoldValueChange(int newValue)
     {
-        LobbyMenu.startingGoldSlider.value = newValue;
+        LobbyMenu.StartingGoldSlider.value = newValue;
     }
 
     public void OnStartingLumberValueChange(int newValue)
     {
-        LobbyMenu.startingLumberSlider.value = newValue;
+        LobbyMenu.StartingLumberSlider.value = newValue;
     }
 
     public void OnMapNameChange(string newName)
     {
         mapName = newName;
-        LobbyMenu.chosenMapNameText.text = mapName;
-        MultiplayerController.Instance.mapName = newName;
-        LobbyMenu.chooseMapMenu.SetActive(false);
-        LobbyMenu.lobbyMainMenu.SetActive(true);
+        LobbyMenu.ChosenMapNameText.text = mapName;
+        MultiplayerController.Instance.MapName = newName;
+        LobbyMenu.ChooseMapMenu.SetActive(false);
+        LobbyMenu.LobbyMainMenu.SetActive(true);
     }
 
     public void UpdateStartingGoldValue()
     {
-        startingGold = (int)LobbyMenu.startingGoldSlider.value;
+        startingGold = (int)LobbyMenu.StartingGoldSlider.value;
     }
 
     public void UpdateStartingLumberValue()
     {
-        startingLumber = (int)LobbyMenu.startingLumberSlider.value;
+        startingLumber = (int)LobbyMenu.StartingLumberSlider.value;
     } 
 
     void Awake()
@@ -110,16 +130,15 @@ public class LobbyMenuController : NetworkBehaviour
         base.OnStartServer();
         if (!isServer)
         {
-            LobbyMenu.playButton.gameObject.SetActive(false);
-            LobbyMenu.chooseMapButton.gameObject.SetActive(false);
-            LobbyMenu.waitingForHostText.gameObject.SetActive(true);
-            LobbyMenu.startingGoldSlider.interactable = false;
-            LobbyMenu.startingLumberSlider.interactable = false;
-            LobbyMenu.player1StatusText.text = playerConnectedText;
-            LobbyMenu.player2StatusText.text = playerConnectedText;
-            Debug.LogError(startingGold);
-            LobbyMenu.startingGoldSlider.value = startingGold;
-            LobbyMenu.startingLumberSlider.value = startingLumber;
+            LobbyMenu.PlayButton.gameObject.SetActive(false);
+            LobbyMenu.ChooseMapButton.gameObject.SetActive(false);
+            LobbyMenu.WaitingForHostText.gameObject.SetActive(true);
+            LobbyMenu.StartingGoldSlider.interactable = false;
+            LobbyMenu.StartingLumberSlider.interactable = false;
+            LobbyMenu.Player1StatusText.text = playerConnectedText;
+            LobbyMenu.Player2StatusText.text = playerConnectedText;
+            LobbyMenu.StartingGoldSlider.value = startingGold;
+            LobbyMenu.StartingLumberSlider.value = startingLumber;
         }
         else
         {
@@ -127,15 +146,15 @@ public class LobbyMenuController : NetworkBehaviour
             UpdateStartingLumberValue();
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null)
             {
-                LobbyMenu.player1StatusText.text = playerConnectedText;
+                LobbyMenu.Player1StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
-                LobbyMenu.player2StatusText.text = playerConnectedText;
+                LobbyMenu.Player2StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
-                LobbyMenu.playButton.interactable = true;
+                LobbyMenu.PlayButton.interactable = true;
             }
         }
     }
@@ -160,33 +179,33 @@ public class LobbyMenuController : NetworkBehaviour
     {
         if (!isServer)
         {
-            LobbyMenu.playButton.gameObject.SetActive(false);
-            LobbyMenu.chooseMapButton.gameObject.SetActive(false);
-            LobbyMenu.waitingForHostText.gameObject.SetActive(true);
-            LobbyMenu.startingGoldSlider.interactable = false;
-            LobbyMenu.startingLumberSlider.interactable = false;
-            LobbyMenu.player1StatusText.text = playerConnectedText;
-            LobbyMenu.player2StatusText.text = playerConnectedText;
-            LobbyMenu.startingGoldSlider.value = startingGold;
-            LobbyMenu.startingLumberSlider.value = startingLumber;
+            LobbyMenu.PlayButton.gameObject.SetActive(false);
+            LobbyMenu.ChooseMapButton.gameObject.SetActive(false);
+            LobbyMenu.WaitingForHostText.gameObject.SetActive(true);
+            LobbyMenu.StartingGoldSlider.interactable = false;
+            LobbyMenu.StartingLumberSlider.interactable = false;
+            LobbyMenu.Player1StatusText.text = playerConnectedText;
+            LobbyMenu.Player2StatusText.text = playerConnectedText;
+            LobbyMenu.StartingGoldSlider.value = startingGold;
+            LobbyMenu.StartingLumberSlider.value = startingLumber;
             if (mapName != "")
             {
-                LobbyMenu.chosenMapNameText.text = mapName;
+                LobbyMenu.ChosenMapNameText.text = mapName;
             }
         }
         else
         {
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null)
             {
-                LobbyMenu.player1StatusText.text = playerConnectedText;
+                LobbyMenu.Player1StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
-                LobbyMenu.player2StatusText.text = playerConnectedText;
+                LobbyMenu.Player2StatusText.text = playerConnectedText;
             }
             if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null)
             {
-                LobbyMenu.playButton.interactable = true;
+                LobbyMenu.PlayButton.interactable = true;
             }
         }
     }
@@ -195,40 +214,40 @@ public class LobbyMenuController : NetworkBehaviour
     {
         if (isServer)
         {
-            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && LobbyMenu.player1StatusText.text != playerConnectedText)
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && LobbyMenu.Player1StatusText.text != playerConnectedText)
             {
-                LobbyMenu.player1StatusText.text = playerConnectedText;
+                LobbyMenu.Player1StatusText.text = playerConnectedText;
             }
-            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && LobbyMenu.player2StatusText.text != playerConnectedText)
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && LobbyMenu.Player2StatusText.text != playerConnectedText)
             {
-                LobbyMenu.player2StatusText.text = playerConnectedText;
+                LobbyMenu.Player2StatusText.text = playerConnectedText;
             }
-            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && !LobbyMenu.playButton.interactable)
+            if (MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player1) != null && MultiplayerController.Instance.GetPlayerByPlayerType(PlayerType.Player2) != null && !LobbyMenu.PlayButton.interactable)
             {
-                LobbyMenu.playButton.interactable = true;
+                LobbyMenu.PlayButton.interactable = true;
             }
         }
     }
 
     public void OpenChooseMapMenu()
     {
-        LobbyMenu.chooseMapMenu.SetActive(true);
+        LobbyMenu.ChooseMapMenu.SetActive(true);
     }
 
     public void CloseChooseMapMenu()
     {
-        LobbyMenu.chooseMapMenu.SetActive(false);
+        LobbyMenu.ChooseMapMenu.SetActive(false);
     }
 
     public void SetMapName()
     {
-        LobbyMenu.chooseMapMenu.SetActive(false);
+        LobbyMenu.ChooseMapMenu.SetActive(false);
     }
 
     public void StartGame()
     {
-        MultiplayerController.Instance.startingGold = startingGold;
-        MultiplayerController.Instance.startingLumber = startingLumber;
+        MultiplayerController.Instance.StartingGold = startingGold;
+        MultiplayerController.Instance.StartingLumber = startingLumber;
         MultiplayerController.Instance.StartGame();
     }
 }

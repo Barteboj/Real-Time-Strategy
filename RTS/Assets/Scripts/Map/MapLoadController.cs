@@ -33,18 +33,31 @@ public class MapLoadController : NetworkBehaviour
             }
         }
     }
+    
+    private int mapSizeX = 10;
+    private int mapSizeY = 10;
 
-    public int mapSizeX = 10;
-    public int mapSizeY = 10;
+    private Vector2 player1StartingPosition;
+    public Vector2 Player1StartingPosition
+    {
+        get
+        {
+            return player1StartingPosition;
+        }
+    }
+    private Vector2 player2StartingPosition;
+    public Vector2 Player2StartingPosition
+    {
+        get
+        {
+            return player2StartingPosition;
+        }
+    }
 
-    public MapGridded map;
+    [SerializeField]
+    private GameObject LoadingMapScreen;
 
-    public Vector2 player1StartingPosition;
-    public Vector2 player2StartingPosition;
-
-    public GameObject LoadingMapScreen;
-
-    public string mapText = "";
+    private string mapText = "";
 
     void Awake()
     {
@@ -61,7 +74,7 @@ public class MapLoadController : NetworkBehaviour
 
     public void LoadChosenMap()
     {
-        LoadMap(Application.dataPath + "/" + MapEditor.mapsFolderName + "/" + MultiplayerController.Instance.mapName + ".map");
+        LoadMap(Application.dataPath + "/" + MapEditor.mapsFolderName + "/" + MultiplayerController.Instance.MapName + ".map");
         LoadingMapScreen.SetActive(false);
     }
 
@@ -77,8 +90,8 @@ public class MapLoadController : NetworkBehaviour
                 case MapEditor.mapSizeFileKey:
                     mapSizeX = int.Parse(words[1]);
                     mapSizeY = int.Parse(words[2]);
-                    map.mapGrid = new MapGridElement[mapSizeY, mapSizeX];
-                    Minimap.Instance.SetMapSize(mapSizeX);
+                    MapGridded.Instance.MapGrid = new MapGridElement[mapSizeY, mapSizeX];
+                    Minimap.Instance.MapSize = mapSizeX;
                     break;
                 case MapEditor.tileKey:
                     SaveToMap(new IntVector2(int.Parse(words[1]), int.Parse(words[2])), (TileType)System.Enum.Parse(typeof(TileType), words[3]));
@@ -147,20 +160,20 @@ public class MapLoadController : NetworkBehaviour
                     case MapEditor.tileKey:
                         positionInMap = new IntVector2(int.Parse(words[1]), int.Parse(words[2]));
                         postionToCreate = MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
-                        mapGrid[positionInMap.y, positionInMap.x] = new MapGridElement(Tiles.Instance.tilesPrefabs.Find(item => item.tileType == (TileType)System.Enum.Parse(typeof(TileType), words[3])));
+                        mapGrid[positionInMap.Y, positionInMap.X] = new MapGridElement(Tiles.Instance.TilesPrefabs.Find(item => item.TileType == (TileType)System.Enum.Parse(typeof(TileType), words[3])));
                         break;
                     case MapEditor.goldMineKey:
                         positionInMap = new IntVector2(int.Parse(words[1]), int.Parse(words[2]));
                         postionToCreate = MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
-                        foreach (IntVector2 minePositionInMap in Resources.Instance.minePrefab.GetComponent<Mine>().GetMapPositions(positionInMap))
+                        foreach (IntVector2 minePositionInMap in Resources.Instance.MinePrefab.GetComponent<Mine>().GetMapPositions(positionInMap))
                         {
-                            mapGrid[minePositionInMap.y, minePositionInMap.x].mine = Resources.Instance.minePrefab.GetComponent<Mine>();
+                            mapGrid[minePositionInMap.Y, minePositionInMap.X].Mine = Resources.Instance.MinePrefab.GetComponent<Mine>();
                         }
                         break;
                     case MapEditor.lumberKey:
                         positionInMap = new IntVector2(int.Parse(words[1]), int.Parse(words[2]));
                         postionToCreate = MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
-                        mapGrid[positionInMap.y, positionInMap.x].lumber = Resources.Instance.treePrefab.GetComponent<LumberInGame>();
+                        mapGrid[positionInMap.Y, positionInMap.X].Lumber = Resources.Instance.TreePrefab.GetComponent<LumberInGame>();
                         break;
                     case MapEditor.player1PositionKey:
                         player1StartingPosition = MapGridded.MapToWorldPosition(new IntVector2(int.Parse(words[1]), int.Parse(words[2])));
@@ -181,7 +194,7 @@ public class MapLoadController : NetworkBehaviour
                     return false;
                 }
             }
-            if (mapSizeX <= 0 || mapSizeY <= 0 || mapSizeX > 50 || mapSizeY > 50 || player1StartingPosition == null || player2StartingPosition == null || player1StartingPosition == player2StartingPosition || player1StartingPosition.x < 0 || player1StartingPosition.x > mapSizeX - 1 || player1StartingPosition.y < 0 || player1StartingPosition.y > mapSizeY - 1 || player2StartingPosition.x < 0 || player2StartingPosition.x > mapSizeX - 1 || player2StartingPosition.y < 0 || player2StartingPosition.y > mapSizeY - 1 || !mapGrid[MapGridded.WorldToMapPosition(player1StartingPosition).y, MapGridded.WorldToMapPosition(player1StartingPosition).x].isWalkable || !mapGrid[MapGridded.WorldToMapPosition(player2StartingPosition).y, MapGridded.WorldToMapPosition(player2StartingPosition).x].isWalkable)
+            if (mapSizeX <= 0 || mapSizeY <= 0 || mapSizeX > 50 || mapSizeY > 50 || player1StartingPosition == null || player2StartingPosition == null || player1StartingPosition == player2StartingPosition || player1StartingPosition.x < 0 || player1StartingPosition.x > mapSizeX - 1 || player1StartingPosition.y < 0 || player1StartingPosition.y > mapSizeY - 1 || player2StartingPosition.x < 0 || player2StartingPosition.x > mapSizeX - 1 || player2StartingPosition.y < 0 || player2StartingPosition.y > mapSizeY - 1 || !mapGrid[MapGridded.WorldToMapPosition(player1StartingPosition).Y, MapGridded.WorldToMapPosition(player1StartingPosition).X].IsWalkable || !mapGrid[MapGridded.WorldToMapPosition(player2StartingPosition).Y, MapGridded.WorldToMapPosition(player2StartingPosition).X].IsWalkable)
             {
                 return false;
             }
@@ -196,8 +209,8 @@ public class MapLoadController : NetworkBehaviour
     public void SaveToMap(IntVector2 positionInMap, TileType tileType)
     {
         Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-        Tile tile = (Instantiate(Tiles.Instance.tilesPrefabs.Find(wantedTile => wantedTile.tileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
-        map.mapGrid[positionInMap.y, positionInMap.x] = new MapGridElement(positionInMap.x, positionInMap.y, tile, Instantiate(Tiles.Instance.canBuildIndicator, tile.transform.position, Quaternion.identity), Instantiate(Tiles.Instance.cannotBuildIndicator, tile.transform.position, Quaternion.identity));
+        Tile tile = (Instantiate(Tiles.Instance.TilesPrefabs.Find(wantedTile => wantedTile.TileType == tileType).gameObject, postionToCreate, Quaternion.identity)).GetComponent<Tile>();
+        MapGridded.Instance.MapGrid[positionInMap.Y, positionInMap.X] = new MapGridElement(positionInMap.X, positionInMap.Y, tile, Instantiate(Tiles.Instance.CanBuildIndicator, tile.transform.position, Quaternion.identity), Instantiate(Tiles.Instance.CannotBuildIndicator, tile.transform.position, Quaternion.identity));
     }
 
     public void SaveMineToMap(IntVector2 positionInMap)
@@ -205,7 +218,7 @@ public class MapLoadController : NetworkBehaviour
         if (isServer)
         {
             Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-            NetworkServer.Spawn(Instantiate(Resources.Instance.minePrefab, postionToCreate, Quaternion.identity));
+            NetworkServer.Spawn(Instantiate(Resources.Instance.MinePrefab, postionToCreate, Quaternion.identity));
         }
     }
 
@@ -214,7 +227,7 @@ public class MapLoadController : NetworkBehaviour
         if (isServer)
         {
             Vector2 postionToCreate = MapGridded.MapToWorldPosition(positionInMap);
-            NetworkServer.Spawn(Instantiate(Resources.Instance.treePrefab, postionToCreate, Quaternion.identity));
+            NetworkServer.Spawn(Instantiate(Resources.Instance.TreePrefab, postionToCreate, Quaternion.identity));
         }
     }
 }

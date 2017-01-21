@@ -6,35 +6,38 @@ using System.Collections.Generic;
 public class Worker : Unit
 {
     private bool isCuttingLumber = false;
-    public bool isSelectingPlaceForBuilding = false;
+    public bool IsSelectingPlaceForBuilding { get; set; }
     private bool isGoingToBuildPlace = false;
-    public bool haveFinishedPlacingBuilding = false;
-    public bool isGoingForGold = false;
-    public bool isReturningWithGold = false;
-    public bool isGoingForLumber = false;
-    public bool isReturningWithLumber = false;
+    private bool haveFinishedPlacingBuilding = false;
+    private bool isGoingForGold = false;
+    private bool isReturningWithGold = false;
+    private bool isGoingForLumber = false;
+    private bool isReturningWithLumber = false;
 
-    public int takenGoldAmount;
-    public float timeOfGivingGold;
+    public int TakenGoldAmount { get; set; }
+    private float timeOfGivingGold;
 
-    public int takenLumberAmount = 0;
-    public float timeOfGatheringLumber;
-    public float timeOfGivingLumber;
+    public int TakenLumberAmount { get; set; }
+    [SerializeField]
+    private float timeOfGatheringLumber;
+    [SerializeField]
+    private float timeOfGivingLumber;
 
-    public Building buildingToBuild;
-    public Building castleToReturnWithGoods;
-    public Mine mineToGoForGold;
-    public LumberInGame lumberToCut;
+    private Building buildingToBuild;
+    private Building castleToReturnWithGoods;
+    private Mine mineToGoForGold;
+    private LumberInGame lumberToCut;
 
-    public BuildingType buildingToBuildType;
-    public IntVector2 positionOfBuildingToBuild;
-    public List<IntVector2> buildingToBuildPositionsInGrid;
+    private BuildingType buildingToBuildType;
+    private IntVector2 positionOfBuildingToBuild;
+    private List<IntVector2> buildingToBuildPositionsInGrid;
     private Coroutine GatherLumberCoroutine;
+    [SerializeField]
+    private SpriteRenderer lumber;
+    [SerializeField]
+    private SpriteRenderer gold;
 
-    public SpriteRenderer lumber;
-    public SpriteRenderer gold;
-
-    public override void Update()
+    protected override void Update()
     {
         base.Update();
         if (isServer)
@@ -81,14 +84,14 @@ public class Worker : Unit
 
     public bool CheckIfIsInBuildingArea()
     {
-        return buildingToBuildPositionsInGrid.Find(item => item.x == MapGridded.WorldToMapPosition(gameObject.transform.position).x && item.y == MapGridded.WorldToMapPosition(gameObject.transform.position).y) != null;
+        return buildingToBuildPositionsInGrid.Find(item => item.X == MapGridded.WorldToMapPosition(gameObject.transform.position).X && item.Y == MapGridded.WorldToMapPosition(gameObject.transform.position).Y) != null;
     }
 
     public bool CheckIfCanBuildInBuildingArea()
     {
         foreach (IntVector2 buildingPositionInGrid in buildingToBuildPositionsInGrid)
         {
-            if (!MapGridded.Instance.IsInMap(buildingPositionInGrid) || (!MapGridded.Instance.mapGrid[buildingPositionInGrid.y, buildingPositionInGrid.x].isWalkable && MapGridded.Instance.mapGrid[buildingPositionInGrid.y, buildingPositionInGrid.x].unit != this))
+            if (!MapGridded.Instance.IsInMap(buildingPositionInGrid) || (!MapGridded.Instance.MapGrid[buildingPositionInGrid.Y, buildingPositionInGrid.X].IsWalkable && MapGridded.Instance.MapGrid[buildingPositionInGrid.Y, buildingPositionInGrid.X].Unit != this))
             {
                 return false;
             }
@@ -98,9 +101,9 @@ public class Worker : Unit
 
     public void Build()
     {
-        buildingToBuild = Instantiate(Buildings.Instance.buildingsList.Find(item => item.buildingType == buildingToBuildType && item.owner == owner), MapGridded.MapToWorldPosition(positionOfBuildingToBuild), Quaternion.identity);
-        buildingToBuild.builder = this;
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).goldAmount -= buildingToBuild.goldCost;
+        buildingToBuild = Instantiate(Buildings.Instance.BuildingsList.Find(item => item.BuildingType == buildingToBuildType && item.Owner == owner), MapGridded.MapToWorldPosition(positionOfBuildingToBuild), Quaternion.identity);
+        buildingToBuild.Builder = this;
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).GoldAmount -= buildingToBuild.GoldCost;
         NetworkServer.Spawn(buildingToBuild.gameObject);
         buildingToBuild.PlaceOnMap();
         isGoingToBuildPlace = false;
@@ -113,17 +116,17 @@ public class Worker : Unit
     [ClientRpc]
     void RpcSelectBuildedBuilding(NetworkIdentity buildingNetworkIdentity)
     {
-        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selector.UnSelectAll();
-            MultiplayerController.Instance.localPlayer.selector.Select(buildingNetworkIdentity.GetComponent<Building>());
+            MultiplayerController.Instance.LocalPlayer.Selector.UnSelectAll();
+            MultiplayerController.Instance.LocalPlayer.Selector.Select(buildingNetworkIdentity.GetComponent<Building>());
         }
     }
 
     public void CancelBuild()
     {
         RpcShowBuildButtons();
-        isSelectingPlaceForBuilding = false;
+        IsSelectingPlaceForBuilding = false;
         isGoingToBuildPlace = false;
         if (!haveFinishedPlacingBuilding && buildingToBuild != null)
         {
@@ -135,7 +138,7 @@ public class Worker : Unit
     [ClientRpc]
     void RpcShowBuildButtons()
     {
-        if (MultiplayerController.Instance.localPlayer.playerType == owner && MultiplayerController.Instance.localPlayer.selector.selectedUnits.Count == 1 && MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+        if (MultiplayerController.Instance.LocalPlayer.PlayerType == owner && MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Count == 1 && MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(this))
         {
             ShowBuildButtons();
         }
@@ -145,7 +148,7 @@ public class Worker : Unit
     {
         foreach (ActionButtonType buttonType in buttonTypes)
         {
-            ActionButton foundButton = ActionButtons.Instance.buttons.Find(item => item.buttonType == buttonType);
+            ActionButton foundButton = ActionButtons.Instance.buttons.Find(item => item.ButtonType == buttonType);
             if (foundButton.GetType() == typeof(BuildButton))
             {
                 foundButton.Show();
@@ -179,7 +182,7 @@ public class Worker : Unit
         List<MapGridElement> AdjacentGridElements = MapGridded.Instance.GetAdjacentGridElements(MapGridded.WorldToMapPosition(gameObject.transform.position));
         foreach (MapGridElement actualMapGridElement in AdjacentGridElements)
         {
-            if (actualMapGridElement.mine != null && actualMapGridElement.mine == mineToGoForGold)
+            if (actualMapGridElement.Mine != null && actualMapGridElement.Mine == mineToGoForGold)
             {
                 return true;
             }
@@ -237,7 +240,7 @@ public class Worker : Unit
         List<MapGridElement> AdjacentGridElements = MapGridded.Instance.GetAdjacentGridElements(MapGridded.WorldToMapPosition(gameObject.transform.position));
         foreach (MapGridElement actualMapGridElement in AdjacentGridElements)
         {
-            if (actualMapGridElement.building != null && actualMapGridElement.building == castleToReturnWithGoods)
+            if (actualMapGridElement.Building != null && actualMapGridElement.Building == castleToReturnWithGoods)
             {
                 return true;
             }
@@ -248,9 +251,9 @@ public class Worker : Unit
     [ClientRpc]
     void RpcGiveGold()
     {
-        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+            MultiplayerController.Instance.LocalPlayer.Selector.Unselect(this);
         }
         if (isServer)
         {
@@ -268,13 +271,13 @@ public class Worker : Unit
 
     public IEnumerator GivingGold()
     {
-        castleToReturnWithGoods.visiters.Add(this);
+        castleToReturnWithGoods.Visiters.Add(this);
         yield return new WaitForSeconds(timeOfGivingGold);
-        castleToReturnWithGoods.visiters.Remove(this);
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).goldAmount += takenGoldAmount;
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).allGatheredGold += takenGoldAmount;
-        takenGoldAmount = 0;
-        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
+        castleToReturnWithGoods.Visiters.Remove(this);
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).GoldAmount += TakenGoldAmount;
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).AllGatheredGold += TakenGoldAmount;
+        TakenGoldAmount = 0;
+        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.Width, castleToReturnWithGoods.Height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         RpcMoveFromTo(gameObject.transform.position, gameObject.transform.position);
         RpcShowYourself();
@@ -286,7 +289,7 @@ public class Worker : Unit
     {
         gameObject.GetComponent<MinimapElement>().Show();
         List<MapGridElement> shortestPathToCastle = null;
-        if (MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Find(item => item.buildingType == BuildingType.Castle))
+        if (MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).ActiveBuildings.Find(item => item.BuildingType == BuildingType.Castle))
         {
             shortestPathToCastle = ASTARPathfinder.Instance.FindPathForNearestCastle(positionInGrid, owner, out castleToReturnWithGoods);
         }
@@ -315,7 +318,7 @@ public class Worker : Unit
         {
             isFollowingPath = false;
             isGoingForLumber = false;
-            if (lumberToCut.IsDepleted || lumberToCut.isBeingCut)
+            if (lumberToCut.IsDepleted || lumberToCut.IsBeingCut)
             {
                 GoForLumber();
             }
@@ -335,7 +338,7 @@ public class Worker : Unit
         List<MapGridElement> AdjacentGridElements = MapGridded.Instance.GetAdjacentGridElements(MapGridded.WorldToMapPosition(gameObject.transform.position));
         foreach (MapGridElement actualMapGridElement in AdjacentGridElements)
         {
-            if (actualMapGridElement.lumber != null && actualMapGridElement.lumber == lumberToCut)
+            if (actualMapGridElement.Lumber != null && actualMapGridElement.Lumber == lumberToCut)
             {
                 return true;
             }
@@ -366,11 +369,11 @@ public class Worker : Unit
 
     private IEnumerator GatherLumber()
     {
-        lumberToCut.isBeingCut = true;
+        lumberToCut.IsBeingCut = true;
         isCuttingLumber = true;
         yield return new WaitForSeconds(timeOfGatheringLumber);
         isCuttingLumber = false;
-        takenLumberAmount = 50;
+        TakenLumberAmount = 50;
         lumberToCut.RpcDeplete();
         RpcSetLumberVisibility(true);
         ReturnWithLumber();
@@ -379,7 +382,7 @@ public class Worker : Unit
     public void ReturnWithLumber()
     {
         List<MapGridElement> shortestPathToCastle = null;
-        if (MultiplayerController.Instance.players.Find(item => item.playerType == owner).activeBuildings.Find(item => item.buildingType == BuildingType.Castle))
+        if (MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).ActiveBuildings.Find(item => item.BuildingType == BuildingType.Castle))
         {
             shortestPathToCastle = ASTARPathfinder.Instance.FindPathForNearestCastle(positionInGrid, owner, out castleToReturnWithGoods);
         }
@@ -428,9 +431,9 @@ public class Worker : Unit
     [ClientRpc]
     void RpcGiveLumber()
     {
-        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(this))
         {
-            MultiplayerController.Instance.localPlayer.selector.Unselect(this);
+            MultiplayerController.Instance.LocalPlayer.Selector.Unselect(this);
         }
         if (isServer)
         {
@@ -447,13 +450,13 @@ public class Worker : Unit
 
     public IEnumerator GivingLumber()
     {
-        castleToReturnWithGoods.visiters.Add(this);
+        castleToReturnWithGoods.Visiters.Add(this);
         yield return new WaitForSeconds(timeOfGivingLumber);
-        castleToReturnWithGoods.visiters.Remove(this);
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).lumberAmount += takenLumberAmount;
-        MultiplayerController.Instance.players.Find(item => item.playerType == owner).allGatheredLumber += takenLumberAmount;
-        takenLumberAmount = 0;
-        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.width, castleToReturnWithGoods.height);
+        castleToReturnWithGoods.Visiters.Remove(this);
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).LumberAmount += TakenLumberAmount;
+        MultiplayerController.Instance.Players.Find(item => item.PlayerType == owner).AllGatheredLumber += TakenLumberAmount;
+        TakenLumberAmount = 0;
+        IntVector2 firstFreePlaceOnMapAroundCastle = MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(castleToReturnWithGoods.transform.position), castleToReturnWithGoods.Width, castleToReturnWithGoods.Height);
         SetNewPositionOnMapSettingWorldPosition(firstFreePlaceOnMapAroundCastle);
         RpcMoveFromTo(gameObject.transform.position, gameObject.transform.position);
         RpcShowYourself();
@@ -462,21 +465,21 @@ public class Worker : Unit
 
     public void PrepareBuild(Building buildingToBuildPrefab)
     {
-        if (MultiplayerController.Instance.localPlayer.selector.selectedUnits.Count == 1 && MultiplayerController.Instance.localPlayer.selector.selectedUnits.Contains(this))
+        if (MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Count == 1 && MultiplayerController.Instance.LocalPlayer.Selector.SelectedUnits.Contains(this))
         {
             HideBuildButtons();
         }
         haveFinishedPlacingBuilding = false;
-        isSelectingPlaceForBuilding = true;
+        IsSelectingPlaceForBuilding = true;
         this.buildingToBuild = Instantiate(buildingToBuildPrefab);
-        this.buildingToBuild.builder = this;
+        this.buildingToBuild.Builder = this;
     }
 
     public void HideBuildButtons()
     {
         foreach (ActionButtonType buttonType in buttonTypes)
         {
-            ActionButton foundButton = ActionButtons.Instance.buttons.Find(item => item.buttonType == buttonType);
+            ActionButton foundButton = ActionButtons.Instance.buttons.Find(item => item.ButtonType == buttonType);
             if (foundButton.GetType() == typeof(BuildButton))
             {
                 foundButton.Hide();
@@ -489,7 +492,7 @@ public class Worker : Unit
         buildingToBuildType = buildingType;
         positionOfBuildingToBuild = MapGridded.WorldToMapPosition(buildPlaceInWorldSpace);
         SetBuildingToBuildPositionsInGrid(buildingType, buildPlaceInWorldSpace);
-        isSelectingPlaceForBuilding = false;
+        IsSelectingPlaceForBuilding = false;
         RequestGoTo(positionOfBuildingToBuild);
         isGoingToBuildPlace = true;
         if (CheckIfIsInBuildingArea())
@@ -505,14 +508,14 @@ public class Worker : Unit
 
     public void SetBuildingToBuildPositionsInGrid(BuildingType buildingType, Vector2 buildPlaceInWorldSpace)
     {
-        Building buildingtoBuild = Buildings.Instance.buildingsList.Find(item => item.buildingType == buildingType && item.owner == owner);
+        Building buildingtoBuild = Buildings.Instance.BuildingsList.Find(item => item.BuildingType == buildingType && item.Owner == owner);
         IntVector2 positionOfBuildingToBuild = MapGridded.WorldToMapPosition(buildPlaceInWorldSpace);
         buildingToBuildPositionsInGrid = new List<IntVector2>();
-        for (int row = 0; row < buildingtoBuild.height; ++row)
+        for (int row = 0; row < buildingtoBuild.Height; ++row)
         {
-            for (int column = 0; column < buildingtoBuild.width; ++column)
+            for (int column = 0; column < buildingtoBuild.Width; ++column)
             {
-                buildingToBuildPositionsInGrid.Add(new IntVector2(positionOfBuildingToBuild.x + column, positionOfBuildingToBuild.y + row));
+                buildingToBuildPositionsInGrid.Add(new IntVector2(positionOfBuildingToBuild.X + column, positionOfBuildingToBuild.Y + row));
             }
         }
     }
@@ -520,8 +523,8 @@ public class Worker : Unit
     public void FinishBuild()
     {
         RpcShowYourself();
-        RpcSetNewPosition(MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), buildingToBuild.width, buildingToBuild.height)));
-        positionInGridSyncVar = MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), buildingToBuild.width, buildingToBuild.height));
+        RpcSetNewPosition(MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), buildingToBuild.Width, buildingToBuild.Height)));
+        positionInGridSyncVar = MapGridded.MapToWorldPosition(MapGridded.Instance.GetFirstFreePlaceAround(MapGridded.WorldToMapPosition(buildingToBuild.transform.position), buildingToBuild.Width, buildingToBuild.Height));
         RpcStop();
     }
 
@@ -559,7 +562,7 @@ public class Worker : Unit
         isReturningWithLumber = false;
         if (isCuttingLumber)
         {
-            lumberToCut.isBeingCut = false;
+            lumberToCut.IsBeingCut = false;
         }
         if (GatherLumberCoroutine != null)
         {
